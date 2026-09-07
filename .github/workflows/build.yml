@@ -6,9 +6,9 @@ on:
   pull_request:
 
 env:
-  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-  SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-  SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
 
 jobs:
   build:
@@ -71,12 +71,6 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-
-      - name: Debug vars
-        run: |
-          echo "SONAR_HOST_URL='${SONAR_HOST_URL}'"
-          echo "SONAR_ORGANIZATION='${SONAR_ORGANIZATION}'"
-          echo "SONAR_PROJECT_KEY='${SONAR_PROJECT_KEY}'"
 
       - name: Build + Test + Coverage + Sonar
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORGANIZATION -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=${{ secrets.SONAR_TOKEN }}
