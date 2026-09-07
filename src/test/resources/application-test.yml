@@ -1,0 +1,17 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.docker.compose.DockerComposeAutoConfiguration
+  mail:
+    host: localhost
+    port: 1025
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: agd
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
