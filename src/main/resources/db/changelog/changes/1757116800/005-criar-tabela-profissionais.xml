@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-005-criar-tb-profissionais" author="igor">
+        <createTable tableName="TB_PROFISSIONAIS" schemaName="agd">
+            <column name="COD_PROFISSIONAL" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_PROFISSIONAIS" nullable="false"/>
+            </column>
+            <column name="COD_USUARIO" type="INT">
+                <constraints nullable="false" unique="true"
+                             uniqueConstraintName="UQ_TB_PROFISSIONAIS_COD_USUARIO"
+                             foreignKeyName="FK_TB_PROFISSIONAIS_COD_USUARIO"
+                             references="agd.TB_USUARIOS(COD_USUARIO)"/>
+            </column>
+            <column name="TX_NOME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TX_EMAIL" type="VARCHAR(255)"/>
+            <column name="TX_ESPECIALIDADES" type="VARCHAR(1000)"/>
+            <column name="TX_ENDERECO" type="VARCHAR(500)"/>
+            <column name="IC_ATIVO" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="TB_PROFISSIONAIS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

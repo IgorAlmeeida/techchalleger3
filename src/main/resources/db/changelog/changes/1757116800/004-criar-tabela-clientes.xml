@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-004-criar-tb-clientes" author="igor">
+        <createTable tableName="TB_CLIENTES" schemaName="agd">
+            <column name="COD_CLIENTE" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_CLIENTES" nullable="false"/>
+            </column>
+            <column name="COD_USUARIO" type="INT">
+                <constraints nullable="false" unique="true"
+                             uniqueConstraintName="UQ_TB_CLIENTES_COD_USUARIO"
+                             foreignKeyName="FK_TB_CLIENTES_COD_USUARIO"
+                             references="agd.TB_USUARIOS(COD_USUARIO)"/>
+            </column>
+            <column name="TX_NOME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TX_EMAIL" type="VARCHAR(255)"/>
+            <column name="TX_CPF" type="VARCHAR(14)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DT_NASCIMENTO" type="DATE"/>
+            <column name="TX_TELEFONE" type="VARCHAR(20)"/>
+            <column name="IC_SEXO" type="VARCHAR(20)">
+                <constraints checkConstraint="IC_SEXO IN ('MASCULINO','FEMININO','OUTRO')"/>
+            </column>
+            <column name="TX_ENDERECO" type="VARCHAR(500)"/>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="TB_CLIENTES" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

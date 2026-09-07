@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-007-criar-tb-profissional-vinculos" author="igor">
+        <createTable tableName="TB_PROFISSIONAL_VINCULOS" schemaName="agd">
+            <column name="COD_PROFISSIONAL_VINCULO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_PROFISSIONAL_VINCULOS" nullable="false"/>
+            </column>
+            <column name="COD_PROFISSIONAL" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_PROFISSIONAL_VINCULOS_COD_PROFISSIONAL"
+                             references="agd.TB_PROFISSIONAIS(COD_PROFISSIONAL)"/>
+            </column>
+            <column name="COD_ESTABELECIMENTO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_PROFISSIONAL_VINCULOS_COD_ESTABELECIMENTO"
+                             references="agd.TB_ESTABELECIMENTOS(COD_ESTABELECIMENTO)"/>
+            </column>
+            <column name="DT_INICIO" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DT_FIM" type="DATE"/>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="IDX_TB_PROFISSIONAL_VINCULOS_COD_PROFISSIONAL"
+                     tableName="TB_PROFISSIONAL_VINCULOS" schemaName="agd">
+            <column name="COD_PROFISSIONAL"/>
+        </createIndex>
+        <createIndex indexName="IDX_TB_PROFISSIONAL_VINCULOS_COD_ESTABELECIMENTO"
+                     tableName="TB_PROFISSIONAL_VINCULOS" schemaName="agd">
+            <column name="COD_ESTABELECIMENTO"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_PROFISSIONAL_VINCULOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

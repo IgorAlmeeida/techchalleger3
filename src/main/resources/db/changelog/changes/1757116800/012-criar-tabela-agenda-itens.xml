@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-012-criar-tb-agenda-itens" author="igor">
+        <createTable tableName="TB_AGENDA_ITENS" schemaName="agd" remarks="Serviços disponíveis por agenda">
+            <column name="COD_AGENDA_ITEM" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_AGENDA_ITENS" nullable="false"/>
+            </column>
+            <column name="COD_AGENDA" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AGENDA_ITENS_COD_AGENDA"
+                             references="agd.TB_AGENDAS(COD_AGENDA)"/>
+            </column>
+            <column name="COD_SERVICO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AGENDA_ITENS_COD_SERVICO"
+                             references="agd.TB_SERVICOS(COD_SERVICO)"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="IDX_TB_AGENDA_ITENS_COD_AGENDA"
+                     tableName="TB_AGENDA_ITENS" schemaName="agd">
+            <column name="COD_AGENDA"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_AGENDA_ITENS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

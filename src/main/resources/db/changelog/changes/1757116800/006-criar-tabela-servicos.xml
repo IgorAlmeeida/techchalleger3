@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-006-criar-tb-servicos" author="igor">
+        <createTable tableName="TB_SERVICOS" schemaName="agd">
+            <column name="COD_SERVICO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_SERVICOS" nullable="false"/>
+            </column>
+            <column name="TX_NOME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NU_DURACAO_MINUTOS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NU_PRECO" type="NUMERIC(10,2)"/>
+            <column name="IC_ATIVO" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="TB_SERVICOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

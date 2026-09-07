@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head><meta charset="UTF-8"/></head>
+<body style="margin: 0; padding: 0; background-color: #FAFAFA;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAFAFA;">
+  <tr><td align="center" style="padding: 30px 10px;">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <tr><td th:replace="~{email/layout-base :: cabecalho}"></td></tr>
+      <tr><td style="padding: 30px;">
+        <h2 style="margin: 0 0 16px; font-size: 20px; color: #E65100; font-family: Arial, sans-serif;">
+          Agenda Cancelada pelo Profissional
+        </h2>
+        <p style="margin: 0 0 20px; font-size: 15px; color: #424242; font-family: Arial, sans-serif; line-height: 1.5;">
+          Informamos que a agenda vinculada ao seu agendamento foi cancelada pelo profissional.
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FFF3E0; border-left: 4px solid #E65100; border-radius: 4px; margin-bottom: 20px;">
+          <tr><td style="padding: 16px;">
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Identificador da agenda cancelada</p>
+            <p style="margin: 4px 0 12px; font-size: 22px; font-weight: bold; color: #E65100; font-family: Arial, sans-serif;" th:text="'Agenda #' + ${agendaId}">---</p>
+
+            <div th:if="${itemNome != null}" style="margin-bottom: 12px;">
+              <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Serviço</p>
+              <p style="margin: 4px 0 0; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${itemNome}">---</p>
+            </div>
+
+            <div th:if="${profissionalNome != null}" style="margin-bottom: 12px;">
+              <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Profissional</p>
+              <p style="margin: 4px 0 0; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${profissionalNome}">---</p>
+            </div>
+
+            <div th:if="${data != null}" style="margin-bottom: 12px;">
+              <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Data</p>
+              <p style="margin: 4px 0 0; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${data}">--/--/----</p>
+            </div>
+          </td></tr>
+        </table>
+        <p style="margin: 0; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
+          Lamentamos o inconveniente. Caso prefira, entre em contato com o estabelecimento para reagendar.
+        </p>
+      </td></tr>
+      <tr><td th:replace="~{email/layout-base :: rodape}"></td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

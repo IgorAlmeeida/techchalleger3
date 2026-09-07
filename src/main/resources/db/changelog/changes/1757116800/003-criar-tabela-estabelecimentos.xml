@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-003-criar-tb-estabelecimentos" author="igor">
+        <createTable tableName="TB_ESTABELECIMENTOS" schemaName="agd">
+            <column name="COD_ESTABELECIMENTO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_ESTABELECIMENTOS" nullable="false"/>
+            </column>
+            <column name="TX_NOME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TX_CNPJ" type="VARCHAR(18)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UQ_TB_ESTABELECIMENTOS_TX_CNPJ"/>
+            </column>
+            <column name="TX_ENDERECO" type="VARCHAR(500)"/>
+            <column name="TX_TELEFONE" type="VARCHAR(20)"/>
+            <column name="TX_RESPONSAVEL_NOME" type="VARCHAR(255)"/>
+            <column name="TX_RESPONSAVEL_CPF" type="VARCHAR(14)"/>
+            <column name="TX_FOTOS_URLS" type="TEXT"/>
+            <column name="IC_ATIVO" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="TB_ESTABELECIMENTOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

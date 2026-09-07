@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <include file="changes/1757116800/001-criar-schema-agd.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/002-criar-tabela-usuarios.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/003-criar-tabela-estabelecimentos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/004-criar-tabela-clientes.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/005-criar-tabela-profissionais.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/006-criar-tabela-servicos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/007-criar-tabela-profissional-vinculos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/008-criar-tabela-profissional-vinculo-servicos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/009-criar-tabela-escalas.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/010-criar-tabela-escala-itens.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/011-criar-tabela-agendas.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/012-criar-tabela-agenda-itens.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/013-criar-tabela-agendamentos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/014-criar-tabela-avaliacoes.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

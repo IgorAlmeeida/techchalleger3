@@ -1,0 +1,27 @@
+name: Build & Sonar
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+  SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build + Test + Coverage + Sonar
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORGANIZATION -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=${{ secrets.SONAR_TOKEN }}

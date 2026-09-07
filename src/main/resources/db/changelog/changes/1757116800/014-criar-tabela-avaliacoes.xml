@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-014-criar-tb-avaliacoes" author="igor">
+        <createTable tableName="TB_AVALIACOES" schemaName="agd" remarks="Avaliações de atendimentos concluídos">
+            <column name="COD_AVALIACAO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_AVALIACOES" nullable="false"/>
+            </column>
+            <column name="COD_AGENDAMENTO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AVALIACOES_COD_AGENDAMENTO"
+                             references="agd.TB_AGENDAMENTOS(COD_AGENDAMENTO)"/>
+            </column>
+            <column name="COD_CLIENTE" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AVALIACOES_COD_CLIENTE"
+                             references="agd.TB_CLIENTES(COD_CLIENTE)"/>
+            </column>
+            <column name="COD_ESTABELECIMENTO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AVALIACOES_COD_ESTABELECIMENTO"
+                             references="agd.TB_ESTABELECIMENTOS(COD_ESTABELECIMENTO)"/>
+            </column>
+            <column name="COD_PROFISSIONAL_VINCULO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AVALIACOES_COD_PROFISSIONAL_VINCULO"
+                             references="agd.TB_PROFISSIONAL_VINCULOS(COD_PROFISSIONAL_VINCULO)"/>
+            </column>
+            <column name="NU_NOTA" type="INT">
+                <constraints nullable="false"
+                             checkConstraint="NU_NOTA BETWEEN 1 AND 5"/>
+            </column>
+            <column name="TX_COMENTARIO" type="TEXT"/>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="TB_AVALIACOES"
+                schemaName="agd"
+                columnNames="COD_AGENDAMENTO"
+                constraintName="UQ_TB_AVALIACOES_COD_AGENDAMENTO"/>
+
+        <createIndex indexName="IDX_TB_AVALIACOES_COD_ESTABELECIMENTO"
+                     tableName="TB_AVALIACOES" schemaName="agd">
+            <column name="COD_ESTABELECIMENTO"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_AVALIACOES" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

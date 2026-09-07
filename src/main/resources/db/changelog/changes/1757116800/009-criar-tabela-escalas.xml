@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-009-criar-tb-escalas" author="igor">
+        <createTable tableName="TB_ESCALAS" schemaName="agd">
+            <column name="COD_ESCALA" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_ESCALAS" nullable="false"/>
+            </column>
+            <column name="COD_PROFISSIONAL_VINCULO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_ESCALAS_COD_PROFISSIONAL_VINCULO"
+                             references="agd.TB_PROFISSIONAL_VINCULOS(COD_PROFISSIONAL_VINCULO)"/>
+            </column>
+            <column name="COD_ESTABELECIMENTO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_ESCALAS_COD_ESTABELECIMENTO"
+                             references="agd.TB_ESTABELECIMENTOS(COD_ESTABELECIMENTO)"/>
+            </column>
+            <column name="IC_DIA_SEMANA" type="VARCHAR(10)">
+                <constraints nullable="false"
+                             checkConstraint="IC_DIA_SEMANA IN ('DOMINGO','SEGUNDA','TERCA','QUARTA','QUINTA','SEXTA','SABADO')"/>
+            </column>
+            <column name="HR_HORA_INICIO" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HR_HORA_FIM" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="IDX_TB_ESCALAS_COD_PROFISSIONAL_VINCULO"
+                     tableName="TB_ESCALAS" schemaName="agd">
+            <column name="COD_PROFISSIONAL_VINCULO"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_ESCALAS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

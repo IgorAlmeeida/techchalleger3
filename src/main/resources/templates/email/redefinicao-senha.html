@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head><meta charset="UTF-8"/></head>
+<body style="margin: 0; padding: 0; background-color: #FAFAFA;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAFAFA;">
+  <tr><td align="center" style="padding: 30px 10px;">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <tr><td th:replace="~{email/layout-base :: cabecalho}"></td></tr>
+      <tr><td style="padding: 30px;">
+        <h2 style="margin: 0 0 16px; font-size: 20px; color: #1565C0; font-family: Arial, sans-serif;">
+          Redefinição de Senha
+        </h2>
+        <p style="margin: 0 0 20px; font-size: 15px; color: #424242; font-family: Arial, sans-serif; line-height: 1.5;">
+          Olá, <strong th:text="${nome}">Usuário</strong>. Recebemos uma solicitação de redefinição de senha para a sua conta (<span th:text="${email}">---</span>).
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #E3F2FD; border-left: 4px solid #1565C0; border-radius: 4px; margin-bottom: 20px;">
+          <tr><td style="padding: 16px;">
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Sua nova senha temporária</p>
+            <p style="margin: 8px 0 0; font-size: 22px; font-weight: bold; color: #1565C0; font-family: 'Courier New', monospace; letter-spacing: 3px; background-color: #FFFFFF; border: 1px dashed #90CAF9; padding: 10px 16px; border-radius: 4px; display: inline-block;" th:text="${senhaTemp}">---</p>
+          </td></tr>
+        </table>
+        <p style="margin: 0 0 12px; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
+          <strong>Importante:</strong> esta senha é temporária. Após o login, você deverá definir uma nova senha permanente através da opção "Alterar Senha".
+        </p>
+        <p style="margin: 0; font-size: 14px; color: #9E9E9E; font-family: Arial, sans-serif; line-height: 1.5;">
+          Se você não solicitou a redefinição de senha, ignore este email. Sua senha atual permanece inalterada.
+        </p>
+      </td></tr>
+      <tr><td th:replace="~{email/layout-base :: rodape}"></td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

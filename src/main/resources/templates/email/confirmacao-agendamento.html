@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head><meta charset="UTF-8"/></head>
+<body style="margin: 0; padding: 0; background-color: #FAFAFA;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAFAFA;">
+  <tr><td align="center" style="padding: 30px 10px;">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <tr><td th:replace="~{email/layout-base :: cabecalho}"></td></tr>
+      <tr><td style="padding: 30px;">
+        <h2 style="margin: 0 0 16px; font-size: 20px; color: #1565C0; font-family: Arial, sans-serif;">
+          Agendamento Confirmado &#10003;
+        </h2>
+        <p style="margin: 0 0 20px; font-size: 15px; color: #424242; font-family: Arial, sans-serif; line-height: 1.5;">
+          Seu agendamento foi confirmado com sucesso no sistema Agendamento.
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #E3F2FD; border-left: 4px solid #1565C0; border-radius: 4px; margin-bottom: 20px;">
+          <tr><td style="padding: 16px;">
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Número do agendamento</p>
+            <p style="margin: 4px 0 12px; font-size: 22px; font-weight: bold; color: #1565C0; font-family: Arial, sans-serif;" th:text="${agendamentoId}">---</p>
+
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Serviço</p>
+            <p style="margin: 4px 0 12px; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${itemNome}">---</p>
+
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Profissional</p>
+            <p style="margin: 4px 0 12px; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${profissionalNome}">---</p>
+
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Data</p>
+            <p style="margin: 4px 0 12px; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${data}">--/--/----</p>
+
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Horário</p>
+            <p style="margin: 4px 0 0; font-size: 18px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;">
+              <span th:text="${horaInicio}">--:--</span>
+              &mdash;
+              <span th:text="${horaFim}">--:--</span>
+            </p>
+          </td></tr>
+        </table>
+        <p style="margin: 0; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
+          Compareça com antecedência ao estabelecimento.
+          Em caso de impossibilidade, cancele com antecedência para liberar a vaga para outros clientes.
+        </p>
+      </td></tr>
+      <tr><td th:replace="~{email/layout-base :: rodape}"></td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

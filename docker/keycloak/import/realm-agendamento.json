@@ -1,0 +1,118 @@
+{
+  "realm": "agendamento",
+  "enabled": true,
+  "displayName": "Agendamento Beleza e Bem-Estar",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "accessTokenLifespan": 3600,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "Administrador do sistema",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "agendamento"
+      },
+      {
+        "name": "PROFISSIONAL",
+        "description": "Profissional de beleza ou bem-estar",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "agendamento"
+      },
+      {
+        "name": "CLIENTE",
+        "description": "Cliente que realiza agendamentos",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "agendamento"
+      }
+    ],
+    "client": {}
+  },
+  "clients": [
+    {
+      "clientId": "agendamento-client",
+      "name": "Agendamento Client",
+      "description": "Client para o sistema de agendamento",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "agendamento-secret",
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "scopeMappings": [],
+  "clientScopeMappings": {},
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@agendamento.com",
+      "firstName": "Admin",
+      "lastName": "Sistema",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    }
+  ],
+  "internationalizationEnabled": false,
+  "defaultLocale": "pt-BR",
+  "browserSecurityHeaders": {
+    "contentSecurityPolicyReportOnly": "",
+    "xContentTypeOptions": "nosniff",
+    "xRobotsTag": "none",
+    "xFrameOptions": "SAMEORIGIN",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+  }
+}

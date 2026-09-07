@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-002-criar-tb-usuarios" author="igor">
+        <createTable tableName="TB_USUARIOS" schemaName="agd">
+            <column name="COD_USUARIO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_USUARIOS" nullable="false"/>
+            </column>
+            <column name="COD_KEYCLOAK" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UQ_TB_USUARIOS_COD_KEYCLOAK"/>
+            </column>
+            <column name="IC_ROLE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <sql>
+            ALTER TABLE agd.TB_USUARIOS
+                ADD CONSTRAINT CK_TB_USUARIOS_IC_ROLE
+                CHECK (IC_ROLE IN ('ADMIN','PROFISSIONAL','CLIENTE'));
+        </sql>
+
+        <rollback>
+            <dropTable tableName="TB_USUARIOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

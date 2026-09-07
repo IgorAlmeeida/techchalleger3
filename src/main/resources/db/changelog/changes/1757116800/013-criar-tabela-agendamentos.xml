@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-013-criar-tb-agendamentos" author="igor">
+        <createTable tableName="TB_AGENDAMENTOS" schemaName="agd" remarks="Slots de atendimento de uma agenda">
+            <column name="COD_AGENDAMENTO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_AGENDAMENTOS" nullable="false"/>
+            </column>
+            <column name="COD_AGENDA" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_AGENDAMENTOS_COD_AGENDA"
+                             references="agd.TB_AGENDAS(COD_AGENDA)"/>
+            </column>
+            <column name="COD_AGENDAMENTO_PAI" type="INT">
+                <constraints foreignKeyName="FK_TB_AGENDAMENTOS_COD_AGENDAMENTO_PAI"
+                             references="agd.TB_AGENDAMENTOS(COD_AGENDAMENTO)"/>
+            </column>
+            <column name="COD_SERVICO" type="INT">
+                <constraints foreignKeyName="FK_TB_AGENDAMENTOS_COD_SERVICO"
+                             references="agd.TB_SERVICOS(COD_SERVICO)"/>
+            </column>
+            <column name="HR_HORA_INICIO" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HR_HORA_FIM" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COD_CLIENTE" type="INT">
+                <constraints foreignKeyName="FK_TB_AGENDAMENTOS_COD_CLIENTE"
+                             references="agd.TB_CLIENTES(COD_CLIENTE)"/>
+            </column>
+            <column name="IC_STATUS" type="VARCHAR(20)">
+                <constraints nullable="false"
+                             checkConstraint="IC_STATUS IN ('DISPONIVEL','RESERVADO','AGENDADO','REALIZADO','NAO_REALIZADO','CANCELADO')"/>
+            </column>
+            <column name="IC_PRESENCA_CONFIRMADA" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_ATUALIZACAO" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="IDX_TB_AGENDAMENTOS_COD_AGENDA"
+                     tableName="TB_AGENDAMENTOS" schemaName="agd">
+            <column name="COD_AGENDA"/>
+        </createIndex>
+
+        <createIndex indexName="IDX_TB_AGENDAMENTOS_COD_CLIENTE"
+                     tableName="TB_AGENDAMENTOS" schemaName="agd">
+            <column name="COD_CLIENTE"/>
+        </createIndex>
+
+        <createIndex indexName="IDX_TB_AGENDAMENTOS_IC_STATUS"
+                     tableName="TB_AGENDAMENTOS" schemaName="agd">
+            <column name="IC_STATUS"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_AGENDAMENTOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

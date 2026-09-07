@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-008-criar-tb-profissional-vinculo-servicos" author="igor">
+        <createTable tableName="TB_PROFISSIONAL_VINCULO_SERVICOS" schemaName="agd">
+            <column name="COD_PROFISSIONAL_VINCULO_SERVICO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_PROFISSIONAL_VINCULO_SERVICOS" nullable="false"/>
+            </column>
+            <column name="COD_PROFISSIONAL_VINCULO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_PROFISSIONAL_VINCULO_SERVICOS_COD_PROFISSIONAL_VINCULO"
+                             references="agd.TB_PROFISSIONAL_VINCULOS(COD_PROFISSIONAL_VINCULO)"/>
+            </column>
+            <column name="COD_SERVICO" type="INT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_TB_PROFISSIONAL_VINCULO_SERVICOS_COD_SERVICO"
+                             references="agd.TB_SERVICOS(COD_SERVICO)"/>
+            </column>
+            <column name="NU_TARIFA" type="NUMERIC(10,2)"/>
+        </createTable>
+
+        <createIndex indexName="IDX_TB_PROFISSIONAL_VINCULO_SERVICOS_COD_PROFISSIONAL_VINCULO"
+                     tableName="TB_PROFISSIONAL_VINCULO_SERVICOS" schemaName="agd">
+            <column name="COD_PROFISSIONAL_VINCULO"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="TB_PROFISSIONAL_VINCULO_SERVICOS" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

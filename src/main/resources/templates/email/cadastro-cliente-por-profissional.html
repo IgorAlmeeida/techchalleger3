@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head><meta charset="UTF-8"/></head>
+<body style="margin: 0; padding: 0; background-color: #FAFAFA;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAFAFA;">
+  <tr><td align="center" style="padding: 30px 10px;">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <tr><td th:replace="~{email/layout-base :: cabecalho}"></td></tr>
+      <tr><td style="padding: 30px;">
+        <h2 style="margin: 0 0 16px; font-size: 20px; color: #1565C0; font-family: Arial, sans-serif;">
+          Sua Conta Foi Criada, <span th:text="${nome}">Cliente</span>!
+        </h2>
+        <p style="margin: 0 0 20px; font-size: 15px; color: #424242; font-family: Arial, sans-serif; line-height: 1.5;">
+          Um profissional realizou seu cadastro no sistema Agendamento.
+          Use as credenciais abaixo para acessar sua conta.
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #E3F2FD; border-left: 4px solid #1565C0; border-radius: 4px; margin-bottom: 20px;">
+          <tr><td style="padding: 16px;">
+            <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Login (e-mail)</p>
+            <p style="margin: 4px 0 0; font-size: 16px; font-weight: bold; color: #212121; font-family: Arial, sans-serif;" th:text="${email}">---</p>
+            <p style="margin: 16px 0 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Senha temporária</p>
+            <p style="margin: 4px 0 0; font-size: 20px; font-weight: bold; color: #1565C0; font-family: 'Courier New', monospace; letter-spacing: 2px; background-color: #FFFFFF; border: 1px dashed #90CAF9; padding: 8px 12px; border-radius: 4px; display: inline-block;" th:text="${senhaTemp}">---</p>
+          </td></tr>
+        </table>
+        <p style="margin: 0 0 12px; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
+          <strong>Importante:</strong> esta é uma senha temporária. Ao fazer login pela primeira vez, você será solicitado a definir uma nova senha.
+        </p>
+        <p style="margin: 0; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
+          Com sua conta você pode visualizar seus agendamentos, agendar serviços e acompanhar seu histórico de atendimentos.
+        </p>
+      </td></tr>
+      <tr><td th:replace="~{email/layout-base :: rodape}"></td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
