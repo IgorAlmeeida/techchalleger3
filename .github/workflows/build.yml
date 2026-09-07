@@ -73,4 +73,4 @@ jobs:
           distribution: 'temurin'
 
       - name: Build + Test + Coverage + Sonar
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORGANIZATION -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORGANIZATION -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=${{ secrets.SONAR_TOKEN }}
