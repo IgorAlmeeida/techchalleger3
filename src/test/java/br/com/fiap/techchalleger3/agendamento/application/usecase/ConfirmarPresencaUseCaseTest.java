@@ -92,4 +92,27 @@ class ConfirmarPresencaUseCaseTest {
         assertThatThrownBy(() -> useCase.executar(3))
                 .isInstanceOf(OperacaoInvalidaException.class);
     }
+
+    @Test
+    void deveConfirmarPresenca_comFilhos() {
+        Agendamento pai = Agendamento.builder()
+                .id(1).agendaId(10).agendamentoPaiId(null)
+                .status(StatusAgendamentoEnum.AGENDADO).presencaConfirmada(false)
+                .build();
+        Agendamento salvo = Agendamento.builder()
+                .id(1).agendaId(10).presencaConfirmada(true).status(StatusAgendamentoEnum.AGENDADO)
+                .build();
+        when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(pai));
+        when(agendamentoPort.salvar(pai)).thenReturn(salvo);
+        when(agendaPort.buscarPorId(10)).thenReturn(Optional.empty());
+
+        Agendamento filho = Agendamento.builder().id(2).agendamentoPaiId(1)
+                .status(StatusAgendamentoEnum.AGENDADO).presencaConfirmada(false).build();
+        when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of(filho));
+
+        Agendamento result = useCase.executar(1);
+
+        assertThat(result.getPresencaConfirmada()).isTrue();
+        verify(agendamentoPort).salvar(filho);
+    }
 }

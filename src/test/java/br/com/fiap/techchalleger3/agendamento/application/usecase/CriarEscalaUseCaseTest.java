@@ -6,8 +6,11 @@ import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepos
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.domain.exception.AcessoNegadoException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.ItemNaoPermitidoException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import br.com.fiap.techchalleger3.agendamento.domain.model.DiaSemanaEnum;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Escala;
 import br.com.fiap.techchalleger3.agendamento.domain.model.EscalaItem;
@@ -105,5 +108,19 @@ class CriarEscalaUseCaseTest {
         assertThat(resultado.getId()).isEqualTo(10);
         verify(escalaPort).salvar(any(Escala.class));
         verify(escalaItemPort, times(1)).salvar(any(EscalaItem.class));
+    }
+
+    @Test
+    void deveLancarAcessoNegado_quandoProfissionalNaoEDono() {
+        ProfissionalVinculo vinculo = ProfissionalVinculo.builder()
+                .id(1).profissionalId(10).estabelecimentoId(1).build();
+        when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(vinculo));
+        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(99).build()));
+
+        assertThatThrownBy(() -> useCase.executar(
+                1, DiaSemanaEnum.SEGUNDA, LocalTime.of(9, 0), LocalTime.of(12, 0),
+                List.of(), "kc", false))
+                .isInstanceOf(AcessoNegadoException.class);
     }
 }

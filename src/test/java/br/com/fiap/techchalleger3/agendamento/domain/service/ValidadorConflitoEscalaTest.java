@@ -65,4 +65,23 @@ class ValidadorConflitoEscalaTest {
 
         assertThatNoException().isThrownBy(() -> validador.validar(nova, List.of(existente)));
     }
+
+    @Test
+    void deveLancarExcecao_quandoGapInsuficiente_existenteAntesDeNova() {
+        // existente termina 11:00, nova começa 11:30 → gap = 30min < 1h (else branch)
+        Escala nova = escala(1, DiaSemanaEnum.SEGUNDA, LocalTime.of(11, 30), LocalTime.of(14, 0));
+        Escala existente = escala(2, DiaSemanaEnum.SEGUNDA, LocalTime.of(9, 0), LocalTime.of(11, 0));
+
+        assertThatThrownBy(() -> validador.validar(nova, List.of(existente)))
+                .isInstanceOf(ConflitoDeEscalaException.class);
+    }
+
+    @Test
+    void naoDeveLancar_quandoGapSuficiente_existenteAntesDeNova() {
+        // existente termina 10:00, nova começa 11:30 → gap = 1h30 >= 1h (else branch, no throw)
+        Escala nova = escala(1, DiaSemanaEnum.SEGUNDA, LocalTime.of(11, 30), LocalTime.of(14, 0));
+        Escala existente = escala(2, DiaSemanaEnum.SEGUNDA, LocalTime.of(9, 0), LocalTime.of(10, 0));
+
+        assertThatNoException().isThrownBy(() -> validador.validar(nova, List.of(existente)));
+    }
 }
