@@ -17,8 +17,8 @@ public interface EstabelecimentoRepository extends JpaRepository<Estabelecimento
     List<EstabelecimentoEntity> findAllByCodigoIn(List<Integer> ids);
 
     @Query("SELECT e FROM EstabelecimentoEntity e WHERE e.ativo = true "
-            + "AND (:nome IS NULL OR LOWER(e.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) "
-            + "AND (:localizacao IS NULL OR LOWER(e.endereco) LIKE LOWER(CONCAT('%', :localizacao, '%')))")
+            + "AND ('' = COALESCE(:nome, '') OR LOWER(e.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) "
+            + "AND ('' = COALESCE(:localizacao, '') OR LOWER(e.endereco) LIKE LOWER(CONCAT('%', :localizacao, '%')))")
     Page<EstabelecimentoEntity> buscarComFiltros(
             @Param("nome") String nome,
             @Param("localizacao") String localizacao,

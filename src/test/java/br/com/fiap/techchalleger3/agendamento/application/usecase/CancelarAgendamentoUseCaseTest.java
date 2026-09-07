@@ -49,7 +49,7 @@ class CancelarAgendamentoUseCaseTest {
     @InjectMocks private CancelarAgendamentoUseCase useCase;
 
     private Usuario usuarioCliente() {
-        return Usuario.builder().id(10).codKeycloak("sub-cliente").role(RoleEnum.CLIENTE).build();
+        return Usuario.builder().id(10).keycloakId("sub-cliente").role(RoleEnum.CLIENTE).build();
     }
 
     private Cliente cliente(int id) {
@@ -151,7 +151,7 @@ class CancelarAgendamentoUseCaseTest {
 
     @Test
     void deveCancelarComoAdmin_quandoAgendamentoAgendado() {
-        Usuario admin = Usuario.builder().id(99).codKeycloak("sub-admin").role(RoleEnum.ADMIN).build();
+        Usuario admin = Usuario.builder().id(99).keycloakId("sub-admin").role(RoleEnum.ADMIN).build();
         Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.AGENDADO);
         Agenda ag = agenda(7);
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();

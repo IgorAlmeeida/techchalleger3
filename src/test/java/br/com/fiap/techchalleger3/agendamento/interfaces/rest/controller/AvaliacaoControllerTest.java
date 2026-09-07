@@ -7,6 +7,10 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.AvaliarAtendim
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +21,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +40,18 @@ class AvaliacaoControllerTest {
     @MockBean private JwtDecoder jwtDecoder;
     @MockBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+
+    @BeforeEach
+    void configureFiltros() throws Exception {
+        lenient().doAnswer(inv -> {
+            ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(sincronizarUsuarioFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
+        lenient().doAnswer(inv -> {
+            ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(contextoEstabelecimentoFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
+    }
 
     @Test
     void deveRetornar401_quandoSemAutenticacao() throws Exception {

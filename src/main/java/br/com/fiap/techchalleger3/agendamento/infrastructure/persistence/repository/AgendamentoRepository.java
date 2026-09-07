@@ -37,8 +37,8 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
 
     @Query("SELECT a FROM AgendamentoEntity a JOIN AgendaEntity ag ON a.codAgenda = ag.codigo " +
            "WHERE a.codCliente = :clienteId AND a.codAgendamentoPai IS NULL AND a.status IN :statuses " +
-           "AND (:dataInicio IS NULL OR ag.dataAgenda >= :dataInicio) " +
-           "AND (:dataFim IS NULL OR ag.dataAgenda <= :dataFim) " +
+           "AND ag.dataAgenda >= COALESCE(:dataInicio, ag.dataAgenda) " +
+           "AND ag.dataAgenda <= COALESCE(:dataFim, ag.dataAgenda) " +
            "ORDER BY ag.dataAgenda ASC, a.horaInicio ASC")
     List<AgendamentoEntity> buscarPaisDoPaciente(
             @Param("clienteId") Integer clienteId,
@@ -48,8 +48,8 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
 
     @Query("SELECT a FROM AgendamentoEntity a JOIN AgendaEntity ag ON a.codAgenda = ag.codigo " +
            "WHERE ag.codProfissionalVinculo IN :vinculoIds AND a.codAgendamentoPai IS NULL AND a.status IN :statuses " +
-           "AND (:dataInicio IS NULL OR ag.dataAgenda >= :dataInicio) " +
-           "AND (:dataFim IS NULL OR ag.dataAgenda <= :dataFim) " +
+           "AND ag.dataAgenda >= COALESCE(:dataInicio, ag.dataAgenda) " +
+           "AND ag.dataAgenda <= COALESCE(:dataFim, ag.dataAgenda) " +
            "ORDER BY ag.dataAgenda ASC, a.horaInicio ASC")
     List<AgendamentoEntity> buscarPaisDosProfissionaisVinculos(
             @Param("vinculoIds") List<Integer> vinculoIds,

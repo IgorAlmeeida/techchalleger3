@@ -47,7 +47,7 @@ class CriarAgendamentoUseCaseTest {
     @InjectMocks private CriarAgendamentoUseCase useCase;
 
     private Usuario usuario() {
-        return Usuario.builder().id(10).codKeycloak("sub-123").build();
+        return Usuario.builder().id(10).keycloakId("sub-123").build();
     }
 
     private Cliente cliente() {

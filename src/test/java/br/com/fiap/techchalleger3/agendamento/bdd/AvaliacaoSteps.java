@@ -49,7 +49,7 @@ public class AvaliacaoSteps {
     private ResultActions resultado;
 
     private void stubUsuarioCliente() {
-        Usuario usuario = Usuario.builder().id(1).codKeycloak("sub-test").build();
+        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-test").build();
         Cliente cliente = Cliente.builder().id(1).email("maria@test.com").build();
         when(usuarioRepositoryPort.buscarPorCodKeycloak(any())).thenReturn(Optional.of(usuario));
         when(clienteRepositoryPort.buscarPorUsuarioId(anyInt())).thenReturn(Optional.of(cliente));
