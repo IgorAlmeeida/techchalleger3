@@ -8,7 +8,6 @@ import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Quando;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,7 +24,7 @@ public class CancelamentoSteps {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private CancelarAgendamentoUseCase cancelarAgendamentoUseCase;
 
     private ResultActions resultado;

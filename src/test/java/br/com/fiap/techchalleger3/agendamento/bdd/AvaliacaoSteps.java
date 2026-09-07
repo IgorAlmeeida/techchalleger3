@@ -13,7 +13,6 @@ import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Quando;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,16 +33,16 @@ public class AvaliacaoSteps {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private AvaliarAtendimentoUseCase avaliarAtendimentoUseCase;
 
-    @MockBean
+    @Autowired
     private UsuarioRepositoryPort usuarioRepositoryPort;
 
-    @MockBean
+    @Autowired
     private ClienteRepositoryPort clienteRepositoryPort;
 
-    @MockBean
+    @Autowired
     private AvaliacaoRepositoryPort avaliacaoRepositoryPort;
 
     private ResultActions resultado;

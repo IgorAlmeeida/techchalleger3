@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/api/auth/**",
                     "/api/contexto/**",
+                    "/api/estabelecimentos/buscar",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/actuator/**"
