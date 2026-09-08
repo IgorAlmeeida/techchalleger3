@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 
 @Service
@@ -32,7 +33,7 @@ public class ConfirmarPresencaUseCase {
             throw new OperacaoInvalidaException("Confirmação de presença só é permitida em agendamentos com status AGENDADO.");
         }
 
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         agendamento.setPresencaConfirmada(true);
         agendamento.setDhAtualizacao(agora);
         Agendamento salvo = agendamentoPort.salvar(agendamento);

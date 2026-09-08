@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -84,7 +85,7 @@ public class AtualizarEscalaUseCase {
         Escala salva = escalaPort.salvar(escala);
 
         escalaItemPort.deletarPorEscalaId(escalaId);
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         for (Integer servicoId : servicoIds) {
             escalaItemPort.salvar(EscalaItem.builder()
                     .escalaId(escalaId)

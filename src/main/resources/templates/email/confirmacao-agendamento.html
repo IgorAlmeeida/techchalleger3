@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
-<head><meta charset="UTF-8"/></head>
+<head><meta charset="UTF-8"/><title>Agendamento - Confirmação de Agendamento</title></head>
 <body style="margin: 0; padding: 0; background-color: #FAFAFA;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAFAFA;">
-  <tr><td align="center" style="padding: 30px 10px;">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+<table style="width: 100%; background-color: #FAFAFA; border-collapse: collapse;">
+  <tr><td style="padding: 30px 10px; text-align: center;">
+    <table style="max-width: 600px; width: 100%; background-color: #FFFFFF; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-collapse: collapse;">
       <tr><td th:replace="~{email/layout-base :: cabecalho}"></td></tr>
       <tr><td style="padding: 30px;">
         <h2 style="margin: 0 0 16px; font-size: 20px; color: #1565C0; font-family: Arial, sans-serif;">
@@ -13,7 +13,9 @@
         <p style="margin: 0 0 20px; font-size: 15px; color: #424242; font-family: Arial, sans-serif; line-height: 1.5;">
           Seu agendamento foi confirmado com sucesso no sistema Agendamento.
         </p>
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #E3F2FD; border-left: 4px solid #1565C0; border-radius: 4px; margin-bottom: 20px;">
+        <table style="width: 100%; background-color: #E3F2FD; border-left: 4px solid #1565C0; border-radius: 4px; margin-bottom: 20px; border-collapse: collapse;">
+          <thead><tr><th scope="col" style="padding: 0; height: 0; overflow: hidden; font-size: 0; line-height: 0;"></th></tr></thead>
+          <tbody>
           <tr><td style="padding: 16px;">
             <p style="margin: 0; font-size: 13px; color: #757575; font-family: Arial, sans-serif;">Número do agendamento</p>
             <p style="margin: 4px 0 12px; font-size: 22px; font-weight: bold; color: #1565C0; font-family: Arial, sans-serif;" th:text="${agendamentoId}">---</p>
@@ -34,6 +36,7 @@
               <span th:text="${horaFim}">--:--</span>
             </p>
           </td></tr>
+          </tbody>
         </table>
         <p style="margin: 0; font-size: 14px; color: #616161; font-family: Arial, sans-serif; line-height: 1.5;">
           Compareça com antecedência ao estabelecimento.

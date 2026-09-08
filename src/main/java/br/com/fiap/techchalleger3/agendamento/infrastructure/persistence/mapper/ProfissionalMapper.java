@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ProfissionalMapper {
@@ -27,7 +26,7 @@ public interface ProfissionalMapper {
         return Arrays.stream(value.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     default String listToString(List<String> value) {

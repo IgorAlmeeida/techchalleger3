@@ -48,6 +48,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("java:S5778")
 @ExtendWith(MockitoExtension.class)
 class AgendaUseCaseTest {
 

@@ -13,7 +13,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.exception.AcessoNegadoExcep
 import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agenda;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
-import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
+
 import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
 import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -64,39 +65,42 @@ public class CancelarAgendaUseCase {
         }
 
         List<Agendamento> todos = agendamentoPort.listarPorAgendaId(agendaId);
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
 
         for (Agendamento agendamento : todos) {
             if (agendamento.getAgendamentoPaiId() != null) continue;
+            cancelarSlot(agendamento, agendaId, agenda, agora);
+        }
+    }
 
-            if (StatusAgendamentoEnum.AGENDADO.equals(agendamento.getStatus())) {
-                Integer clienteId = agendamento.getClienteId();
-                Integer servicoId = agendamento.getServicoId();
+    private void cancelarSlot(Agendamento agendamento, Integer agendaId, Agenda agenda, LocalDateTime agora) {
+        if (StatusAgendamentoEnum.AGENDADO.equals(agendamento.getStatus())) {
+            Integer clienteId = agendamento.getClienteId();
+            Integer servicoId = agendamento.getServicoId();
 
-                agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
-                agendamento.setDhAtualizacao(agora);
-                agendamentoPort.salvar(agendamento);
+            agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
+            agendamento.setDhAtualizacao(agora);
+            agendamentoPort.salvar(agendamento);
 
-                for (Agendamento filho : agendamentoPort.buscarFilhosPorPaiId(agendamento.getId())) {
-                    filho.setStatus(StatusAgendamentoEnum.CANCELADO);
-                    filho.setDhAtualizacao(agora);
-                    agendamentoPort.salvar(filho);
-                }
-
-                if (clienteId != null) {
-                    clientePort.buscarPorId(clienteId).ifPresent(c ->
-                            emailSenderPort.enviar(new EmailMensagem(
-                                    c.getEmail(),
-                                    "CANCELAMENTO_AGENDA",
-                                    dadosCancelamentoAgenda(agendaId, agenda, servicoId)
-                            )));
-                }
-            } else if (StatusAgendamentoEnum.DISPONIVEL.equals(agendamento.getStatus())
-                    || StatusAgendamentoEnum.RESERVADO.equals(agendamento.getStatus())) {
-                agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
-                agendamento.setDhAtualizacao(agora);
-                agendamentoPort.salvar(agendamento);
+            for (Agendamento filho : agendamentoPort.buscarFilhosPorPaiId(agendamento.getId())) {
+                filho.setStatus(StatusAgendamentoEnum.CANCELADO);
+                filho.setDhAtualizacao(agora);
+                agendamentoPort.salvar(filho);
             }
+
+            if (clienteId != null) {
+                clientePort.buscarPorId(clienteId).ifPresent(c ->
+                        emailSenderPort.enviar(new EmailMensagem(
+                                c.getEmail(),
+                                "CANCELAMENTO_AGENDA",
+                                dadosCancelamentoAgenda(agendaId, agenda, servicoId)
+                        )));
+            }
+        } else if (StatusAgendamentoEnum.DISPONIVEL.equals(agendamento.getStatus())
+                || StatusAgendamentoEnum.RESERVADO.equals(agendamento.getStatus())) {
+            agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
+            agendamento.setDhAtualizacao(agora);
+            agendamentoPort.salvar(agendamento);
         }
     }
 

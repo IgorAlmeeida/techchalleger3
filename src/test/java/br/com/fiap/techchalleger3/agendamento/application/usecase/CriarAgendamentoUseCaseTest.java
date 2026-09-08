@@ -15,7 +15,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncont
 import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
 import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
-import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
+
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

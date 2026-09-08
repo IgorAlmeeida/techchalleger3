@@ -32,7 +32,7 @@ class MapperTest {
                 .codigo(1).codAgenda(2).codAgendamentoPai(3).codServico(4).codCliente(5)
                 .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
                 .status(StatusAgendamentoEnum.AGENDADO).presencaConfirmada(true)
-                .dhInsert(LocalDateTime.now()).dhAtualizacao(LocalDateTime.now()).build();
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault())).dhAtualizacao(LocalDateTime.now(ZoneId.systemDefault())).build();
 
         Agendamento m = agendamentoMapper.toModel(e);
 
@@ -483,7 +483,7 @@ class MapperTest {
     void avaliacao_toModel() {
         AvaliacaoEntity e = AvaliacaoEntity.builder()
                 .codAvaliacao(1).codAgendamento(2).codCliente(3).codEstabelecimento(4)
-                .codProfissionalVinculo(5).nota(5).comentario("Ótimo").dhInsert(LocalDateTime.now()).build();
+                .codProfissionalVinculo(5).nota(5).comentario("Ótimo").dhInsert(LocalDateTime.now(ZoneId.systemDefault())).build();
 
         Avaliacao m = avaliacaoMapper.toModel(e);
 
@@ -499,7 +499,7 @@ class MapperTest {
     @Test
     void avaliacao_toEntity() {
         Avaliacao m = Avaliacao.builder().id(10).agendamentoId(20).clienteId(30).estabelecimentoId(40)
-                .profissionalVinculoId(50).nota(3).comentario("Ok").dhInsert(LocalDateTime.now()).build();
+                .profissionalVinculoId(50).nota(3).comentario("Ok").dhInsert(LocalDateTime.now(ZoneId.systemDefault())).build();
 
         AvaliacaoEntity e = avaliacaoMapper.toEntity(m);
 

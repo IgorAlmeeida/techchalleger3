@@ -25,8 +25,7 @@ class KeycloakTokenPortTest {
         KeycloakTokenPort.TokenResponse a = new KeycloakTokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
         KeycloakTokenPort.TokenResponse b = new KeycloakTokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
 
-        assertThat(a).isEqualTo(b);
-        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+        assertThat(a).isEqualTo(b).hasSameHashCodeAs(b);
     }
 
     @Test
@@ -55,8 +54,7 @@ class EmailMensagemTest {
         EmailMensagem a = new EmailMensagem("a@b.com", "T", dados);
         EmailMensagem b = new EmailMensagem("a@b.com", "T", dados);
 
-        assertThat(a).isEqualTo(b);
-        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+        assertThat(a).isEqualTo(b).hasSameHashCodeAs(b);
     }
 
     @Test

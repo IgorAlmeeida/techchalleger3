@@ -159,12 +159,13 @@ class InfrastructureMiscTest {
         byte[] result = icsAdapter.exportarIcs(ag);
 
         String ics = new String(result);
-        assertThat(ics).contains("BEGIN:VCALENDAR");
-        assertThat(ics).contains("BEGIN:VEVENT");
-        assertThat(ics).contains("agendamento-42@agendamento.app");
-        assertThat(ics).contains("20260910T090000");
-        assertThat(ics).contains("20260910T100000");
-        assertThat(ics).contains("END:VCALENDAR");
+        assertThat(ics)
+                .contains("BEGIN:VCALENDAR")
+                .contains("BEGIN:VEVENT")
+                .contains("agendamento-42@agendamento.app")
+                .contains("20260910T090000")
+                .contains("20260910T100000")
+                .contains("END:VCALENDAR");
     }
 
     // ── KeycloakRolesConverter ────────────────────────────────────────────

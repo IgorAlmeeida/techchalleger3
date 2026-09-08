@@ -13,7 +13,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.CriarAgendamen
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -58,11 +57,9 @@ public class AgendamentoController {
             description = "Busca o primeiro slot disponível para o profissional/serviço solicitado. "
                     + "Se um agendamentoId específico for informado, reserva aquele slot diretamente. "
                     + "Caso não haja disponibilidade, retorna HTTP 422.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Agendamento criado"),
-            @ApiResponse(responseCode = "409", description = "Cliente já possui agendamento ativo para este serviço/profissional"),
-            @ApiResponse(responseCode = "422", description = "Sem horários disponíveis ou conflito de horário")
-    })
+    @ApiResponse(responseCode = "201", description = "Agendamento criado")
+    @ApiResponse(responseCode = "409", description = "Cliente já possui agendamento ativo para este serviço/profissional")
+    @ApiResponse(responseCode = "422", description = "Sem horários disponíveis ou conflito de horário")
     public ResponseEntity<AgendamentoResponse> criar(
             @Valid @RequestBody CriarAgendamentoRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -80,12 +77,10 @@ public class AgendamentoController {
     @PreAuthorize("hasAnyRole('CLIENTE', 'PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Cancela um agendamento",
             description = "CLIENTE só pode cancelar próprio agendamento. PROFISSIONAL cancela agendamentos do próprio vínculo. ADMIN cancela qualquer agendamento.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Agendamento cancelado"),
-            @ApiResponse(responseCode = "403", description = "Sem permissão para cancelar este agendamento"),
-            @ApiResponse(responseCode = "404", description = "Agendamento não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Agendamento não pode ser cancelado no estado atual")
-    })
+    @ApiResponse(responseCode = "200", description = "Agendamento cancelado")
+    @ApiResponse(responseCode = "403", description = "Sem permissão para cancelar este agendamento")
+    @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
+    @ApiResponse(responseCode = "422", description = "Agendamento não pode ser cancelado no estado atual")
     public ResponseEntity<AgendamentoResponse> cancelar(
             @Parameter(description = "ID do agendamento pai") @PathVariable Integer id,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -128,10 +123,8 @@ public class AgendamentoController {
     @PreAuthorize("hasAnyRole('CLIENTE', 'PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Exporta agendamento como arquivo ICS (iCalendar)",
             description = "Retorna o arquivo .ics para importação em agendas como Google Calendar.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Arquivo ICS gerado"),
-            @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Arquivo ICS gerado")
+    @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
     public ResponseEntity<byte[]> exportarIcs(
             @Parameter(description = "ID do agendamento") @PathVariable Integer id) {
         byte[] ics = exportarIcsUseCase.exportar(id);

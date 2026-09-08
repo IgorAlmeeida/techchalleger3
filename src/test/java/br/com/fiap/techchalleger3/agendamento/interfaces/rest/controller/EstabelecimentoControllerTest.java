@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -36,12 +36,12 @@ class EstabelecimentoControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    @MockBean private EstabelecimentoUseCase useCase;
-    @MockBean private EstabelecimentoResponseAssembler assembler;
-    @MockBean private BuscarEstabelecimentosUseCase buscarEstabelecimentosUseCase;
-    @MockBean private JwtDecoder jwtDecoder;
-    @MockBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean private EstabelecimentoUseCase useCase;
+    @MockitoBean private EstabelecimentoResponseAssembler assembler;
+    @MockitoBean private BuscarEstabelecimentosUseCase buscarEstabelecimentosUseCase;
+    @MockitoBean private JwtDecoder jwtDecoder;
+    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
     void configureFiltros() throws Exception {

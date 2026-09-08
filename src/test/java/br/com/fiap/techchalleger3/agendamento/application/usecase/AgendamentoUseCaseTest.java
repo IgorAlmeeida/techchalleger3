@@ -20,7 +20,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
-import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.ServicoResumo;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

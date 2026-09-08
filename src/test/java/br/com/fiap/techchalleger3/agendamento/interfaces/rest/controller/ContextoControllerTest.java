@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -35,10 +35,10 @@ class ContextoControllerTest {
 
     @Autowired MockMvc mockMvc;
 
-    @MockBean ListarEstabelecimentosContextoUseCase useCase;
-    @MockBean JwtDecoder jwtDecoder;
-    @MockBean SincronizarUsuarioFilter sincronizarFilter;
-    @MockBean ContextoEstabelecimentoFilter contextoFilter;
+    @MockitoBean ListarEstabelecimentosContextoUseCase useCase;
+    @MockitoBean JwtDecoder jwtDecoder;
+    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
+    @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach
     void filtros() throws Exception {

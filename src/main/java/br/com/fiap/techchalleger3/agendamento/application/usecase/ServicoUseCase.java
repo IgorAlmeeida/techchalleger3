@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class ServicoUseCase {
                 .duracaoMinutos(duracaoMinutos)
                 .preco(preco)
                 .ativo(true)
-                .dhInsert(LocalDateTime.now())
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
         Servico salvo = servicoPort.salvar(servico);
         cachePort.invalidar(CHAVE_SERVICOS);
@@ -63,7 +64,7 @@ public class ServicoUseCase {
         servico.setNome(nome);
         servico.setDuracaoMinutos(duracaoMinutos);
         servico.setPreco(preco);
-        servico.setDhAtualizacao(LocalDateTime.now());
+        servico.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         Servico salvo = servicoPort.salvar(servico);
         cachePort.invalidar(CHAVE_SERVICOS);
         return salvo;
@@ -72,7 +73,7 @@ public class ServicoUseCase {
     public void inativar(Integer id) {
         Servico servico = buscarPorId(id);
         servico.setAtivo(false);
-        servico.setDhAtualizacao(LocalDateTime.now());
+        servico.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         servicoPort.salvar(servico);
         cachePort.invalidar(CHAVE_SERVICOS);
     }

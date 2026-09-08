@@ -25,7 +25,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,28 +40,28 @@ import static org.mockito.Mockito.lenient;
 public class CucumberSpringConfiguration {
 
     // Security / filters
-    @MockBean JwtDecoder jwtDecoder;
-    @MockBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean JwtDecoder jwtDecoder;
+    @MockitoBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     // AgendamentoController deps
-    @MockBean CriarAgendamentoUseCase criarAgendamentoUseCase;
-    @MockBean CancelarAgendamentoUseCase cancelarAgendamentoUseCase;
-    @MockBean ListarMeusAgendamentosClienteUseCase listarMeusAgendamentos;
-    @MockBean ListarAgendamentosProfissionalUseCase listarAgendamentosProfissional;
-    @MockBean ExportarAgendamentoIcsUseCase exportarIcs;
-    @MockBean AgendamentoResponseAssembler agendamentoAssembler;
+    @MockitoBean CriarAgendamentoUseCase criarAgendamentoUseCase;
+    @MockitoBean CancelarAgendamentoUseCase cancelarAgendamentoUseCase;
+    @MockitoBean ListarMeusAgendamentosClienteUseCase listarMeusAgendamentos;
+    @MockitoBean ListarAgendamentosProfissionalUseCase listarAgendamentosProfissional;
+    @MockitoBean ExportarAgendamentoIcsUseCase exportarIcs;
+    @MockitoBean AgendamentoResponseAssembler agendamentoAssembler;
 
     // AvaliacaoController deps
-    @MockBean AvaliarAtendimentoUseCase avaliarAtendimentoUseCase;
-    @MockBean AvaliacaoRepositoryPort avaliacaoRepositoryPort;
-    @MockBean UsuarioRepositoryPort usuarioRepositoryPort;
-    @MockBean ClienteRepositoryPort clienteRepositoryPort;
+    @MockitoBean AvaliarAtendimentoUseCase avaliarAtendimentoUseCase;
+    @MockitoBean AvaliacaoRepositoryPort avaliacaoRepositoryPort;
+    @MockitoBean UsuarioRepositoryPort usuarioRepositoryPort;
+    @MockitoBean ClienteRepositoryPort clienteRepositoryPort;
 
     // EstabelecimentoController deps
-    @MockBean EstabelecimentoUseCase estabelecimentoUseCase;
-    @MockBean EstabelecimentoResponseAssembler estabelecimentoAssembler;
-    @MockBean BuscarEstabelecimentosUseCase buscarEstabelecimentosUseCase;
+    @MockitoBean EstabelecimentoUseCase estabelecimentoUseCase;
+    @MockitoBean EstabelecimentoResponseAssembler estabelecimentoAssembler;
+    @MockitoBean BuscarEstabelecimentosUseCase buscarEstabelecimentosUseCase;
 
     @Before
     public void configureFiltros() throws Exception {

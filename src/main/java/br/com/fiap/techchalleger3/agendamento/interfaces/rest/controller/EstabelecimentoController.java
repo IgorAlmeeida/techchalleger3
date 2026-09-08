@@ -10,7 +10,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.Estabeleciment
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,10 +49,8 @@ public class EstabelecimentoController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cria estabelecimento")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Estabelecimento criado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "CNPJ já cadastrado")
-    })
+    @ApiResponse(responseCode = "201", description = "Estabelecimento criado com sucesso")
+    @ApiResponse(responseCode = "422", description = "CNPJ já cadastrado")
     public ResponseEntity<EstabelecimentoResponse> criar(@Valid @RequestBody CriarEstabelecimentoRequest req) {
         Estabelecimento estabelecimento = useCase.criar(req.nome(), req.cnpj(), req.endereco(),
                 req.telefone(), req.responsavelNome(), req.responsavelCpf(), req.fotosUrls());
@@ -63,9 +60,7 @@ public class EstabelecimentoController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista estabelecimentos ativos")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de estabelecimentos ativos")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de estabelecimentos ativos")
     public ResponseEntity<Page<EstabelecimentoResponse>> listar(Pageable pageable) {
         return ResponseEntity.ok(useCase.listar(pageable).map(assembler::toResponse));
     }
@@ -73,10 +68,8 @@ public class EstabelecimentoController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Busca estabelecimento por id")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Estabelecimento encontrado"),
-            @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Estabelecimento encontrado")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
     public ResponseEntity<EstabelecimentoResponse> buscar(
             @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id) {
         return ResponseEntity.ok(assembler.toResponse(useCase.buscarPorId(id)));
@@ -85,11 +78,9 @@ public class EstabelecimentoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualiza estabelecimento")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Estabelecimento atualizado"),
-            @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado"),
-            @ApiResponse(responseCode = "422", description = "CNPJ já cadastrado por outro estabelecimento")
-    })
+    @ApiResponse(responseCode = "200", description = "Estabelecimento atualizado")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    @ApiResponse(responseCode = "422", description = "CNPJ já cadastrado por outro estabelecimento")
     public ResponseEntity<EstabelecimentoResponse> atualizar(
             @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id,
             @Valid @RequestBody AtualizarEstabelecimentoRequest req) {
@@ -101,10 +92,8 @@ public class EstabelecimentoController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inativa estabelecimento")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Estabelecimento inativado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
-    })
+    @ApiResponse(responseCode = "204", description = "Estabelecimento inativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
     public ResponseEntity<Void> inativar(
             @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id) {
         useCase.inativar(id);
@@ -114,9 +103,7 @@ public class EstabelecimentoController {
     @GetMapping("/buscar")
     @Operation(summary = "Busca estabelecimentos com filtros",
             description = "Busca pública por nome, localização, preço e nota mínima.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de estabelecimentos encontrados")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de estabelecimentos encontrados")
     public ResponseEntity<List<EstabelecimentoResponse>> buscarComFiltros(
             @Parameter(description = "Nome do estabelecimento (busca parcial)") @RequestParam(required = false) String nome,
             @Parameter(description = "Localização") @RequestParam(required = false) String localizacao,

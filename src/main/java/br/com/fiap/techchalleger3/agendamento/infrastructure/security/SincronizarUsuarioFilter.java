@@ -60,6 +60,7 @@ public class SincronizarUsuarioFilter extends OncePerRequestFilter {
             try {
                 return RoleEnum.obterPorCodigo(r);
             } catch (IllegalArgumentException ignored) {
+                // role string not recognized — try next role in the list
             }
         }
         return null;

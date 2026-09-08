@@ -69,9 +69,7 @@ public class KeycloakAdminAdapter implements KeycloakAdminPort {
             }
             String location = response.getHeaderString("Location");
             return location.substring(location.lastIndexOf('/') + 1);
-        } catch (EmailJaCadastradoException e) {
-            throw e;
-        } catch (ServicoIndisponivelException e) {
+        } catch (EmailJaCadastradoException | ServicoIndisponivelException e) {
             throw e;
         } catch (Exception e) {
             log.error("Erro ao criar usuário no Keycloak: {}", e.getMessage());

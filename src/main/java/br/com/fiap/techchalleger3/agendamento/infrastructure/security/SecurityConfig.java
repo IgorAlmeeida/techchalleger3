@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
+    @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    SincronizarUsuarioFilter sincronizarUsuarioFilter,
                                                    ContextoEstabelecimentoFilter contextoEstabelecimentoFilter) throws Exception {

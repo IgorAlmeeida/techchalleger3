@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -158,7 +158,7 @@ class SecurityFilterTest {
     @InjectMocks ContextoEstabelecimentoFilter contextoFilter;
 
     @Test
-    void contextFilter_shouldNotFilter_authPath() throws Exception {
+    void contextFilter_shouldNotFilter_authPath() {
         HttpServletRequest req = mock(HttpServletRequest.class);
         when(req.getRequestURI()).thenReturn("/api/auth/login");
 
@@ -166,7 +166,7 @@ class SecurityFilterTest {
     }
 
     @Test
-    void contextFilter_shouldFilter_servicosPath() throws Exception {
+    void contextFilter_shouldFilter_servicosPath() {
         HttpServletRequest req = mock(HttpServletRequest.class);
         when(req.getRequestURI()).thenReturn("/api/servicos");
 

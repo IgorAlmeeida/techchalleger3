@@ -12,6 +12,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 
 @Service
@@ -52,7 +53,7 @@ public class AvaliarAtendimentoUseCase {
                 .profissionalVinculoId(agenda.getProfissionalVinculoId())
                 .nota(nota)
                 .comentario(comentario)
-                .dhInsert(LocalDateTime.now())
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
 
         return avaliacaoPort.salvar(avaliacao);

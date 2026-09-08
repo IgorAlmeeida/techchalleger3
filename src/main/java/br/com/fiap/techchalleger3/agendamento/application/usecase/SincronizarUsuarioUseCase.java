@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class SincronizarUsuarioUseCase {
         Usuario usuario = usuarioPort.salvar(Usuario.builder()
                 .keycloakId(keycloakSub)
                 .role(role)
-                .dhInsert(LocalDateTime.now())
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build());
 
         String nomeSanitizado = (nome != null && !nome.isBlank()) ? nome : keycloakSub;
@@ -42,13 +43,13 @@ public class SincronizarUsuarioUseCase {
                     .usuarioId(usuario.getId())
                     .nome(nomeSanitizado)
                     .cpf("")
-                    .dhInsert(LocalDateTime.now())
+                    .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                     .build());
         } else if (RoleEnum.PROFISSIONAL.equals(role)) {
             profissionalPort.salvar(Profissional.builder()
                     .usuarioId(usuario.getId())
                     .nome(nomeSanitizado)
-                    .dhInsert(LocalDateTime.now())
+                    .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                     .build());
         }
 

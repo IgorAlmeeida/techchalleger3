@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -124,7 +125,7 @@ public class CriarAgendamentoUseCase {
 
     private Agendamento reservarGrupo(List<Agendamento> janela, Cliente cliente, Servico servico) {
         Integer servicoId = servico.getId();
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         LocalTime novaHoraInicio = janela.get(0).getHoraInicio();
         LocalTime novaHoraFim = janela.get(janela.size() - 1).getHoraFim();
 

@@ -26,6 +26,7 @@ public class CadastrarClienteUseCase {
     private final KeycloakAdminPort keycloakAdminPort;
 
     @Transactional
+    @SuppressWarnings("java:S107")
     public Cliente executar(String nome, String email, String password, String cpf,
                             LocalDate dataNascimento, String telefone, String sexo, String endereco) {
         if (!SENHA_PATTERN.matcher(password).matches()) {

@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +46,9 @@ public class CancelarAgendamentoUseCase {
     private final EmailSenderPort emailSenderPort;
 
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final String ENTIDADE_AGENDAMENTO = "Agendamento";
+    private static final String ENTIDADE_AGENDA = "Agenda";
+    private static final String TIPO_EMAIL_CANCELAMENTO = "CANCELAMENTO";
 
     @Transactional
     public Agendamento executar(Integer agendamentoId, String keycloakSub) {
@@ -66,7 +70,7 @@ public class CancelarAgendamentoUseCase {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente para usuário", usuario.getId()));
 
         Agendamento agendamento = agendamentoPort.buscarPorId(agendamentoId)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agendamento", agendamentoId));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDAMENTO, agendamentoId));
 
         if (!StatusAgendamentoEnum.AGENDADO.equals(agendamento.getStatus())) {
             throw new OperacaoInvalidaException("Apenas agendamentos com status AGENDADO podem ser cancelados.");
@@ -79,13 +83,13 @@ public class CancelarAgendamentoUseCase {
         }
 
         Agenda agenda = agendaPort.buscarPorId(agendamento.getAgendaId())
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agenda", agendamento.getAgendaId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDA, agendamento.getAgendaId()));
 
         LocalTime horaFimOriginal = agendamento.getHoraFim();
         Integer servicoIdOriginal = agendamento.getServicoId();
         Integer clienteIdOriginal = agendamento.getClienteId();
 
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         List<Agendamento> filhos = agendamentoPort.buscarFilhosPorPaiId(agendamentoId);
 
         agendamento.setStatus(StatusAgendamentoEnum.DISPONIVEL);
@@ -108,7 +112,7 @@ public class CancelarAgendamentoUseCase {
 
         emailSenderPort.enviar(new EmailMensagem(
                 cliente.getEmail(),
-                "CANCELAMENTO",
+                TIPO_EMAIL_CANCELAMENTO,
                 dadosCancelamento(agendamentoId, agenda, servicoIdOriginal)
         ));
 
@@ -127,7 +131,7 @@ public class CancelarAgendamentoUseCase {
 
     private Agendamento executarComoAdmin(Integer agendamentoId) {
         Agendamento agendamento = agendamentoPort.buscarPorId(agendamentoId)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agendamento", agendamentoId));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDAMENTO, agendamentoId));
 
         if (!StatusAgendamentoEnum.AGENDADO.equals(agendamento.getStatus())) {
             throw new OperacaoInvalidaException("Apenas agendamentos com status AGENDADO podem ser cancelados.");
@@ -137,11 +141,11 @@ public class CancelarAgendamentoUseCase {
         }
 
         Agenda agenda = agendaPort.buscarPorId(agendamento.getAgendaId())
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agenda", agendamento.getAgendaId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDA, agendamento.getAgendaId()));
 
         Integer clienteId = agendamento.getClienteId();
         Integer servicoId = agendamento.getServicoId();
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         List<Agendamento> filhos = agendamentoPort.buscarFilhosPorPaiId(agendamentoId);
 
         agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
@@ -160,7 +164,7 @@ public class CancelarAgendamentoUseCase {
                     .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente", clienteId));
             emailSenderPort.enviar(new EmailMensagem(
                     clienteAfetado.getEmail(),
-                    "CANCELAMENTO",
+                    TIPO_EMAIL_CANCELAMENTO,
                     dadosCancelamento(agendamentoId, agenda, servicoId)
             ));
         }
@@ -173,7 +177,7 @@ public class CancelarAgendamentoUseCase {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional para usuário", usuario.getId()));
 
         Agendamento agendamento = agendamentoPort.buscarPorId(agendamentoId)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agendamento", agendamentoId));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDAMENTO, agendamentoId));
 
         if (!StatusAgendamentoEnum.AGENDADO.equals(agendamento.getStatus())) {
             throw new OperacaoInvalidaException("Apenas agendamentos com status AGENDADO podem ser cancelados.");
@@ -183,7 +187,7 @@ public class CancelarAgendamentoUseCase {
         }
 
         Agenda agenda = agendaPort.buscarPorId(agendamento.getAgendaId())
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Agenda", agendamento.getAgendaId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_AGENDA, agendamento.getAgendaId()));
 
         ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(agenda.getProfissionalVinculoId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", agenda.getProfissionalVinculoId()));
@@ -194,7 +198,7 @@ public class CancelarAgendamentoUseCase {
 
         Integer clienteId = agendamento.getClienteId();
         Integer servicoId = agendamento.getServicoId();
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         List<Agendamento> filhos = agendamentoPort.buscarFilhosPorPaiId(agendamentoId);
 
         agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
@@ -213,7 +217,7 @@ public class CancelarAgendamentoUseCase {
                     .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente", clienteId));
             emailSenderPort.enviar(new EmailMensagem(
                     clienteAfetado.getEmail(),
-                    "CANCELAMENTO",
+                    TIPO_EMAIL_CANCELAMENTO,
                     dadosCancelamento(agendamentoId, agenda, servicoId)
             ));
         }

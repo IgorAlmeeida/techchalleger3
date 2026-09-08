@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class EstabelecimentoUseCase {
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final CachePort cachePort;
 
+    @SuppressWarnings("java:S107")
     public Estabelecimento criar(String nome, String cnpj, String endereco, String telefone,
                                   String responsavelNome, String responsavelCpf, List<String> fotosUrls) {
         if (estabelecimentoPort.existePorCnpj(cnpj)) {
@@ -42,7 +44,7 @@ public class EstabelecimentoUseCase {
                 .responsavelCpf(responsavelCpf)
                 .fotosUrls(fotosUrls)
                 .ativo(true)
-                .dhInsert(LocalDateTime.now())
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
         Estabelecimento salvo = estabelecimentoPort.salvar(estabelecimento);
         cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
@@ -66,6 +68,7 @@ public class EstabelecimentoUseCase {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Estabelecimento", id));
     }
 
+    @SuppressWarnings("java:S107")
     public Estabelecimento atualizar(Integer id, String nome, String cnpj, String endereco,
                                       String telefone, String responsavelNome, String responsavelCpf,
                                       List<String> fotosUrls) {
@@ -80,7 +83,7 @@ public class EstabelecimentoUseCase {
         estabelecimento.setResponsavelNome(responsavelNome);
         estabelecimento.setResponsavelCpf(responsavelCpf);
         estabelecimento.setFotosUrls(fotosUrls);
-        estabelecimento.setDhAtualizacao(LocalDateTime.now());
+        estabelecimento.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         Estabelecimento salvo = estabelecimentoPort.salvar(estabelecimento);
         cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
         return salvo;
@@ -94,7 +97,7 @@ public class EstabelecimentoUseCase {
                     "Estabelecimento possui vínculos ativos. Encerre os vínculos antes de inativar.");
         }
         estabelecimento.setAtivo(false);
-        estabelecimento.setDhAtualizacao(LocalDateTime.now());
+        estabelecimento.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         estabelecimentoPort.salvar(estabelecimento);
         cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
     }

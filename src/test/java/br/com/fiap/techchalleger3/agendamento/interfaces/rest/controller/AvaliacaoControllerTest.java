@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,13 +33,13 @@ class AvaliacaoControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    @MockBean private AvaliarAtendimentoUseCase avaliarUseCase;
-    @MockBean private AvaliacaoRepositoryPort avaliacaoPort;
-    @MockBean private UsuarioRepositoryPort usuarioPort;
-    @MockBean private ClienteRepositoryPort clientePort;
-    @MockBean private JwtDecoder jwtDecoder;
-    @MockBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean private AvaliarAtendimentoUseCase avaliarUseCase;
+    @MockitoBean private AvaliacaoRepositoryPort avaliacaoPort;
+    @MockitoBean private UsuarioRepositoryPort usuarioPort;
+    @MockitoBean private ClienteRepositoryPort clientePort;
+    @MockitoBean private JwtDecoder jwtDecoder;
+    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
     void configureFiltros() throws Exception {

@@ -12,7 +12,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.EscalaResponse
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,11 +47,9 @@ public class EscalaController {
     @PreAuthorize("hasAnyRole('PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Cria uma escala recorrente para um vínculo de profissional",
             description = "Define os horários de atendimento semanais de um profissional em um estabelecimento, associando serviços.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Escala criada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Vínculo de profissional ou serviço não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Conflito de escala no mesmo dia/horário ou serviço não permitido")
-    })
+    @ApiResponse(responseCode = "201", description = "Escala criada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Vínculo de profissional ou serviço não encontrado")
+    @ApiResponse(responseCode = "422", description = "Conflito de escala no mesmo dia/horário ou serviço não permitido")
     public ResponseEntity<EscalaResponse> criar(
             @Valid @RequestBody CriarEscalaRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -74,12 +71,10 @@ public class EscalaController {
     @PreAuthorize("hasRole('PROFISSIONAL') or hasRole('ADMIN')")
     @Operation(summary = "Atualiza uma escala existente",
             description = "Atualiza dia da semana, horários e serviços. PROFISSIONAL só pode atualizar as próprias escalas.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Escala atualizada"),
-            @ApiResponse(responseCode = "403", description = "Profissional não autorizado"),
-            @ApiResponse(responseCode = "404", description = "Escala não encontrada"),
-            @ApiResponse(responseCode = "422", description = "Conflito de escala ou serviço não permitido")
-    })
+    @ApiResponse(responseCode = "200", description = "Escala atualizada")
+    @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
+    @ApiResponse(responseCode = "404", description = "Escala não encontrada")
+    @ApiResponse(responseCode = "422", description = "Conflito de escala ou serviço não permitido")
     public ResponseEntity<EscalaResponse> atualizar(
             @Parameter(description = "Identificador da escala") @PathVariable Integer id,
             @Valid @RequestBody AtualizarEscalaRequest request,
@@ -98,11 +93,9 @@ public class EscalaController {
     @PreAuthorize("hasRole('PROFISSIONAL') or hasRole('ADMIN')")
     @Operation(summary = "Lista escalas com serviços detalhados",
             description = "Filtra por estabelecimentoId e/ou profissionalVinculoId. PROFISSIONAL só pode listar as próprias escalas.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de escalas"),
-            @ApiResponse(responseCode = "400", description = "Nenhum filtro informado"),
-            @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de escalas")
+    @ApiResponse(responseCode = "400", description = "Nenhum filtro informado")
+    @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
     public ResponseEntity<List<EscalaDetalhadaResponse>> listar(
             @Parameter(description = "Filtrar por id do estabelecimento") @RequestParam(required = false) Integer estabelecimentoId,
             @Parameter(description = "Filtrar por id do vínculo de profissional") @RequestParam(required = false) Integer profissionalVinculoId,

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,69 +39,69 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RegistroNaoEncontradoException.class)
     public ResponseEntity<ErroResponse> handleNaoEncontrado(RegistroNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErroResponse("NAO_ENCONTRADO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("NAO_ENCONTRADO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(AgendaEmAbertoException.class)
     public ResponseEntity<ErroResponse> handleAgendaEmAberto(AgendaEmAbertoException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErroResponse("AGENDA_EM_ABERTO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("AGENDA_EM_ABERTO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(AgendamentoJaExistenteException.class)
     public ResponseEntity<ErroResponse> handleAgendamentoJaExistente(AgendamentoJaExistenteException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErroResponse("AGENDAMENTO_JA_EXISTENTE", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("AGENDAMENTO_JA_EXISTENTE", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(ConflitoDeHorarioClienteException.class)
     public ResponseEntity<ErroResponse> handleConflitoHorario(ConflitoDeHorarioClienteException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErroResponse("CONFLITO_DE_HORARIO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("CONFLITO_DE_HORARIO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErroResponse> handleDomain(DomainException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErroResponse("REGRA_NEGOCIO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("REGRA_NEGOCIO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(AcessoNegadoException.class)
     public ResponseEntity<ErroResponse> handleAcesso(AcessoNegadoException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErroResponse("ACESSO_NEGADO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("ACESSO_NEGADO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     public ResponseEntity<ErroResponse> handleAcessoNegadoSpringSecurity(
             org.springframework.security.access.AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErroResponse("ACESSO_NEGADO", "Acesso negado.", List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("ACESSO_NEGADO", "Acesso negado.", List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<ErroResponse> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErroResponse("CREDENCIAIS_INVALIDAS", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("CREDENCIAIS_INVALIDAS", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(EmailJaCadastradoException.class)
     public ResponseEntity<ErroResponse> handleEmailJaCadastrado(EmailJaCadastradoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErroResponse("EMAIL_JA_CADASTRADO", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("EMAIL_JA_CADASTRADO", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(ServicoIndisponivelException.class)
     public ResponseEntity<ErroResponse> handleServicoIndisponivel(ServicoIndisponivelException ex) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(new ErroResponse("SERVICO_INDISPONIVEL", ex.getMessage(), List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("SERVICO_INDISPONIVEL", ex.getMessage(), List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGenerico(Exception ex) {
         log.error("Erro inesperado capturado pelo handler: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErroResponse("ERRO_INTERNO", "Erro inesperado", List.of(), LocalDateTime.now()));
+                .body(new ErroResponse("ERRO_INTERNO", "Erro inesperado", List.of(), LocalDateTime.now(ZoneId.systemDefault())));
     }
 
     @Override
@@ -117,6 +118,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .toList();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErroResponse("VALIDACAO", "Requisição inválida", violacoes, LocalDateTime.now()));
+                .body(new ErroResponse("VALIDACAO", "Requisição inválida", violacoes, LocalDateTime.now(ZoneId.systemDefault())));
     }
 }

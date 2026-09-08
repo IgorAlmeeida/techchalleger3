@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -153,8 +154,8 @@ class DomainModelTest {
         ag.setClienteId(5);
         ag.setStatus(StatusAgendamentoEnum.AGENDADO);
         ag.setPresencaConfirmada(true);
-        ag.setDhInsert(LocalDateTime.now());
-        ag.setDhAtualizacao(LocalDateTime.now());
+        ag.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        ag.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         ag.setDataAgenda(LocalDate.now());
         assertThat(ag.getId()).isEqualTo(1);
         assertThat(ag.getStatus()).isEqualTo(StatusAgendamentoEnum.AGENDADO);
@@ -171,8 +172,8 @@ class DomainModelTest {
         ag.setHoraFim(LocalTime.of(17, 0));
         ag.setEstabelecimentoId(3);
         ag.setProfissionalVinculoId(4);
-        ag.setDhInsert(LocalDateTime.now());
-        ag.setDhAtualizacao(LocalDateTime.now());
+        ag.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        ag.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(ag.getId()).isEqualTo(1);
     }
 
@@ -185,8 +186,8 @@ class DomainModelTest {
         e.setDiaSemana(DiaSemanaEnum.TERCA);
         e.setHoraInicio(LocalTime.of(8, 0));
         e.setHoraFim(LocalTime.of(12, 0));
-        e.setDhInsert(LocalDateTime.now());
-        e.setDhAtualizacao(LocalDateTime.now());
+        e.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        e.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(e.getId()).isEqualTo(1);
     }
 
@@ -202,8 +203,8 @@ class DomainModelTest {
         c.setTelefone("11999");
         c.setSexo("M");
         c.setEndereco("Rua A");
-        c.setDhInsert(LocalDateTime.now());
-        c.setDhAtualizacao(LocalDateTime.now());
+        c.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        c.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(c.getNome()).isEqualTo("João");
     }
 
@@ -217,8 +218,8 @@ class DomainModelTest {
         p.setEspecialidades(List.of("Corte"));
         p.setEndereco("Rua B");
         p.setAtivo(false);
-        p.setDhInsert(LocalDateTime.now());
-        p.setDhAtualizacao(LocalDateTime.now());
+        p.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        p.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(p.getAtivo()).isFalse();
     }
 
@@ -234,8 +235,8 @@ class DomainModelTest {
         e.setResponsavelCpf("111");
         e.setFotosUrls(List.of("http://x.com/img.jpg"));
         e.setAtivo(true);
-        e.setDhInsert(LocalDateTime.now());
-        e.setDhAtualizacao(LocalDateTime.now());
+        e.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        e.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(e.getNome()).isEqualTo("Studio");
     }
 
@@ -247,8 +248,8 @@ class DomainModelTest {
         v.setEstabelecimentoId(3);
         v.setDataInicio(LocalDate.now());
         v.setDataFim(LocalDate.now().plusMonths(1));
-        v.setDhInsert(LocalDateTime.now());
-        v.setDhAtualizacao(LocalDateTime.now());
+        v.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
+        v.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(v.isAtivo()).isFalse();
     }
 
@@ -281,13 +282,13 @@ class DomainModelTest {
         av.setProfissionalVinculoId(5);
         av.setNota(5);
         av.setComentario("Ótimo!");
-        av.setDhInsert(LocalDateTime.now());
+        av.setDhInsert(LocalDateTime.now(ZoneId.systemDefault()));
         assertThat(av.getNota()).isEqualTo(5);
     }
 
     @Test
     void agendamento_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Agendamento ag = Agendamento.builder()
                 .id(1).agendaId(2).dataAgenda(LocalDate.now()).agendamentoPaiId(3)
                 .servicoId(4).horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
@@ -301,7 +302,7 @@ class DomainModelTest {
 
     @Test
     void agenda_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Agenda ag = Agenda.builder()
                 .id(1).escalaId(2).dataAgenda(LocalDate.now()).diaSemana(DiaSemanaEnum.SEGUNDA)
                 .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(17, 0))
@@ -314,7 +315,7 @@ class DomainModelTest {
 
     @Test
     void escala_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Escala e = Escala.builder()
                 .id(1).profissionalVinculoId(2).estabelecimentoId(3)
                 .diaSemana(DiaSemanaEnum.QUARTA).horaInicio(LocalTime.of(8, 0)).horaFim(LocalTime.of(16, 0))
@@ -326,7 +327,7 @@ class DomainModelTest {
 
     @Test
     void cliente_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Cliente c = Cliente.builder()
                 .id(1).usuarioId(2).nome("João").email("joao@x.com").cpf("111.111.111-11")
                 .dataNascimento(LocalDate.of(1990, 1, 1)).telefone("11999991111").sexo("M")
@@ -338,7 +339,7 @@ class DomainModelTest {
 
     @Test
     void profissional_builderComAtivoFalse() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Profissional p = Profissional.builder()
                 .id(1).usuarioId(2).nome("Dr.").email("dr@x.com")
                 .especialidades(List.of("Corte")).endereco("Rua B")
@@ -350,7 +351,7 @@ class DomainModelTest {
 
     @Test
     void estabelecimento_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Estabelecimento e = Estabelecimento.builder()
                 .id(1).nome("Studio X").cnpj("00.000.000/0001-01").endereco("Av. 1")
                 .telefone("11000001111").responsavelNome("Ana").responsavelCpf("222.222.222-22")
@@ -363,7 +364,7 @@ class DomainModelTest {
 
     @Test
     void profissionalVinculo_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         ProfissionalVinculo v = ProfissionalVinculo.builder()
                 .id(1).profissionalId(2).estabelecimentoId(3)
                 .dataInicio(LocalDate.now()).dataFim(LocalDate.now().plusYears(1))
@@ -384,7 +385,7 @@ class DomainModelTest {
 
     @Test
     void escalaItem_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         EscalaItem ei = EscalaItem.builder()
                 .id(1).escalaId(2).servicoId(3).ativa(true)
                 .dhInsert(now).dhAtualizacao(now)
@@ -395,7 +396,7 @@ class DomainModelTest {
 
     @Test
     void agendaItem_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         AgendaItem ai = AgendaItem.builder()
                 .id(1).agendaId(2).servicoId(3)
                 .dhInsert(now).dhAtualizacao(now)
@@ -406,7 +407,7 @@ class DomainModelTest {
 
     @Test
     void usuario_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Usuario u = Usuario.builder()
                 .id(1).keycloakId("kc-uuid-1").role(RoleEnum.PROFISSIONAL)
                 .dhInsert(now).dhAtualizacao(now)
@@ -417,7 +418,7 @@ class DomainModelTest {
 
     @Test
     void servico_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Servico s = Servico.builder()
                 .id(1).nome("Corte").duracaoMinutos(30).preco(BigDecimal.valueOf(50))
                 .ativo(false).dhInsert(now).dhAtualizacao(now)
@@ -428,7 +429,7 @@ class DomainModelTest {
 
     @Test
     void avaliacao_builderCompleto() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Avaliacao a = Avaliacao.builder()
                 .id(1).agendamentoId(2).clienteId(3).estabelecimentoId(4)
                 .profissionalVinculoId(5).nota(5).comentario("Ótimo!").dhInsert(now)
@@ -439,17 +440,14 @@ class DomainModelTest {
 
     @Test
     void avaliacao_equalsHashCodeToString() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Avaliacao a = Avaliacao.builder().id(1).nota(5).comentario("X").dhInsert(now).build();
         Avaliacao b = Avaliacao.builder().id(1).nota(5).comentario("X").dhInsert(now).build();
-        assertThat(a).isEqualTo(b);
-        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+        assertThat(a).isEqualTo(b).hasSameHashCodeAs(b);
         assertThat(a.toString()).contains("Avaliacao");
 
         Avaliacao c = Avaliacao.builder().id(2).nota(3).comentario("Y").dhInsert(now).build();
-        assertThat(a).isNotEqualTo(c);
-        assertThat(a).isNotEqualTo(null);
-        assertThat(a).isNotEqualTo("not an avaliacao");
+        assertThat(a).isNotEqualTo(c).isNotEqualTo(null).isNotEqualTo("not an avaliacao");
     }
 
     @Test

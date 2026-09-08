@@ -13,7 +13,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.CriarAvaliacao
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,11 +46,9 @@ public class AvaliacaoController {
     @PreAuthorize("hasRole('CLIENTE')")
     @Operation(summary = "Avalia um atendimento concluído",
             description = "O cliente autenticado avalia um agendamento de status CONCLUIDO com nota de 1 a 5.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Avaliação registrada"),
-            @ApiResponse(responseCode = "404", description = "Agendamento não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Agendamento não concluído ou já avaliado")
-    })
+    @ApiResponse(responseCode = "201", description = "Avaliação registrada")
+    @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
+    @ApiResponse(responseCode = "422", description = "Agendamento não concluído ou já avaliado")
     public ResponseEntity<AvaliacaoResponse> avaliar(
             @Valid @RequestBody CriarAvaliacaoRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {

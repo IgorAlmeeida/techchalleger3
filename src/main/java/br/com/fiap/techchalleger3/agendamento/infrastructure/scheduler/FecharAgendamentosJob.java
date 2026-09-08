@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class FecharAgendamentosJob {
             StatusAgendamentoEnum novoStatus = Boolean.TRUE.equals(agendamento.getPresencaConfirmada())
                     ? StatusAgendamentoEnum.REALIZADO
                     : StatusAgendamentoEnum.NAO_REALIZADO;
-            LocalDateTime agora = LocalDateTime.now();
+            LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
 
             agendamento.setStatus(novoStatus);
             agendamento.setDhAtualizacao(agora);

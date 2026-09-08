@@ -17,7 +17,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.UsuarioCadastr
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -46,11 +45,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Autentica usuário via Keycloak e retorna JWT")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
-            @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
-    })
+    @ApiResponse(responseCode = "200", description = "Login realizado com sucesso")
+    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         KeycloakTokenPort.TokenResponse token = loginUseCase.executar(request.username(), request.password());
         return ResponseEntity.ok(toLoginResponse(token));
@@ -58,11 +55,9 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Renova o access token usando refresh token")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Token renovado com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Refresh token inválido ou expirado"),
-            @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
-    })
+    @ApiResponse(responseCode = "200", description = "Token renovado com sucesso")
+    @ApiResponse(responseCode = "401", description = "Refresh token inválido ou expirado")
+    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
     public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         KeycloakTokenPort.TokenResponse token = renovarTokenUseCase.executar(request.refreshToken());
         return ResponseEntity.ok(toLoginResponse(token));
@@ -76,12 +71,10 @@ public class AuthController {
     @PostMapping("/cadastrar-cliente")
     @Operation(summary = "Auto-cadastro de cliente",
             description = "Cria conta do cliente no Keycloak e no banco local. Sem autenticação prévia.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso"),
-            @ApiResponse(responseCode = "409", description = "E-mail já cadastrado"),
-            @ApiResponse(responseCode = "422", description = "CPF já cadastrado ou senha fraca"),
-            @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
-    })
+    @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso")
+    @ApiResponse(responseCode = "409", description = "E-mail já cadastrado")
+    @ApiResponse(responseCode = "422", description = "CPF já cadastrado ou senha fraca")
+    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
     public ResponseEntity<UsuarioCadastradoResponse> cadastrarCliente(
             @Valid @RequestBody CadastrarClienteRequest req) {
 
@@ -96,9 +89,7 @@ public class AuthController {
     @PostMapping("/esqueci-senha")
     @Operation(summary = "Solicita redefinição de senha por email",
             description = "Envia uma senha temporária para o email informado. Responde 200 independente de o email existir (anti-enumeração).")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Solicitação processada")
-    })
+    @ApiResponse(responseCode = "200", description = "Solicitação processada")
     public ResponseEntity<Void> esqueciSenha(@Valid @RequestBody EsqueciSenhaRequest request) {
         redefinirSenhaEsquecidaUseCase.executar(request.email());
         return ResponseEntity.ok().build();
@@ -109,11 +100,9 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Altera a senha do usuário autenticado",
             description = "Valida a senha atual e define a nova senha. A nova senha não é temporária.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Senha atual incorreta"),
-            @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
-    })
+    @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso")
+    @ApiResponse(responseCode = "401", description = "Senha atual incorreta")
+    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
     public ResponseEntity<Void> alterarSenha(
             @Valid @RequestBody AlterarSenhaRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {

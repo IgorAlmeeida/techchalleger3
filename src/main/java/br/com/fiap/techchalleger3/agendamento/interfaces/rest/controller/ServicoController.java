@@ -8,7 +8,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.ServicoRespons
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,9 +38,7 @@ public class ServicoController {
 
     @PostMapping
     @Operation(summary = "Cria serviço")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Serviço criado com sucesso")
-    })
+    @ApiResponse(responseCode = "201", description = "Serviço criado com sucesso")
     public ResponseEntity<ServicoResponse> criar(@Valid @RequestBody CriarServicoRequest req) {
         Servico servico = useCase.criar(req.nome(), req.duracaoMinutos(), req.preco());
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(servico));
@@ -49,19 +46,15 @@ public class ServicoController {
 
     @GetMapping
     @Operation(summary = "Lista serviços ativos")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de serviços ativos")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de serviços ativos")
     public ResponseEntity<Page<ServicoResponse>> listar(Pageable pageable) {
         return ResponseEntity.ok(useCase.listar(pageable).map(this::toResponse));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Busca serviço por id")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Serviço encontrado"),
-            @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Serviço encontrado")
+    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public ResponseEntity<ServicoResponse> buscar(
             @Parameter(description = "Identificador do serviço") @PathVariable Integer id) {
         return ResponseEntity.ok(toResponse(useCase.buscarPorId(id)));
@@ -69,10 +62,8 @@ public class ServicoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza serviço")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Serviço atualizado"),
-            @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Serviço atualizado")
+    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public ResponseEntity<ServicoResponse> atualizar(
             @Parameter(description = "Identificador do serviço") @PathVariable Integer id,
             @Valid @RequestBody AtualizarServicoRequest req) {
@@ -82,10 +73,8 @@ public class ServicoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Inativa serviço")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Serviço inativado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
-    })
+    @ApiResponse(responseCode = "204", description = "Serviço inativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public ResponseEntity<Void> inativar(
             @Parameter(description = "Identificador do serviço") @PathVariable Integer id) {
         useCase.inativar(id);

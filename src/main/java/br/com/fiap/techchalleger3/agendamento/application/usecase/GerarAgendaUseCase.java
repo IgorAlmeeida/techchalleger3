@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class GerarAgendaUseCase {
         LocalDate cursor = dataInicio;
 
         while (!cursor.isAfter(dataFim)) {
-            if (cursor.getDayOfWeek() == diaDaSemana) {
+            if (cursor.getDayOfWeek().equals(diaDaSemana)) {
                 agendasGeradas.add(gerarAgendaParaData(escala, itensAtivos, cursor));
             }
             cursor = cursor.plusDays(1);
@@ -112,7 +113,7 @@ public class GerarAgendaUseCase {
                     "Já existe uma agenda para o vínculo " + escala.getProfissionalVinculoId() + " na data " + data + ".");
         }
 
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
 
         Agenda agenda = agendaPort.salvar(Agenda.builder()
                 .escalaId(escala.getId())

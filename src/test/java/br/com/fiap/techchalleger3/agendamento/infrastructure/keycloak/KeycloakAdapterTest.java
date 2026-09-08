@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -18,16 +18,16 @@ import static org.mockito.Mockito.when;
 
 class KeycloakAdapterTest {
 
-    // ── KeycloakAdminAdapter ───────────────────────────────────────────────
-
     private KeycloakAdminAdapter adminAdapter;
     private Keycloak kcMock;
+    private KeycloakTokenAdapter tokenAdapter;
 
     @BeforeEach
     void setup() {
         adminAdapter = new KeycloakAdminAdapter("http://kc", "testrealm", "client", "secret");
         kcMock = mock(Keycloak.class, RETURNS_DEEP_STUBS);
         ReflectionTestUtils.setField(adminAdapter, "keycloak", kcMock);
+        tokenAdapter = new KeycloakTokenAdapter("http://kc", "testrealm", "client", "secret");
     }
 
     @Test
@@ -77,8 +77,7 @@ class KeycloakAdapterTest {
 
     @Test
     void redefinirSenha_sucesso() {
-        adminAdapter.redefinirSenha("user-123", "NovaSenha@1", false);
-        // no exception = success
+        assertDoesNotThrow(() -> adminAdapter.redefinirSenha("user-123", "NovaSenha@1", false));
     }
 
     @Test
@@ -89,26 +88,14 @@ class KeycloakAdapterTest {
                 .isInstanceOf(ServicoIndisponivelException.class);
     }
 
-    // ── KeycloakTokenAdapter ───────────────────────────────────────────────
-
-    private KeycloakTokenAdapter tokenAdapter;
-
-    @BeforeEach
-    void setupToken() {
-        tokenAdapter = new KeycloakTokenAdapter("http://kc", "testrealm", "client", "secret");
-    }
-
     @Test
     void obterToken_servidorInacessivel_lancaServicoIndisponivel() {
-        // KeycloakBuilder cria cliente real para http://kc — host não resolve → ServicoIndisponivelException
         assertThatThrownBy(() -> tokenAdapter.obterToken("user@x.com", "wrong"))
                 .isInstanceOf(ServicoIndisponivelException.class);
     }
 
     @Test
     void renovarToken_excecaoGenerica_lancaServicoIndisponivel() {
-        // O chain de mock do RestClient é hard to set up em Java 21 com final fields;
-        // a exception genérica é capturada antes de chegar ao body() → ServicoIndisponivelException
         assertThatThrownBy(() -> tokenAdapter.renovarToken("ref"))
                 .isInstanceOf(ServicoIndisponivelException.class);
     }

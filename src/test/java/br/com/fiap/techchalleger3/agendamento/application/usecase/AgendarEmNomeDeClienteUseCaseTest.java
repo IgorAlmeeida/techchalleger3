@@ -18,8 +18,6 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
 import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
-import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
-import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
+
 import java.util.List;
 import java.util.Optional;
 

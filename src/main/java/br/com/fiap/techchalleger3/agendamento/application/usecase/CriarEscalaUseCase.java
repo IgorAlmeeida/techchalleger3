@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -86,14 +87,14 @@ public class CriarEscalaUseCase {
                 .diaSemana(diaSemana)
                 .horaInicio(horaInicio)
                 .horaFim(horaFim)
-                .dhInsert(LocalDateTime.now())
+                .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
 
         new ValidadorConflitoEscala().validar(nova, escalasExistentes);
 
         Escala salva = escalaPort.salvar(nova);
 
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         for (Integer servicoId : servicoIds) {
             escalaItemPort.salvar(EscalaItem.builder()
                     .escalaId(salva.getId())

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -61,6 +62,7 @@ public class AgendarEmNomeDeClienteUseCase {
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Transactional
+    @SuppressWarnings("java:S107")
     public Agendamento executar(String cpf, String nome, LocalDate dataNascimento, String telefone,
                                 String sexo, String endereco, String email,
                                 Integer profissionalVinculoId, Integer servicoId,
@@ -170,7 +172,7 @@ public class AgendarEmNomeDeClienteUseCase {
 
     private Agendamento reservarGrupo(List<Agendamento> janela, Cliente cliente, Servico servico) {
         Integer servicoId = servico.getId();
-        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime agora = LocalDateTime.now(ZoneId.systemDefault());
         LocalTime novaHoraInicio = janela.get(0).getHoraInicio();
         LocalTime novaHoraFim = janela.get(janela.size() - 1).getHoraFim();
 

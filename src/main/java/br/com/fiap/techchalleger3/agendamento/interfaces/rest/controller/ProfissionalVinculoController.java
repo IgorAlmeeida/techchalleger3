@@ -19,7 +19,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.VinculoRespons
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -60,11 +59,9 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Associa um profissional a um estabelecimento (admin)",
             description = "Cria um vínculo ativo entre profissional e estabelecimento. Não pode haver vínculo ativo duplicado para o mesmo par.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Vínculo criado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Profissional ou estabelecimento não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Vínculo ativo já existe para este par profissional/estabelecimento")
-    })
+    @ApiResponse(responseCode = "201", description = "Vínculo criado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Profissional ou estabelecimento não encontrado")
+    @ApiResponse(responseCode = "422", description = "Vínculo ativo já existe para este par profissional/estabelecimento")
     public ResponseEntity<VinculoResponse> criar(@Valid @RequestBody CriarVinculoRequest request) {
         ProfissionalVinculo vinculo = criarVinculoUseCase.executar(
                 request.profissionalId(), request.estabelecimentoId(), request.dataInicio());
@@ -75,11 +72,9 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Associa um serviço a um vínculo (admin)",
             description = "Define quais serviços o profissional oferece naquele estabelecimento. Serviço duplicado no mesmo vínculo é rejeitado.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Serviço associado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Vínculo ou serviço não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Serviço já associado a este vínculo")
-    })
+    @ApiResponse(responseCode = "201", description = "Serviço associado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Vínculo ou serviço não encontrado")
+    @ApiResponse(responseCode = "422", description = "Serviço já associado a este vínculo")
     public ResponseEntity<VinculoItemResponse> associarServico(
             @Parameter(description = "Identificador do vínculo de profissional") @PathVariable Integer id,
             @Valid @RequestBody AssociarItemRequest request) {
@@ -91,9 +86,7 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista vínculos profissional↔estabelecimento (admin)",
             description = "Filtra por profissionalId e/ou estabelecimentoId. Inclui vínculos ativos e encerrados.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de vínculos")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de vínculos")
     public ResponseEntity<Page<VinculoResponse>> listar(
             @Parameter(description = "Filtrar por id do profissional") @RequestParam(required = false) Integer profissionalId,
             @Parameter(description = "Filtrar por id do estabelecimento") @RequestParam(required = false) Integer estabelecimentoId,
@@ -108,10 +101,8 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista serviços de um vínculo (admin)",
             description = "Retorna os serviços associados a um vínculo, com nome e duração.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de serviços do vínculo"),
-            @ApiResponse(responseCode = "404", description = "Vínculo não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de serviços do vínculo")
+    @ApiResponse(responseCode = "404", description = "Vínculo não encontrado")
     public ResponseEntity<List<VinculoItemDetalhadaResponse>> listarItens(
             @Parameter(description = "Identificador do vínculo de profissional") @PathVariable Integer id) {
         return ResponseEntity.ok(listarServicosDoVinculoUseCase.executar(id));
@@ -121,10 +112,8 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('CLIENTE')")
     @Operation(summary = "Lista profissionais e serviços disponíveis em um estabelecimento (cliente)",
             description = "Retorna todos os vínculos ativos de um estabelecimento com seus serviços.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de profissionais disponíveis no estabelecimento"),
-            @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de profissionais disponíveis no estabelecimento")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
     public ResponseEntity<List<ProfissionalDisponivelResponse>> listarOferta(
             @Parameter(description = "Id do estabelecimento", required = true) @RequestParam Integer estabelecimentoId,
             @Parameter(description = "Filtrar por serviço (opcional)") @RequestParam(required = false) Integer servicoId) {
@@ -135,11 +124,9 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Remove serviço de um vínculo (admin)",
             description = "Bloqueia se houver agendas futuras com este serviço no vínculo.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Vínculo ou serviço não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Agendas futuras em aberto impedem a remoção")
-    })
+    @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso")
+    @ApiResponse(responseCode = "404", description = "Vínculo ou serviço não encontrado")
+    @ApiResponse(responseCode = "422", description = "Agendas futuras em aberto impedem a remoção")
     public ResponseEntity<Void> desvincularServico(
             @Parameter(description = "Identificador do vínculo de profissional") @PathVariable Integer vinculoId,
             @Parameter(description = "Identificador da associação vínculo/serviço") @PathVariable Integer itemId) {
@@ -151,11 +138,9 @@ public class ProfissionalVinculoController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Encerra vínculo profissional↔estabelecimento (admin)",
             description = "Seta data_fim = hoje. Bloqueia se houver agendas futuras no vínculo.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Vínculo encerrado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Vínculo não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Agendas futuras em aberto impedem o encerramento")
-    })
+    @ApiResponse(responseCode = "204", description = "Vínculo encerrado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Vínculo não encontrado")
+    @ApiResponse(responseCode = "422", description = "Agendas futuras em aberto impedem o encerramento")
     public ResponseEntity<Void> desvincularProfissional(
             @Parameter(description = "Identificador do vínculo de profissional") @PathVariable Integer vinculoId) {
         desvincularProfissionalUseCase.executar(vinculoId);

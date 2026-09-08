@@ -3,7 +3,6 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakTokenPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
-import br.com.fiap.techchalleger3.agendamento.domain.exception.CredenciaisInvalidasException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +17,7 @@ public class AlterarSenhaUseCase {
     private final UsuarioRepositoryPort usuarioPort;
 
     public void executar(String keycloakSub, String emailDoToken, String senhaAtual, String senhaNova) {
-        try {
-            keycloakTokenPort.obterToken(emailDoToken, senhaAtual);
-        } catch (CredenciaisInvalidasException e) {
-            throw e;
-        }
+        keycloakTokenPort.obterToken(emailDoToken, senhaAtual);
 
         Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,13 +29,15 @@ public class ProfissionalUseCase {
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final AgendaRepositoryPort agendaPort;
 
+    private static final String ENTIDADE_PROFISSIONAL = "Profissional";
+
     public Page<Profissional> listar(String nome, String especialidade, boolean incluirInativos, Pageable pageable) {
         return profissionalPort.listarComFiltros(nome, especialidade, incluirInativos, pageable);
     }
 
     public Profissional buscarPorId(Integer id, String keycloakSub, boolean isAdmin) {
         Profissional profissional = profissionalPort.buscarPorId(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
         if (!isAdmin) {
             validarProprioAcesso(profissional, keycloakSub);
         }
@@ -45,21 +48,21 @@ public class ProfissionalUseCase {
     public Profissional atualizar(Integer id, String nome, List<String> especialidades,
                                    String endereco, String keycloakSub, boolean isAdmin) {
         Profissional profissional = profissionalPort.buscarPorId(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
         if (!isAdmin) {
             validarProprioAcesso(profissional, keycloakSub);
         }
         profissional.setNome(nome);
         profissional.setEspecialidades(especialidades);
         profissional.setEndereco(endereco);
-        profissional.setDhAtualizacao(LocalDateTime.now());
+        profissional.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         return profissionalPort.salvar(profissional);
     }
 
     @Transactional
     public void inativar(Integer id) {
         Profissional profissional = profissionalPort.buscarPorId(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
 
         List<ProfissionalVinculo> vinculos = profissionalVinculoPort.listarPorProfissionalId(id);
         boolean temAgendaFutura = vinculos.stream()
@@ -70,7 +73,7 @@ public class ProfissionalUseCase {
         }
 
         profissional.setAtivo(false);
-        profissional.setDhAtualizacao(LocalDateTime.now());
+        profissional.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         profissionalPort.salvar(profissional);
     }
 

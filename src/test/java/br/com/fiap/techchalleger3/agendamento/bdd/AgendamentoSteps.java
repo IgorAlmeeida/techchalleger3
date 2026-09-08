@@ -30,7 +30,6 @@ public class AgendamentoSteps {
     private CriarAgendamentoUseCase criarAgendamentoUseCase;
 
     private ResultActions resultado;
-    private String clienteAtual;
 
     @Dado("que existe o estabelecimento {string} com o serviço {string}")
     public void queExisteEstabelecimento(String estabelecimento, String servico) {
@@ -44,7 +43,7 @@ public class AgendamentoSteps {
 
     @Dado("que o cliente {string} está autenticado")
     public void clienteAutenticado(String cliente) {
-        this.clienteAtual = cliente;
+        // contexto de autenticação gerenciado pelo MockMvc JWT
     }
 
     @Quando("ela solicita um agendamento para {string} com {string} na próxima terça às {string}")

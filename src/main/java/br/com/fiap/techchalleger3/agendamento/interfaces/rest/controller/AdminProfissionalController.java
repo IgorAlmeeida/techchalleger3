@@ -10,7 +10,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.UsuarioCadastr
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,11 +44,9 @@ public class AdminProfissionalController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cadastra profissional",
             description = "Cria conta no Keycloak com senha temporária e envia email de primeiro acesso.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Profissional cadastrado e email enviado"),
-            @ApiResponse(responseCode = "409", description = "E-mail já cadastrado"),
-            @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
-    })
+    @ApiResponse(responseCode = "201", description = "Profissional cadastrado e email enviado")
+    @ApiResponse(responseCode = "409", description = "E-mail já cadastrado")
+    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
     public ResponseEntity<UsuarioCadastradoResponse> cadastrar(@Valid @RequestBody CadastrarProfissionalRequest req) {
         Profissional profissional = cadastrarUseCase.executar(
                 req.nome(), req.email(), req.especialidades(), req.endereco());
@@ -62,9 +59,7 @@ public class AdminProfissionalController {
     @Operation(summary = "Lista profissionais",
             description = "Retorna profissionais paginados. Filtros opcionais por nome e especialidade. " +
                     "Por padrão lista apenas ativos; use incluirInativos=true para ver todos.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de profissionais")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de profissionais")
     public ResponseEntity<Page<ProfissionalResponse>> listar(
             Pageable pageable,
             @Parameter(description = "Filtrar por nome (busca parcial)") @RequestParam(required = false) String nome,
@@ -78,11 +73,9 @@ public class AdminProfissionalController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('PROFISSIONAL')")
     @Operation(summary = "Busca profissional por id",
             description = "ADMIN pode consultar qualquer profissional. PROFISSIONAL só pode consultar o próprio perfil.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Profissional encontrado"),
-            @ApiResponse(responseCode = "403", description = "Profissional tentando acessar outro perfil"),
-            @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Profissional encontrado")
+    @ApiResponse(responseCode = "403", description = "Profissional tentando acessar outro perfil")
+    @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
     public ResponseEntity<ProfissionalResponse> buscar(
             @Parameter(description = "Identificador do profissional") @PathVariable Integer id,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -96,11 +89,9 @@ public class AdminProfissionalController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('PROFISSIONAL')")
     @Operation(summary = "Atualiza profissional",
             description = "Atualiza nome, especialidades e endereço. ADMIN pode atualizar qualquer profissional; PROFISSIONAL só o próprio perfil.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Profissional atualizado"),
-            @ApiResponse(responseCode = "403", description = "Profissional tentando atualizar outro perfil"),
-            @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Profissional atualizado")
+    @ApiResponse(responseCode = "403", description = "Profissional tentando atualizar outro perfil")
+    @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
     public ResponseEntity<ProfissionalResponse> atualizar(
             @Parameter(description = "Identificador do profissional") @PathVariable Integer id,
             @Valid @RequestBody AtualizarProfissionalRequest req,
@@ -117,11 +108,9 @@ public class AdminProfissionalController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inativa profissional (não remove o registro)",
             description = "Inativação lógica. Bloqueada se o profissional tiver agendas futuras — cancele as agendas primeiro.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Profissional inativado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Profissional não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Profissional possui agendas futuras")
-    })
+    @ApiResponse(responseCode = "204", description = "Profissional inativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
+    @ApiResponse(responseCode = "422", description = "Profissional possui agendas futuras")
     public ResponseEntity<Void> inativar(
             @Parameter(description = "Identificador do profissional") @PathVariable Integer id) {
         profissionalUseCase.inativar(id);

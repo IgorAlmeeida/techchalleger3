@@ -16,6 +16,7 @@ public class BuscarEstabelecimentosUseCase {
 
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
 
+    @SuppressWarnings("java:S107")
     public Page<Estabelecimento> buscar(
             String nome,
             String localizacao,

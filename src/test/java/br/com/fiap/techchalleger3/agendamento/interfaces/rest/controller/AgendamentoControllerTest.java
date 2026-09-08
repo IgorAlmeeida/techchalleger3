@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,15 +47,15 @@ class AgendamentoControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private CriarAgendamentoUseCase criarUseCase;
-    @MockBean private CancelarAgendamentoUseCase cancelarUseCase;
-    @MockBean private ListarMeusAgendamentosClienteUseCase listarClienteUseCase;
-    @MockBean private ListarAgendamentosProfissionalUseCase listarProfissionalUseCase;
-    @MockBean private ExportarAgendamentoIcsUseCase exportarIcsUseCase;
-    @MockBean private AgendamentoResponseAssembler assembler;
-    @MockBean private JwtDecoder jwtDecoder;
-    @MockBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean private CriarAgendamentoUseCase criarUseCase;
+    @MockitoBean private CancelarAgendamentoUseCase cancelarUseCase;
+    @MockitoBean private ListarMeusAgendamentosClienteUseCase listarClienteUseCase;
+    @MockitoBean private ListarAgendamentosProfissionalUseCase listarProfissionalUseCase;
+    @MockitoBean private ExportarAgendamentoIcsUseCase exportarIcsUseCase;
+    @MockitoBean private AgendamentoResponseAssembler assembler;
+    @MockitoBean private JwtDecoder jwtDecoder;
+    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
     void configureFiltros() throws Exception {

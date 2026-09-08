@@ -11,7 +11,6 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.GerarAgendaReq
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,11 +51,9 @@ public class AgendaController {
     @PreAuthorize("hasAnyRole('PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Gera agendas concretas a partir de uma escala, para um intervalo de datas",
             description = "Para cada data no intervalo cujo dia da semana coincida com o dia da escala, uma agenda com slots de atendimento é criada.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Agendas geradas com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Escala não encontrada"),
-            @ApiResponse(responseCode = "422", description = "Intervalo de datas inválido ou agenda já existente no período")
-    })
+    @ApiResponse(responseCode = "201", description = "Agendas geradas com sucesso")
+    @ApiResponse(responseCode = "404", description = "Escala não encontrada")
+    @ApiResponse(responseCode = "422", description = "Intervalo de datas inválido ou agenda já existente no período")
     public ResponseEntity<List<AgendaResponse>> gerar(
             @Valid @RequestBody GerarAgendaRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -71,12 +68,10 @@ public class AgendaController {
     @PreAuthorize("hasAnyRole('PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Cancela uma agenda inteira em lote",
             description = "Todos os slots AGENDADO da agenda são cancelados com notificação por email.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Agenda cancelada com sucesso"),
-            @ApiResponse(responseCode = "403", description = "Profissional não é dono desta agenda"),
-            @ApiResponse(responseCode = "404", description = "Agenda não encontrada"),
-            @ApiResponse(responseCode = "422", description = "Agenda não pode ser cancelada no estado atual")
-    })
+    @ApiResponse(responseCode = "204", description = "Agenda cancelada com sucesso")
+    @ApiResponse(responseCode = "403", description = "Profissional não é dono desta agenda")
+    @ApiResponse(responseCode = "404", description = "Agenda não encontrada")
+    @ApiResponse(responseCode = "422", description = "Agenda não pode ser cancelada no estado atual")
     public ResponseEntity<Void> cancelar(
             @Parameter(description = "Identificador da agenda") @PathVariable Integer id,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
@@ -90,11 +85,9 @@ public class AgendaController {
     @PreAuthorize("hasRole('PROFISSIONAL') or hasRole('ADMIN')")
     @Operation(summary = "Lista agendas com serviços detalhados",
             description = "Filtra por profissionalVinculoId e/ou estabelecimentoId. PROFISSIONAL só pode listar agendas do próprio vínculo.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de agendas"),
-            @ApiResponse(responseCode = "400", description = "Nenhum filtro informado"),
-            @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de agendas")
+    @ApiResponse(responseCode = "400", description = "Nenhum filtro informado")
+    @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
     public ResponseEntity<Page<AgendaDetalhadaResponse>> listar(
             @Parameter(description = "Filtrar por id do vínculo de profissional") @RequestParam(required = false) Integer profissionalVinculoId,
             @Parameter(description = "Filtrar por id do estabelecimento") @RequestParam(required = false) Integer estabelecimentoId,

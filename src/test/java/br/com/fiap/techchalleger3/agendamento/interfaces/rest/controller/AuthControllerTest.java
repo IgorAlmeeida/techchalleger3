@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,14 +35,14 @@ class AuthControllerTest {
 
     @Autowired MockMvc mockMvc;
 
-    @MockBean LoginUseCase loginUseCase;
-    @MockBean RenovarTokenUseCase renovarTokenUseCase;
-    @MockBean CadastrarClienteUseCase cadastrarClienteUseCase;
-    @MockBean RedefinirSenhaEsquecidaUseCase redefinirSenhaEsquecidaUseCase;
-    @MockBean AlterarSenhaUseCase alterarSenhaUseCase;
-    @MockBean JwtDecoder jwtDecoder;
-    @MockBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean LoginUseCase loginUseCase;
+    @MockitoBean RenovarTokenUseCase renovarTokenUseCase;
+    @MockitoBean CadastrarClienteUseCase cadastrarClienteUseCase;
+    @MockitoBean RedefinirSenhaEsquecidaUseCase redefinirSenhaEsquecidaUseCase;
+    @MockitoBean AlterarSenhaUseCase alterarSenhaUseCase;
+    @MockitoBean JwtDecoder jwtDecoder;
+    @MockitoBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
     void configureFiltros() throws Exception {

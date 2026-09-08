@@ -16,6 +16,7 @@ public interface EstabelecimentoRepositoryPort {
     Page<Estabelecimento> listarAtivos(Pageable pageable);
     List<Estabelecimento> listarAtivos();
     List<Estabelecimento> listarPorIds(List<Integer> ids);
+    @SuppressWarnings("java:S107")
     Page<Estabelecimento> buscarComFiltros(String nome, String localizacao, Integer servicoId,
                                            BigDecimal precoMin, BigDecimal precoMax,
                                            Double notaMinima, LocalDate data, Pageable pageable);

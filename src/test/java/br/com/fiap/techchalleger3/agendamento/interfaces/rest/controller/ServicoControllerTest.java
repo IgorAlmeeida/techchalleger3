@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -38,10 +38,10 @@ class ServicoControllerTest {
 
     @Autowired MockMvc mockMvc;
 
-    @MockBean ServicoUseCase useCase;
-    @MockBean JwtDecoder jwtDecoder;
-    @MockBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
-    @MockBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean ServicoUseCase useCase;
+    @MockitoBean JwtDecoder jwtDecoder;
+    @MockitoBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
+    @MockitoBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
     void filtros() throws Exception {
