@@ -52,7 +52,7 @@ class ProfissionalUseCaseTest {
     void deveBuscarPorId_profissional_validaProprioAcesso() {
         Usuario usuario = Usuario.builder().id(10).build();
         when(profissionalPort.buscarPorId(1)).thenReturn(Optional.of(prof(1, 10)));
-        when(usuarioPort.buscarPorCodKeycloak("kc-10")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("kc-10")).thenReturn(Optional.of(usuario));
 
         Profissional result = useCase.buscarPorId(1, "kc-10", false);
 
@@ -63,7 +63,7 @@ class ProfissionalUseCaseTest {
     void deveLancar_quandoProfissionalNaoAutorizado() {
         Usuario outro = Usuario.builder().id(99).build();
         when(profissionalPort.buscarPorId(1)).thenReturn(Optional.of(prof(1, 10)));
-        when(usuarioPort.buscarPorCodKeycloak("kc-99")).thenReturn(Optional.of(outro));
+        when(usuarioPort.buscarPorUuid("kc-99")).thenReturn(Optional.of(outro));
 
         assertThatThrownBy(() -> useCase.buscarPorId(1, "kc-99", false))
                 .isInstanceOf(AcessoNegadoException.class);
@@ -89,16 +89,17 @@ class ProfissionalUseCaseTest {
     }
 
     @Test
-    void deveInativar_semAgendas() {
+    void deveDeletar_semAgendas() {
         Profissional profissional = prof(1, 10);
         when(profissionalPort.buscarPorId(1)).thenReturn(Optional.of(profissional));
         when(profissionalVinculoPort.listarPorProfissionalId(1))
                 .thenReturn(List.of(ProfissionalVinculo.builder().id(5).build()));
         when(agendaPort.existeAgendaFuturaPorVinculo(5)).thenReturn(false);
 
-        useCase.inativar(1);
+        useCase.deletar(1);
 
-        assertThat(profissional.getAtivo()).isFalse();
+        verify(profissionalPort).deletar(1);
+        verify(usuarioPort).deletar(10);
     }
 
     @Test
@@ -111,14 +112,14 @@ class ProfissionalUseCaseTest {
     }
 
     @Test
-    void deveLancar_quandoInativarComAgendas() {
+    void deveLancar_quandoDeletarComAgendas() {
         Profissional profissional = prof(1, 10);
         when(profissionalPort.buscarPorId(1)).thenReturn(Optional.of(profissional));
         when(profissionalVinculoPort.listarPorProfissionalId(1))
                 .thenReturn(List.of(ProfissionalVinculo.builder().id(5).build()));
         when(agendaPort.existeAgendaFuturaPorVinculo(5)).thenReturn(true);
 
-        assertThatThrownBy(() -> useCase.inativar(1))
+        assertThatThrownBy(() -> useCase.deletar(1))
                 .isInstanceOf(OperacaoInvalidaException.class);
     }
 }

@@ -14,8 +14,8 @@ public interface ProfissionalRepository extends JpaRepository<ProfissionalEntity
     Optional<ProfissionalEntity> findByEmail(String email);
 
     @Query("SELECT p FROM ProfissionalEntity p WHERE " +
-           "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
-           "(:especialidades IS NULL OR LOWER(p.especialidades) LIKE LOWER(CONCAT('%', :especialidades, '%'))) AND " +
+           "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', CAST(:nome AS String), '%'))) AND " +
+           "(:especialidades IS NULL OR LOWER(p.especialidades) LIKE LOWER(CONCAT('%', CAST(:especialidades AS String), '%'))) AND " +
            "(:incluirInativos = true OR p.ativo = true)")
     Page<ProfissionalEntity> buscarComFiltros(@Param("nome") String nome,
                                               @Param("especialidades") String especialidades,

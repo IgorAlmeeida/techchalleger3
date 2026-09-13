@@ -82,9 +82,9 @@ class ListarAgendamentosProfissionalUseCaseTest {
 
     @Test
     void profissional_comFiltro_retornaAgendamentos() {
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(30).build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(profissional));
 
         Agendamento a = agendamento(null, null);
@@ -102,12 +102,12 @@ class ListarAgendamentosProfissionalUseCaseTest {
 
     @Test
     void profissional_semFiltro_usaTodosVinculos() {
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(30).build();
         ProfissionalVinculo v1 = ProfissionalVinculo.builder().id(5).profissionalId(30).build();
         ProfissionalVinculo v2 = ProfissionalVinculo.builder().id(6).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(profissional));
         when(profissionalVinculoPort.listarPorProfissionalId(30)).thenReturn(List.of(v1, v2));
         when(agendamentoPort.buscarPaisPorProfissionalVinculoIds(List.of(5, 6), List.of(StatusAgendamentoEnum.AGENDADO, StatusAgendamentoEnum.RESERVADO), null, null))

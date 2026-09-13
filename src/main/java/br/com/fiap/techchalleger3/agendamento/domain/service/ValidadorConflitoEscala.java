@@ -5,6 +5,9 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Escala;
 
 import java.util.List;
 
+/**
+ * Serviço de domínio que valida se um novo item de escala conflita com itens já existentes do mesmo profissional.
+ */
 public class ValidadorConflitoEscala {
 
     public void validar(Escala nova, List<Escala> existentes) {

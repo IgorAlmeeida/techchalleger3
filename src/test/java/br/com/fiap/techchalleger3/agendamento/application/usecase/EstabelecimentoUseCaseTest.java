@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EstabelecimentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException;
@@ -28,7 +27,6 @@ class EstabelecimentoUseCaseTest {
 
     @Mock private EstabelecimentoRepositoryPort estabelecimentoPort;
     @Mock private ProfissionalVinculoRepositoryPort profissionalVinculoPort;
-    @Mock private CachePort cachePort;
     @InjectMocks private EstabelecimentoUseCase useCase;
 
     private Estabelecimento estab(int id) {
@@ -44,7 +42,6 @@ class EstabelecimentoUseCaseTest {
         Estabelecimento result = useCase.criar("Studio 1", "00.000.000/0001-00", null, null, null, null, null);
 
         assertThat(result.getId()).isEqualTo(1);
-        verify(cachePort).invalidar(any());
     }
 
     @Test
@@ -56,24 +53,21 @@ class EstabelecimentoUseCaseTest {
     }
 
     @Test
-    void deveListar_buscandoDoCache() {
-        Estabelecimento e = estab(1);
-        when(cachePort.get(any(), any())).thenReturn(Optional.of(List.of(e)));
-
-        Page<Estabelecimento> page = useCase.listar(PageRequest.of(0, 10));
-
-        assertThat(page.getTotalElements()).isEqualTo(1);
-    }
-
-    @Test
-    void deveListar_buscandoDoBanco_quandoCacheVazio() {
-        when(cachePort.get(any(), any())).thenReturn(Optional.empty());
+    void deveListar_buscandoDoBanco() {
         when(estabelecimentoPort.listarAtivos()).thenReturn(List.of(estab(1), estab(2)));
 
         Page<Estabelecimento> page = useCase.listar(PageRequest.of(0, 10));
 
         assertThat(page.getTotalElements()).isEqualTo(2);
-        verify(cachePort).put(any(), any(), any());
+    }
+
+    @Test
+    void deveListar_retornaListaVazia_quandoSemAtivos() {
+        when(estabelecimentoPort.listarAtivos()).thenReturn(List.of());
+
+        Page<Estabelecimento> page = useCase.listar(PageRequest.of(0, 10));
+
+        assertThat(page.getTotalElements()).isEqualTo(0);
     }
 
     @Test
@@ -103,19 +97,17 @@ class EstabelecimentoUseCaseTest {
         Estabelecimento result = useCase.atualizar(1, "Novo Nome", "novo-cnpj", null, null, null, null, null);
 
         assertThat(result).isNotNull();
-        verify(cachePort).invalidar(any());
     }
 
     @Test
-    void deveInativar_quandoSemVinculos() {
+    void deveDeletar_quandoSemVinculos() {
         Estabelecimento existente = estab(1);
         when(estabelecimentoPort.buscarPorId(1)).thenReturn(Optional.of(existente));
         when(profissionalVinculoPort.existeVinculoAtivoPorEstabelecimento(1)).thenReturn(false);
 
-        useCase.inativar(1);
+        useCase.deletar(1);
 
-        verify(estabelecimentoPort).salvar(any());
-        verify(cachePort).invalidar(any());
+        verify(estabelecimentoPort).deletar(1);
     }
 
     @Test
@@ -128,11 +120,11 @@ class EstabelecimentoUseCaseTest {
     }
 
     @Test
-    void deveLancar_quandoInativarComVinculos() {
+    void deveLancar_quandoDeletarComVinculos() {
         when(estabelecimentoPort.buscarPorId(1)).thenReturn(Optional.of(estab(1)));
         when(profissionalVinculoPort.existeVinculoAtivoPorEstabelecimento(1)).thenReturn(true);
 
-        assertThatThrownBy(() -> useCase.inativar(1))
+        assertThatThrownBy(() -> useCase.deletar(1))
                 .isInstanceOf(OperacaoInvalidaException.class);
     }
 }

@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 
+/**
+ * Registra a avaliação de um atendimento realizado.
+ * Só pode ser feita pelo cliente do agendamento, uma única vez por agendamento com status REALIZADO.
+ */
 @Service
 @RequiredArgsConstructor
 public class AvaliarAtendimentoUseCase {

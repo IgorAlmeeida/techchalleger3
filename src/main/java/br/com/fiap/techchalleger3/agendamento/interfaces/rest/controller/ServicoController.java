@@ -30,6 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/servicos")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+/**
+ * Endpoints administrativos para CRUD de serviços. A duração deve ser múltiplo de 5 minutos.
+ * Acesso restrito ao perfil ADMIN.
+ */
 @Tag(name = "Serviços", description = "CRUD de serviços oferecidos (admin)")
 @SecurityRequirement(name = "bearerAuth")
 public class ServicoController {
@@ -72,12 +76,12 @@ public class ServicoController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Inativa serviço")
-    @ApiResponse(responseCode = "204", description = "Serviço inativado com sucesso")
+    @Operation(summary = "Remove serviço do banco")
+    @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso")
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
-    public ResponseEntity<Void> inativar(
+    public ResponseEntity<Void> deletar(
             @Parameter(description = "Identificador do serviço") @PathVariable Integer id) {
-        useCase.inativar(id);
+        useCase.deletar(id);
         return ResponseEntity.noContent().build();
     }
 

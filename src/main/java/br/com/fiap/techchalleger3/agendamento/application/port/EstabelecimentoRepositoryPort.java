@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de estabelecimentos ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Estabelecimento}).
+ */
 public interface EstabelecimentoRepositoryPort {
     Optional<Estabelecimento> buscarPorId(Integer id);
     boolean existePorCnpj(String cnpj);
@@ -21,4 +24,5 @@ public interface EstabelecimentoRepositoryPort {
                                            BigDecimal precoMin, BigDecimal precoMax,
                                            Double notaMinima, LocalDate data, Pageable pageable);
     Estabelecimento salvar(Estabelecimento estabelecimento);
+    void deletar(Integer id);
 }

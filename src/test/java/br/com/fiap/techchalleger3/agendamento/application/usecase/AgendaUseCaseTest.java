@@ -143,7 +143,7 @@ class AgendaUseCaseTest {
     void cancelar_profissional_lancaAcessoNegado_quandoVinculoDeOutro() {
         Agenda agenda = Agenda.builder().id(1).profissionalVinculoId(10).build();
         when(agendaPort.buscarPorId(1)).thenReturn(Optional.of(agenda));
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(99).build()));
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(ProfissionalVinculo.builder().id(10).profissionalId(50).build()));
 
@@ -217,7 +217,7 @@ class AgendaUseCaseTest {
 
     @Test
     void listar_profissional_retornaPropriosVinculos() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Profissional.builder().id(10).build()));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(5).profissionalId(10).estabelecimentoId(30).build();
         when(profissionalVinculoPort.buscarPorId(5)).thenReturn(Optional.of(vinculo));
@@ -237,7 +237,7 @@ class AgendaUseCaseTest {
 
     @Test
     void listar_profissional_lancaAcessoNegado_quandoVinculoDeOutro() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Profissional.builder().id(10).build()));
         ProfissionalVinculo outroVinculo = ProfissionalVinculo.builder().id(5).profissionalId(99).estabelecimentoId(30).build();
         when(profissionalVinculoPort.buscarPorId(5)).thenReturn(Optional.of(outroVinculo));

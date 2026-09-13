@@ -123,12 +123,12 @@ class CancelarAgendaUseCaseTest {
         Agenda ag = agenda(20);
         Agendamento a = agendamento(StatusAgendamentoEnum.AGENDADO, 100, null);
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(30).build();
         Cliente cliente = Cliente.builder().id(100).email("c@x.com").build();
 
         when(agendaPort.buscarPorId(1)).thenReturn(Optional.of(ag));
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
         when(profissionalVinculoPort.buscarPorId(20)).thenReturn(Optional.of(vinculo), Optional.empty());
         when(agendamentoPort.listarPorAgendaId(1)).thenReturn(List.of(a));
@@ -147,11 +147,11 @@ class CancelarAgendaUseCaseTest {
     void profissional_posseInvalida_lancaAcessoNegado() {
         Agenda ag = agenda(20);
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(99).build(); // different
 
         when(agendaPort.buscarPorId(1)).thenReturn(Optional.of(ag));
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
         when(profissionalVinculoPort.buscarPorId(20)).thenReturn(Optional.of(vinculo));
 

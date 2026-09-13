@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Avaliação de um atendimento feita pelo cliente após a realização do agendamento.
+ * Nota de 1 a 5 e comentário opcional.
+ */
 public class Avaliacao {
     private Integer id;
     private Integer agendamentoId;

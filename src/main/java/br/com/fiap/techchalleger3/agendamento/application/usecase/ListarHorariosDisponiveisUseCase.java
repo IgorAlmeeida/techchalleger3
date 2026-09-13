@@ -17,16 +17,11 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
 import br.com.fiap.techchalleger3.agendamento.domain.service.BuscadorDeJanelaDeSlots;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.EstabelecimentoResumo;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.HorarioDisponivelResponse;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.ProfissionalResumo;
-import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.ServicoResumo;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,67 +39,46 @@ public class ListarHorariosDisponiveisUseCase {
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
     private final ServicoRepositoryPort servicoPort;
 
-    public List<HorarioDisponivel> executar(Integer profissionalVinculoId, Integer servicoId) {
+    public List<HorarioDisponivelResponse> executar(Integer profissionalVinculoId, Integer servicoId) {
         if (profissionalVinculoId == null) {
             throw new OperacaoInvalidaException("profissionalVinculoId é obrigatório.");
         }
         if (servicoId == null) {
-            throw new OperacaoInvalidaException("servicoId é obrigatório para busca de janelas disponíveis.");
+            throw new OperacaoInvalidaException("servicoId é obrigatório.");
         }
 
         Servico servico = servicoPort.buscarPorId(servicoId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Servico", servicoId));
-        int n = servico.getDuracaoMinutos() / 5;
+        int nSlots = servico.getDuracaoMinutos() / 5;
 
         List<Agendamento> disponiveis = agendamentoPort.buscarDisponiveisPorVinculo(profissionalVinculoId);
-
-        Map<Integer, List<Agendamento>> porAgenda = disponiveis.stream()
-                .collect(Collectors.groupingBy(
-                        Agendamento::getAgendaId,
-                        LinkedHashMap::new,
-                        Collectors.collectingAndThen(
-                                Collectors.toList(),
-                                list -> list.stream()
-                                        .sorted(Comparator.comparing(Agendamento::getHoraInicio))
-                                        .toList())));
+        Map<Integer, List<Agendamento>> porAgenda = BuscadorDeJanelaDeSlots.agrupar(disponiveis);
 
         Map<Integer, List<Agendamento>> porAgendaComServico = porAgenda.entrySet().stream()
                 .filter(e -> agendaItemPort.existePorAgendaIdsEServico(List.of(e.getKey()), servicoId))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 
-        List<Agendamento> inicios = BuscadorDeJanelaDeSlots.buscarIniciosDeJanelas(porAgendaComServico, n);
+        List<Agendamento> inicios = BuscadorDeJanelaDeSlots.buscarIniciosDeJanelasNaoSobrepostas(porAgendaComServico, nSlots);
 
-        return inicios.stream().map(inicio -> enriquecer(inicio, servico)).toList();
+        return inicios.stream()
+                .map(slot -> toResponse(slot, servico))
+                .toList();
     }
 
-    private HorarioDisponivel enriquecer(Agendamento inicio, Servico servico) {
-        Agenda agenda = agendaPort.buscarPorId(inicio.getAgendaId()).orElseThrow();
+    private HorarioDisponivelResponse toResponse(Agendamento agendamento, Servico servico) {
+        Agenda agenda = agendaPort.buscarPorId(agendamento.getAgendaId()).orElseThrow();
         ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(agenda.getProfissionalVinculoId()).orElseThrow();
         Profissional profissional = profissionalPort.buscarPorId(vinculo.getProfissionalId()).orElseThrow();
         Estabelecimento estabelecimento = estabelecimentoPort.buscarPorId(vinculo.getEstabelecimentoId()).orElseThrow();
 
-        return HorarioDisponivel.builder()
-                .agendaId(agenda.getId())
-                .agendamentoId(inicio.getId())
-                .dataAgenda(agenda.getDataAgenda())
-                .horaInicio(inicio.getHoraInicio())
-                .horaFim(inicio.getHoraInicio().plusMinutes(servico.getDuracaoMinutos()))
-                .profissional(new ProfissionalResumo(profissional.getId(), profissional.getNome()))
-                .estabelecimento(new EstabelecimentoResumo(estabelecimento.getId(), estabelecimento.getNome()))
-                .servico(new ServicoResumo(servico.getId(), servico.getNome(), servico.getDuracaoMinutos()))
-                .build();
-    }
-
-    @Getter
-    @Builder
-    public static class HorarioDisponivel {
-        private final Integer agendaId;
-        private final Integer agendamentoId;
-        private final LocalDate dataAgenda;
-        private final LocalTime horaInicio;
-        private final LocalTime horaFim;
-        private final ProfissionalResumo profissional;
-        private final EstabelecimentoResumo estabelecimento;
-        private final ServicoResumo servico;
+        return new HorarioDisponivelResponse(
+                agenda.getId(),
+                agendamento.getId(),
+                agenda.getDataAgenda(),
+                agendamento.getHoraInicio(),
+                agendamento.getHoraInicio().plusMinutes(servico.getDuracaoMinutos()),
+                new ProfissionalResumo(profissional.getId(), profissional.getNome()),
+                new EstabelecimentoResumo(estabelecimento.getId(), estabelecimento.getNome())
+        );
     }
 }

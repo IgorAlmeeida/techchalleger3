@@ -35,6 +35,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Gera agendas (e slots de 5 minutos) para todos os dias que se encaixam no padrão semanal
+ * de uma escala, dentro do intervalo de datas informado.
+ */
 @Service
 @RequiredArgsConstructor
 public class GerarAgendaUseCase {
@@ -60,12 +64,12 @@ public class GerarAgendaUseCase {
 
     @Transactional
     public List<Agenda> executar(Integer escalaId, LocalDate dataInicio, LocalDate dataFim,
-                                  String keycloakSub, boolean isAdmin) {
+                                  String userSub, boolean isAdmin) {
         Escala escala = escalaPort.buscarPorId(escalaId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Escala", escalaId));
 
         if (!isAdmin) {
-            validarPosse(escala, keycloakSub);
+            validarPosse(escala, userSub);
         }
 
         List<EscalaItem> itensAtivos = escalaItemPort.listarAtivosPorEscalaId(escalaId);
@@ -92,9 +96,9 @@ public class GerarAgendaUseCase {
         return agendasGeradas;
     }
 
-    private void validarPosse(Escala escala, String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    private void validarPosse(Escala escala, String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
         Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional para usuário", usuario.getId()));

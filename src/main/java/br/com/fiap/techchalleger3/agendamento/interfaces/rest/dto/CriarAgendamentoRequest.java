@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,7 +15,7 @@ public record CriarAgendamentoRequest(
         @NotNull Integer servicoId,
 
         @Schema(description = "Data preferencial para o agendamento (busca o primeiro slot disponível a partir desta data)", example = "2026-08-01")
-        LocalDate dataPreferencia,
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dataPreferencia,
 
         @Schema(description = "Id de um slot de agendamento específico (DISPONIVEL) para reserva direta. Opcional — se omitido, o sistema busca automaticamente.", example = "42")
         Integer agendamentoId

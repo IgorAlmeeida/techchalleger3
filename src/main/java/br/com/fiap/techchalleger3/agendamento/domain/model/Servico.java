@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Serviço ofertado pelo estabelecimento (ex.: corte de cabelo, massagem).
+ * Define nome, duração em minutos e preço.
+ */
 public class Servico {
     private Integer id;
     private String nome;

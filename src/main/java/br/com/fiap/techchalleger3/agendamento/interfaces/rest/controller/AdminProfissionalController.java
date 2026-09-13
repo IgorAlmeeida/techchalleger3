@@ -33,6 +33,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin/profissionais")
 @RequiredArgsConstructor
+/**
+ * Endpoints administrativos para cadastro, listagem, atualização e inativação de profissionais.
+ * Acesso restrito ao perfil ADMIN.
+ */
 @Tag(name = "Admin — Profissionais", description = "CRUD de profissionais")
 @SecurityRequirement(name = "bearerAuth")
 public class AdminProfissionalController {
@@ -43,10 +47,10 @@ public class AdminProfissionalController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cadastra profissional",
-            description = "Cria conta no Keycloak com senha temporária e envia email de primeiro acesso.")
+            description = "Cria conta com senha temporária e envia email de primeiro acesso.")
     @ApiResponse(responseCode = "201", description = "Profissional cadastrado e email enviado")
     @ApiResponse(responseCode = "409", description = "E-mail já cadastrado")
-    @ApiResponse(responseCode = "503", description = "Keycloak indisponível")
+    @ApiResponse(responseCode = "503", description = "Serviço de autenticação indisponível")
     public ResponseEntity<UsuarioCadastradoResponse> cadastrar(@Valid @RequestBody CadastrarProfissionalRequest req) {
         Profissional profissional = cadastrarUseCase.executar(
                 req.nome(), req.email(), req.especialidades(), req.endereco());
@@ -81,8 +85,8 @@ public class AdminProfissionalController {
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = principal.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        String keycloakSub = principal.getToken().getSubject();
-        return ResponseEntity.ok(toResponse(profissionalUseCase.buscarPorId(id, keycloakSub, isAdmin)));
+        String userSub = principal.getToken().getSubject();
+        return ResponseEntity.ok(toResponse(profissionalUseCase.buscarPorId(id, userSub, isAdmin)));
     }
 
     @PutMapping("/{id}")
@@ -98,22 +102,22 @@ public class AdminProfissionalController {
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = principal.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         Profissional profissional = profissionalUseCase.atualizar(
-                id, req.nome(), req.especialidades(), req.endereco(), keycloakSub, isAdmin);
+                id, req.nome(), req.especialidades(), req.endereco(), userSub, isAdmin);
         return ResponseEntity.ok(toResponse(profissional));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Inativa profissional (não remove o registro)",
-            description = "Inativação lógica. Bloqueada se o profissional tiver agendas futuras — cancele as agendas primeiro.")
-    @ApiResponse(responseCode = "204", description = "Profissional inativado com sucesso")
+    @Operation(summary = "Remove profissional do banco",
+            description = "Bloqueado se o profissional tiver agendas futuras — cancele as agendas primeiro.")
+    @ApiResponse(responseCode = "204", description = "Profissional removido com sucesso")
     @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
     @ApiResponse(responseCode = "422", description = "Profissional possui agendas futuras")
-    public ResponseEntity<Void> inativar(
+    public ResponseEntity<Void> deletar(
             @Parameter(description = "Identificador do profissional") @PathVariable Integer id) {
-        profissionalUseCase.inativar(id);
+        profissionalUseCase.deletar(id);
         return ResponseEntity.noContent().build();
     }
 

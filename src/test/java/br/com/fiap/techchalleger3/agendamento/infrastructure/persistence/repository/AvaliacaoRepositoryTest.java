@@ -38,8 +38,8 @@ class AvaliacaoRepositoryTest extends RepositoryTestBase {
 
     @BeforeEach
     void setUp() {
-        UsuarioEntity usuCliente = em.persist(UsuarioEntity.builder().codKeycloak("kc-cli-av").role(RoleEnum.CLIENTE).build());
-        UsuarioEntity usuProf = em.persist(UsuarioEntity.builder().codKeycloak("kc-prof-av").role(RoleEnum.PROFISSIONAL).build());
+        UsuarioEntity usuCliente = em.persist(UsuarioEntity.builder().uuid("kc-cli-av").email("cli-av@test.com").nome("Maria").senhaHash("h").role(RoleEnum.CLIENTE).build());
+        UsuarioEntity usuProf = em.persist(UsuarioEntity.builder().uuid("kc-prof-av").email("prof-av@test.com").nome("Carlos").senhaHash("h").role(RoleEnum.PROFISSIONAL).build());
         EstabelecimentoEntity estab = em.persist(EstabelecimentoEntity.builder()
                 .nome("Studio Av").cnpj("44.444.444/0001-44").build());
         ProfissionalEntity prof = em.persist(ProfissionalEntity.builder()

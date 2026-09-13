@@ -48,13 +48,13 @@ class CancelarAgendamentoMoreTest {
 
     @Test
     void cancelarComoProfissional_sucesso() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(30).nome("Dr.").build();
         Agendamento agendamento = agendamentoPai(100);
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).estabelecimentoId(40).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -73,13 +73,13 @@ class CancelarAgendamentoMoreTest {
 
     @Test
     void cancelarComoProfissional_vinculoNaoAutorizado_lancaAcessoNegado() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(99).nome("Outro").build();
         Agendamento agendamento = agendamentoPai(100);
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).estabelecimentoId(40).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -91,12 +91,12 @@ class CancelarAgendamentoMoreTest {
 
     @Test
     void cancelarComoProfissional_statusNaoAgendado_lancaOperacaoInvalida() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(30).build();
         Agendamento agendamento = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(100).status(StatusAgendamentoEnum.DISPONIVEL).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
 
@@ -106,14 +106,14 @@ class CancelarAgendamentoMoreTest {
 
     @Test
     void cancelarComoAdmin_semCliente_semEmail() {
-        Usuario admin = Usuario.builder().id(99).keycloakId("sub-admin").role(RoleEnum.ADMIN).build();
+        Usuario admin = Usuario.builder().id(99).uuid("sub-admin").role(RoleEnum.ADMIN).build();
         Agendamento agendamento = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(null).servicoId(null)
                 .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
                 .status(StatusAgendamentoEnum.AGENDADO).build();
         Agenda ag = agenda();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-admin")).thenReturn(Optional.of(admin));
+        when(usuarioPort.buscarPorUuid("sub-admin")).thenReturn(Optional.of(admin));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
         when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of());
@@ -126,7 +126,7 @@ class CancelarAgendamentoMoreTest {
 
     @Test
     void cancelarComoAdmin_comFilhos_cancela() {
-        Usuario admin = Usuario.builder().id(99).keycloakId("sub-admin").role(RoleEnum.ADMIN).build();
+        Usuario admin = Usuario.builder().id(99).uuid("sub-admin").role(RoleEnum.ADMIN).build();
         Agendamento pai = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(100).servicoId(5)
                 .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
@@ -136,7 +136,7 @@ class CancelarAgendamentoMoreTest {
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-admin")).thenReturn(Optional.of(admin));
+        when(usuarioPort.buscarPorUuid("sub-admin")).thenReturn(Optional.of(admin));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(pai));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
         when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of(filho));
@@ -155,8 +155,8 @@ class CancelarAgendamentoMoreTest {
     @Test
     void executar_roleDesconhecida_lancaAcessoNegado() {
         // Simula role não mapeada (ex.: algum futuro enum não tratado)
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub").role(null).build();
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario));
+        Usuario usuario = Usuario.builder().id(1).uuid("sub").role(null).build();
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario));
 
         assertThatThrownBy(() -> useCase.executar(1, "sub"))
                 .isInstanceOf(AcessoNegadoException.class);

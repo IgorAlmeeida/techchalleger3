@@ -3,9 +3,11 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaItemRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.CalendarioExternoGateway;
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailMensagem;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.IntegracaoCalendarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
@@ -23,6 +25,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import br.com.fiap.techchalleger3.agendamento.domain.service.BuscadorDeJanelaDeSlots;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +42,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Realiza o agendamento de um serviço pelo cliente autenticado, reservando os slots
+ * necessários, enviando e-mail de confirmação e sincronizando com o Google Calendar
+ * quando o cliente tiver integração ativa.
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CriarAgendamentoUseCase {
@@ -52,17 +61,19 @@ public class CriarAgendamentoUseCase {
     private final ServicoRepositoryPort servicoPort;
     private final ProfissionalRepositoryPort profissionalPort;
     private final EmailSenderPort emailSenderPort;
+    private final IntegracaoCalendarioRepositoryPort integracaoCalendarioPort;
+    private final CalendarioExternoGateway calendarioExternoGateway;
 
     private static final DateTimeFormatter HORA_FMT = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Transactional
-    public Agendamento executar(String keycloakSub, Integer profissionalVinculoId,
+    public Agendamento executar(String userSub, Integer profissionalVinculoId,
                                 Integer servicoId, LocalDate dataPreferencia,
                                 Integer agendamentoIdEspecifico) {
 
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
         Cliente cliente = clientePort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente para usuário", usuario.getId()));
@@ -177,9 +188,22 @@ public class CriarAgendamentoUseCase {
 
         emailSenderPort.enviar(new EmailMensagem(
                 cliente.getEmail(),
-                "CONFIRMACAO_AGENDAMENTO",
+                "confirmacao-agendamento",
                 dadosEmail
         ));
+
+        try {
+            integracaoCalendarioPort.buscarAtivaByClienteId(cliente.getId()).ifPresent(integracao -> {
+                String eventId = calendarioExternoGateway.criarEvento(paiSalvo, integracao);
+                if (eventId != null) {
+                    paiSalvo.setGoogleCalendarEventId(eventId);
+                    agendamentoPort.salvar(paiSalvo);
+                }
+            });
+        } catch (Exception e) {
+            log.warn("Falha ao sincronizar com Google Calendar para agendamento {}: {}",
+                    paiSalvo.getId(), e.getMessage());
+        }
 
         return paiSalvo;
     }

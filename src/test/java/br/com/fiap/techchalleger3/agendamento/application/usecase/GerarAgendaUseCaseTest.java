@@ -90,8 +90,8 @@ class GerarAgendaUseCaseTest {
         when(escalaPort.buscarPorId(1)).thenReturn(Optional.of(escala));
         when(escalaItemPort.listarAtivosPorEscalaId(1)).thenReturn(List.of(item()));
 
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         Profissional profissional = Profissional.builder().id(30).build();
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(30).build();
@@ -114,8 +114,8 @@ class GerarAgendaUseCaseTest {
         Escala escala = escalaMondayWindow();
         when(escalaPort.buscarPorId(1)).thenReturn(Optional.of(escala));
 
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         Profissional profissional = Profissional.builder().id(99).build(); // different profissional
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(30).build();

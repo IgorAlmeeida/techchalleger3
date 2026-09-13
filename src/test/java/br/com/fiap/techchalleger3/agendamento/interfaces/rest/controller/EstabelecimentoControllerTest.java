@@ -4,7 +4,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.BuscarEstabele
 import br.com.fiap.techchalleger3.agendamento.application.usecase.EstabelecimentoUseCase;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.EstabelecimentoResponseAssembler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -39,8 +38,6 @@ class EstabelecimentoControllerTest {
     @MockitoBean private EstabelecimentoUseCase useCase;
     @MockitoBean private EstabelecimentoResponseAssembler assembler;
     @MockitoBean private BuscarEstabelecimentosUseCase buscarEstabelecimentosUseCase;
-    @MockitoBean private JwtDecoder jwtDecoder;
-    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach

@@ -1,8 +1,8 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakTokenPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.domain.exception.CredenciaisInvalidasException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import lombok.RequiredArgsConstructor;
@@ -12,16 +12,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AlterarSenhaUseCase {
 
-    private final KeycloakTokenPort keycloakTokenPort;
-    private final KeycloakAdminPort keycloakAdminPort;
+    private final PasswordPort passwordPort;
     private final UsuarioRepositoryPort usuarioPort;
 
-    public void executar(String keycloakSub, String emailDoToken, String senhaAtual, String senhaNova) {
-        keycloakTokenPort.obterToken(emailDoToken, senhaAtual);
-
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
-
-        keycloakAdminPort.redefinirSenha(usuario.getKeycloakId(), senhaNova, false);
+    public void executar(String uuid, String senhaAtual, String senhaNova) {
+        Usuario usuario = usuarioPort.buscarPorUuid(uuid)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", uuid));
+        if (!passwordPort.matches(senhaAtual, usuario.getSenhaHash())) {
+            throw new CredenciaisInvalidasException();
+        }
+        usuarioPort.atualizarSenha(uuid, passwordPort.encode(senhaNova));
     }
 }

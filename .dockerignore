@@ -1,0 +1,11 @@
+target/
+.git/
+.github/
+.idea/
+*.iml
+.sonar/
+graphify-out/
+.claude/
+.vscode/
+*.log
+HELP.md

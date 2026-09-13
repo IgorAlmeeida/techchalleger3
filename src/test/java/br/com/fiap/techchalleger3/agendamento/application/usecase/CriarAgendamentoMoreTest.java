@@ -36,7 +36,7 @@ class CriarAgendamentoMoreTest {
     @InjectMocks private CriarAgendamentoUseCase useCase;
 
     private Usuario usuario() {
-        return Usuario.builder().id(1).keycloakId("sub-1").build();
+        return Usuario.builder().id(1).uuid("sub-1").build();
     }
 
     private Cliente cliente() {
@@ -49,7 +49,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void lancaRegistroNaoEncontrado_usuarioAusente() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.empty());
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.executar("sub", 1, 5, null, null))
                 .isInstanceOf(br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException.class);
@@ -57,7 +57,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void lancaRegistroNaoEncontrado_clienteAusente() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.executar("sub", 1, 5, null, null))
@@ -66,7 +66,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void lancaAgendamentoJaExistente() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(ProfissionalVinculo.builder().id(1).build()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(servico10min()));
@@ -78,7 +78,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void lancaOperacaoInvalida_semHorariosDisponiveis() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(ProfissionalVinculo.builder().id(1).build()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(servico10min()));
@@ -91,7 +91,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void reservarSlotEspecifico_slotIndisponivel_lancaOperacaoInvalida() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(ProfissionalVinculo.builder().id(1).build()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(servico10min()));
@@ -109,7 +109,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void reservarSlotEspecifico_semJanelaConsecutiva_lancaOperacaoInvalida() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(ProfissionalVinculo.builder().id(1).build()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(servico10min()));
@@ -129,7 +129,7 @@ class CriarAgendamentoMoreTest {
 
     @Test
     void reservarGrupo_sucesso_comUmSlot() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(
                 ProfissionalVinculo.builder().id(1).profissionalId(30).build()));

@@ -1,7 +1,7 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,13 +24,13 @@ class CadastrarProfissionalUseCaseTest {
 
     @Mock private UsuarioRepositoryPort usuarioPort;
     @Mock private ProfissionalRepositoryPort profissionalPort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @Mock private EmailSenderPort emailSenderPort;
     @InjectMocks private CadastrarProfissionalUseCase useCase;
 
     @Test
     void deveCadastrar_eEnviarEmail() {
-        when(keycloakAdminPort.criarUsuario(any(), any(), any(), any(), anyBoolean())).thenReturn("kc-1");
+        when(passwordPort.encode(any())).thenReturn("hash");
         when(usuarioPort.salvar(any())).thenReturn(Usuario.builder().id(1).build());
         Profissional prof = Profissional.builder().id(1).nome("Dr. João").build();
         when(profissionalPort.salvar(any())).thenReturn(prof);

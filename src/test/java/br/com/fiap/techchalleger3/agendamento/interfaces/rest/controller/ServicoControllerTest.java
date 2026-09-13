@@ -4,7 +4,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ServicoUseCase
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -39,8 +38,6 @@ class ServicoControllerTest {
     @Autowired MockMvc mockMvc;
 
     @MockitoBean ServicoUseCase useCase;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach
@@ -130,7 +127,7 @@ class ServicoControllerTest {
     }
 
     @Test
-    void inativar_retorna204_admin() throws Exception {
+    void deletar_retorna204_admin() throws Exception {
         mockMvc.perform(delete("/api/servicos/1")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isNoContent());

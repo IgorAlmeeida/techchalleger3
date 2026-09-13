@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.RegistroNaoEncontradoException;
@@ -12,20 +11,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Agrupa as operações de CRUD sobre serviços: criação, listagem, busca, atualização e
+ * inativação. A duração em minutos deve ser múltiplo de 5 (granularidade dos slots).
+ */
 @Service
 @RequiredArgsConstructor
 public class ServicoUseCase {
 
-    private static final String CHAVE_SERVICOS = "agendamento:cache:servicos:ativos";
-    private static final Duration TTL = Duration.ofMinutes(10);
-
     private final ServicoRepositoryPort servicoPort;
-    private final CachePort cachePort;
 
     public Servico criar(String nome, Integer duracaoMinutos, BigDecimal preco) {
         validarMultiploDe5(duracaoMinutos);
@@ -36,20 +34,11 @@ public class ServicoUseCase {
                 .ativo(true)
                 .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
-        Servico salvo = servicoPort.salvar(servico);
-        cachePort.invalidar(CHAVE_SERVICOS);
-        return salvo;
+        return servicoPort.salvar(servico);
     }
 
-    @SuppressWarnings("unchecked")
     public Page<Servico> listar(Pageable pageable) {
-        List<Servico> todos = cachePort.get(CHAVE_SERVICOS, List.class)
-                .map(l -> (List<Servico>) l)
-                .orElseGet(() -> {
-                    List<Servico> doBanco = servicoPort.listarAtivos();
-                    cachePort.put(CHAVE_SERVICOS, doBanco, TTL);
-                    return doBanco;
-                });
+        List<Servico> todos = servicoPort.listarAtivos();
         return paginarEmMemoria(todos, pageable);
     }
 
@@ -65,17 +54,12 @@ public class ServicoUseCase {
         servico.setDuracaoMinutos(duracaoMinutos);
         servico.setPreco(preco);
         servico.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
-        Servico salvo = servicoPort.salvar(servico);
-        cachePort.invalidar(CHAVE_SERVICOS);
-        return salvo;
+        return servicoPort.salvar(servico);
     }
 
-    public void inativar(Integer id) {
-        Servico servico = buscarPorId(id);
-        servico.setAtivo(false);
-        servico.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
-        servicoPort.salvar(servico);
-        cachePort.invalidar(CHAVE_SERVICOS);
+    public void deletar(Integer id) {
+        buscarPorId(id);
+        servicoPort.deletar(id);
     }
 
     private void validarMultiploDe5(Integer duracaoMinutos) {

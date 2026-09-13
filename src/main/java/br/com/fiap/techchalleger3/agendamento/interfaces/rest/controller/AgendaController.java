@@ -38,6 +38,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/agendas")
 @RequiredArgsConstructor
+/**
+ * Endpoints para geração de agendas a partir de escalas e cancelamento de agendas abertas,
+ * com controle de acesso por perfil (PROFISSIONAL ou ADMIN).
+ */
 @Tag(name = "Agendas", description = "Geração e cancelamento de agendas concretas a partir de escalas")
 @SecurityRequirement(name = "bearerAuth")
 public class AgendaController {
@@ -58,9 +62,9 @@ public class AgendaController {
             @Valid @RequestBody GerarAgendaRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityUtils.isAdmin(principal);
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         List<Agenda> agendas = gerarAgendaUseCase.executar(
-                request.escalaId(), request.dataInicio(), request.dataFim(), keycloakSub, isAdmin);
+                request.escalaId(), request.dataInicio(), request.dataFim(), userSub, isAdmin);
         return ResponseEntity.status(HttpStatus.CREATED).body(agendas.stream().map(assembler::toResponse).toList());
     }
 
@@ -76,15 +80,15 @@ public class AgendaController {
             @Parameter(description = "Identificador da agenda") @PathVariable Integer id,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityUtils.isAdmin(principal);
-        String keycloakSub = principal.getToken().getSubject();
-        cancelarAgendaUseCase.executar(id, keycloakSub, isAdmin);
+        String userSub = principal.getToken().getSubject();
+        cancelarAgendaUseCase.executar(id, userSub, isAdmin);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('PROFISSIONAL') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'PROFISSIONAL', 'ADMIN')")
     @Operation(summary = "Lista agendas com serviços detalhados",
-            description = "Filtra por profissionalVinculoId e/ou estabelecimentoId. PROFISSIONAL só pode listar agendas do próprio vínculo.")
+            description = "Filtra por profissionalVinculoId e/ou estabelecimentoId. PROFISSIONAL só pode listar agendas do próprio vínculo. CLIENTE pode filtrar por estabelecimento ou vínculo para ver disponibilidade.")
     @ApiResponse(responseCode = "200", description = "Lista de agendas")
     @ApiResponse(responseCode = "400", description = "Nenhum filtro informado")
     @ApiResponse(responseCode = "403", description = "Profissional não autorizado")
@@ -99,10 +103,12 @@ public class AgendaController {
 
         boolean isAdmin = principal.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        String keycloakSub = principal.getToken().getSubject();
+        boolean isCliente = principal.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_CLIENTE".equals(a.getAuthority()));
+        String userSub = principal.getToken().getSubject();
         PageRequest pageable = PageRequest.of(page, size, Sort.by("dataAgenda").ascending());
         Page<AgendaDetalhadaResponse> resultado = listarAgendasUseCase.executar(
-                profissionalVinculoId, estabelecimentoId, dataInicio, dataFim, keycloakSub, isAdmin, pageable);
+                profissionalVinculoId, estabelecimentoId, dataInicio, dataFim, userSub, isAdmin, isCliente, pageable);
         return ResponseEntity.ok(resultado);
     }
 }

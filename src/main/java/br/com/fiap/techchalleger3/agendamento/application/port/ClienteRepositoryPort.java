@@ -4,6 +4,9 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
 
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de clientes ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Cliente}).
+ */
 public interface ClienteRepositoryPort {
     Optional<Cliente> buscarPorId(Integer id);
     Optional<Cliente> buscarPorUsuarioId(Integer usuarioId);

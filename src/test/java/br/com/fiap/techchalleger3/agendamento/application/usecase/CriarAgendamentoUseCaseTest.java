@@ -47,7 +47,7 @@ class CriarAgendamentoUseCaseTest {
     @InjectMocks private CriarAgendamentoUseCase useCase;
 
     private Usuario usuario() {
-        return Usuario.builder().id(10).keycloakId("sub-123").build();
+        return Usuario.builder().id(10).uuid("sub-123").build();
     }
 
     private Cliente cliente() {
@@ -60,7 +60,7 @@ class CriarAgendamentoUseCaseTest {
 
     @Test
     void deveLancarExcecao_quandoUsuarioNaoEncontrado() {
-        when(usuarioPort.buscarPorCodKeycloak("sub-123")).thenReturn(Optional.empty());
+        when(usuarioPort.buscarPorUuid("sub-123")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.executar("sub-123", 1, 2, null, null))
                 .isInstanceOf(RegistroNaoEncontradoException.class);
@@ -68,7 +68,7 @@ class CriarAgendamentoUseCaseTest {
 
     @Test
     void deveLancarExcecao_quandoClienteNaoEncontrado() {
-        when(usuarioPort.buscarPorCodKeycloak("sub-123")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub-123")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.executar("sub-123", 1, 2, null, null))
@@ -77,7 +77,7 @@ class CriarAgendamentoUseCaseTest {
 
     @Test
     void deveLancarExcecao_quandoAgendamentoJaExistente() {
-        when(usuarioPort.buscarPorCodKeycloak("sub-123")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub-123")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(
                 Optional.of(ProfissionalVinculo.builder().id(1).build()));
@@ -90,7 +90,7 @@ class CriarAgendamentoUseCaseTest {
 
     @Test
     void deveLancarExcecao_quandoSemDisponibilidade() {
-        when(usuarioPort.buscarPorCodKeycloak("sub-123")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub-123")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(
                 Optional.of(ProfissionalVinculo.builder().id(1).build()));

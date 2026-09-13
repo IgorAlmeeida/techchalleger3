@@ -33,6 +33,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/avaliacoes")
 @RequiredArgsConstructor
+/**
+ * Endpoint para registro de avaliação de um atendimento realizado pelo cliente autenticado.
+ */
 @Tag(name = "Avaliacoes", description = "Avaliação de atendimentos realizados")
 @SecurityRequirement(name = "bearerAuth")
 public class AvaliacaoController {
@@ -53,9 +56,9 @@ public class AvaliacaoController {
             @Valid @RequestBody CriarAvaliacaoRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
 
-        String keycloakSub = principal.getToken().getSubject();
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+        String userSub = principal.getToken().getSubject();
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
         Cliente cliente = clientePort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente", usuario.getId()));
 

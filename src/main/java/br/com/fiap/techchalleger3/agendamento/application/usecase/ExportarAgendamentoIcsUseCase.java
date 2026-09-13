@@ -7,6 +7,9 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Exporta um agendamento no formato iCalendar (ICS) para download pelo cliente.
+ */
 @Service
 @RequiredArgsConstructor
 public class ExportarAgendamentoIcsUseCase {

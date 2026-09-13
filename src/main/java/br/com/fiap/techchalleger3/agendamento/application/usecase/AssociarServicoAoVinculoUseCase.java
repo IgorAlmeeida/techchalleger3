@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
@@ -11,6 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Associa um serviço a um vínculo profissional, tornando-o disponível naquele estabelecimento.
+ *
+ * @throws br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException se o serviço já estiver associado ao vínculo
+ */
 @Service
 @RequiredArgsConstructor
 public class AssociarServicoAoVinculoUseCase {
@@ -18,7 +22,6 @@ public class AssociarServicoAoVinculoUseCase {
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final ServicoRepositoryPort servicoPort;
     private final ProfissionalVinculoServicoRepositoryPort vinculoServicoPort;
-    private final CachePort cachePort;
 
     @Transactional
     public ProfissionalVinculoServico executar(Integer profissionalVinculoId, Integer servicoId) {
@@ -37,7 +40,6 @@ public class AssociarServicoAoVinculoUseCase {
                 .servicoId(servicoId)
                 .build());
 
-        cachePort.invalidar("agendamento:cache:vinculo:" + profissionalVinculoId + ":servicos");
         return salvo;
     }
 }

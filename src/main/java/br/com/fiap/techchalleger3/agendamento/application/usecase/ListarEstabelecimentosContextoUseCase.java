@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Retorna os estabelecimentos visíveis para o usuário autenticado de acordo com seu perfil:
+ * profissionais veem apenas estabelecimentos com vínculo ativo; clientes e admins veem todos.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarEstabelecimentosContextoUseCase {
@@ -22,9 +26,9 @@ public class ListarEstabelecimentosContextoUseCase {
     private final ProfissionalVinculoRepositoryPort vinculoPort;
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
 
-    public List<Estabelecimento> executar(String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuário", keycloakSub));
+    public List<Estabelecimento> executar(String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuário", userSub));
 
         if (RoleEnum.PROFISSIONAL.equals(usuario.getRole())) {
             var profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())

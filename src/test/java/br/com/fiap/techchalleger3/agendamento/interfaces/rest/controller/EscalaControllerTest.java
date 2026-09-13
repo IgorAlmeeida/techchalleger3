@@ -6,7 +6,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarEscalasU
 import br.com.fiap.techchalleger3.agendamento.domain.model.*;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.EscalaResponseAssembler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -43,8 +42,6 @@ class EscalaControllerTest {
     @MockitoBean AtualizarEscalaUseCase atualizarUseCase;
     @MockitoBean ListarEscalasUseCase listarUseCase;
     @MockitoBean EscalaResponseAssembler assembler;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach

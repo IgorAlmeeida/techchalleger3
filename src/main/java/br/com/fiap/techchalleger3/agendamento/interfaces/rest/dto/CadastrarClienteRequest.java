@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +13,7 @@ public record CadastrarClienteRequest(
         @Schema(description = "Nome completo do cliente", example = "João da Silva")
         @NotBlank String nome,
 
-        @Schema(description = "E-mail do cliente, usado como login no Keycloak", example = "joao.silva@email.com")
+        @Schema(description = "E-mail do cliente, usado como login", example = "joao.silva@email.com")
         @NotBlank @Email String email,
 
         @Schema(description = "Senha de acesso (mínimo 8 caracteres, deve conter letras e números)", example = "Senha@123")
@@ -22,7 +23,7 @@ public record CadastrarClienteRequest(
         @NotBlank String cpf,
 
         @Schema(description = "Data de nascimento do cliente", example = "1990-05-15")
-        @NotNull LocalDate dataNascimento,
+        @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dataNascimento,
 
         @Schema(description = "Telefone de contato do cliente", example = "(11) 91234-5678")
         String telefone,

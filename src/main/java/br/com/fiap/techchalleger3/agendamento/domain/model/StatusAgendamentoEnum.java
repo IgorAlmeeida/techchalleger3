@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
+/**
+ * Ciclo de vida de um agendamento: DISPONIVEL → AGENDADO → REALIZADO | CANCELADO | NAO_COMPARECEU.
+ */
 public enum StatusAgendamentoEnum {
 
     DISPONIVEL("DISPONIVEL", "Disponível"),

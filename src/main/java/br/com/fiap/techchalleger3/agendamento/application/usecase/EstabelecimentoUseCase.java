@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EstabelecimentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException;
@@ -13,21 +12,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Agrupa as operações de CRUD sobre estabelecimentos: criação, listagem, busca, atualização
+ * e inativação (desde que não haja vínculos profissionais ativos).
+ */
 @Service
 @RequiredArgsConstructor
 public class EstabelecimentoUseCase {
 
-    private static final String CHAVE_ESTABELECIMENTOS = "agendamento:cache:estabelecimentos:ativos";
-    private static final Duration TTL = Duration.ofMinutes(10);
-
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
-    private final CachePort cachePort;
 
     @SuppressWarnings("java:S107")
     public Estabelecimento criar(String nome, String cnpj, String endereco, String telefone,
@@ -46,20 +44,11 @@ public class EstabelecimentoUseCase {
                 .ativo(true)
                 .dhInsert(LocalDateTime.now(ZoneId.systemDefault()))
                 .build();
-        Estabelecimento salvo = estabelecimentoPort.salvar(estabelecimento);
-        cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
-        return salvo;
+        return estabelecimentoPort.salvar(estabelecimento);
     }
 
-    @SuppressWarnings("unchecked")
     public Page<Estabelecimento> listar(Pageable pageable) {
-        List<Estabelecimento> todos = cachePort.get(CHAVE_ESTABELECIMENTOS, List.class)
-                .map(l -> (List<Estabelecimento>) l)
-                .orElseGet(() -> {
-                    List<Estabelecimento> doBanco = estabelecimentoPort.listarAtivos();
-                    cachePort.put(CHAVE_ESTABELECIMENTOS, doBanco, TTL);
-                    return doBanco;
-                });
+        List<Estabelecimento> todos = estabelecimentoPort.listarAtivos();
         return paginarEmMemoria(todos, pageable);
     }
 
@@ -84,23 +73,35 @@ public class EstabelecimentoUseCase {
         estabelecimento.setResponsavelCpf(responsavelCpf);
         estabelecimento.setFotosUrls(fotosUrls);
         estabelecimento.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
-        Estabelecimento salvo = estabelecimentoPort.salvar(estabelecimento);
-        cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
-        return salvo;
+        return estabelecimentoPort.salvar(estabelecimento);
+    }
+
+    @Transactional
+    public void deletar(Integer id) {
+        buscarPorId(id);
+        if (profissionalVinculoPort.existeVinculoAtivoPorEstabelecimento(id)) {
+            throw new OperacaoInvalidaException(
+                    "Estabelecimento possui vínculos ativos. Encerre os vínculos antes de excluir.");
+        }
+        estabelecimentoPort.deletar(id);
     }
 
     @Transactional
     public void inativar(Integer id) {
         Estabelecimento estabelecimento = buscarPorId(id);
-        if (profissionalVinculoPort.existeVinculoAtivoPorEstabelecimento(id)) {
-            throw new OperacaoInvalidaException(
-                    "Estabelecimento possui vínculos ativos. Encerre os vínculos antes de inativar.");
-        }
         estabelecimento.setAtivo(false);
         estabelecimento.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
         estabelecimentoPort.salvar(estabelecimento);
-        cachePort.invalidar(CHAVE_ESTABELECIMENTOS);
     }
+
+    @Transactional
+    public void ativar(Integer id) {
+        Estabelecimento estabelecimento = buscarPorId(id);
+        estabelecimento.setAtivo(true);
+        estabelecimento.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
+        estabelecimentoPort.salvar(estabelecimento);
+    }
+
 
     private static <T> Page<T> paginarEmMemoria(List<T> lista, Pageable pageable) {
         int inicio = (int) pageable.getOffset();

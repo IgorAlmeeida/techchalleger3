@@ -31,6 +31,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Lista agendas com filtros por vínculo profissional, estabelecimento e intervalo de datas,
+ * retornando dados detalhados de profissional, estabelecimento e serviços da agenda.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarAgendasUseCase {
@@ -48,16 +52,17 @@ public class ListarAgendasUseCase {
             Integer estabelecimentoId,
             LocalDate dataInicio,
             LocalDate dataFim,
-            String keycloakSub,
+            String userSub,
             boolean isAdmin,
+            boolean isCliente,
             Pageable pageable) {
 
         if (profissionalVinculoId == null && estabelecimentoId == null) {
             throw new OperacaoInvalidaException("Ao menos um filtro (profissionalVinculoId ou estabelecimentoId) é obrigatório.");
         }
 
-        if (!isAdmin && profissionalVinculoId != null) {
-            Integer profissionalId = resolveProfissionalId(keycloakSub);
+        if (!isAdmin && !isCliente && profissionalVinculoId != null) {
+            Integer profissionalId = resolveProfissionalId(userSub);
             ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(profissionalVinculoId)
                     .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", profissionalVinculoId));
             if (!vinculo.getProfissionalId().equals(profissionalId)) {
@@ -72,9 +77,9 @@ public class ListarAgendasUseCase {
         return new PageImpl<>(respostas, pageable, agendas.getTotalElements());
     }
 
-    private Integer resolveProfissionalId(String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    private Integer resolveProfissionalId(String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
         Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", usuario.getId()));
         return profissional.getId();

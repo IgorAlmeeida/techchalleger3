@@ -5,6 +5,9 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Avaliacao;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de avaliações ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Avaliacao}).
+ */
 public interface AvaliacaoRepositoryPort {
     Avaliacao salvar(Avaliacao avaliacao);
     Optional<Avaliacao> buscarPorId(Integer id);

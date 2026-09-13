@@ -5,7 +5,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ProfissionalUs
 import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -40,8 +39,6 @@ class AdminProfissionalControllerTest {
 
     @MockitoBean CadastrarProfissionalUseCase cadastrarUseCase;
     @MockitoBean ProfissionalUseCase profissionalUseCase;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach
@@ -171,14 +168,14 @@ class AdminProfissionalControllerTest {
     }
 
     @Test
-    void inativar_comRoleAdmin_retorna204() throws Exception {
+    void deletar_comRoleAdmin_retorna204() throws Exception {
         mockMvc.perform(delete("/api/admin/profissionais/1")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void inativar_comRoleCliente_retorna403() throws Exception {
+    void deletar_comRoleCliente_retorna403() throws Exception {
         mockMvc.perform(delete("/api/admin/profissionais/1")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
                 .andExpect(status().isForbidden());

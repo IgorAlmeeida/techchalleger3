@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EstabelecimentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
@@ -20,35 +19,23 @@ import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.VinculoItemDet
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
 
+/**
+ * Lista os serviços associados a um vínculo profissional com dados detalhados
+ * de profissional, estabelecimento e serviço.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarServicosDoVinculoUseCase {
-
-    private static final Duration TTL = Duration.ofMinutes(10);
 
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final ProfissionalVinculoServicoRepositoryPort vinculoServicoPort;
     private final ServicoRepositoryPort servicoPort;
     private final ProfissionalRepositoryPort profissionalPort;
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
-    private final CachePort cachePort;
 
-    @SuppressWarnings("unchecked")
     public List<VinculoItemDetalhadaResponse> executar(Integer vinculoId) {
-        String chave = "agendamento:cache:vinculo:" + vinculoId + ":servicos";
-        return cachePort.get(chave, List.class)
-                .map(l -> (List<VinculoItemDetalhadaResponse>) l)
-                .orElseGet(() -> {
-                    List<VinculoItemDetalhadaResponse> resultado = buscarDoRepositorio(vinculoId);
-                    cachePort.put(chave, resultado, TTL);
-                    return resultado;
-                });
-    }
-
-    private List<VinculoItemDetalhadaResponse> buscarDoRepositorio(Integer vinculoId) {
         ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(vinculoId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", vinculoId));
 

@@ -68,9 +68,9 @@ class AtualizarEscalaUseCaseTest {
     @Test
     void profissional_posseValida_sucesso() {
         setupCommonMocks(30);
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(30).build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
 
         Escala result = useCase.executar(1, DiaSemanaEnum.TERCA, LocalTime.of(9, 0), LocalTime.of(10, 0),
@@ -85,9 +85,9 @@ class AtualizarEscalaUseCaseTest {
     void profissional_posseInvalida_lancaAcessoNegado() {
         when(escalaPort.buscarPorId(1)).thenReturn(Optional.of(escala()));
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo(30)));
-        Usuario usuario = Usuario.builder().id(5).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(5).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(99).build(); // different
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(profissional));
 
         assertThatThrownBy(() -> useCase.executar(1, DiaSemanaEnum.TERCA, LocalTime.of(9, 0), LocalTime.of(10, 0),

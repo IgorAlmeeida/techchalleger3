@@ -46,7 +46,7 @@ class ContextoEstabelecimentoUseCaseTest {
 
     @Test
     void contexto_lancaQuandoUsuarioNaoExiste() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.empty());
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> listarContexto.executar("kc"))
                 .isInstanceOf(RegistroNaoEncontradoException.class);
@@ -54,7 +54,7 @@ class ContextoEstabelecimentoUseCaseTest {
 
     @Test
     void contexto_admin_retornaTodosAtivos() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.ADMIN).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.ADMIN).build()));
         when(estabelecimentoPort.listarAtivos()).thenReturn(List.of(Estabelecimento.builder().id(10).build()));
 
         List<Estabelecimento> result = listarContexto.executar("kc");
@@ -64,7 +64,7 @@ class ContextoEstabelecimentoUseCaseTest {
 
     @Test
     void contexto_profissional_retornaVinculados() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.PROFISSIONAL).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.PROFISSIONAL).build()));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Profissional.builder().id(10).build()));
         when(vinculoPort.listarEstabelecimentoIdsAtivosPorProfissional(10)).thenReturn(List.of(20));
         when(estabelecimentoPort.listarPorIds(List.of(20))).thenReturn(List.of(Estabelecimento.builder().id(20).nome("Studio").build()));
@@ -77,7 +77,7 @@ class ContextoEstabelecimentoUseCaseTest {
 
     @Test
     void contexto_profissional_semVinculos_retornaVazio() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.PROFISSIONAL).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).role(RoleEnum.PROFISSIONAL).build()));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Profissional.builder().id(10).build()));
         when(vinculoPort.listarEstabelecimentoIdsAtivosPorProfissional(10)).thenReturn(List.of());
 

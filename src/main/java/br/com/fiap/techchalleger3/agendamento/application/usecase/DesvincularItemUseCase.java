@@ -2,7 +2,6 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaItemRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.AgendaEmAbertoException;
@@ -14,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Remove a associação de um serviço a um vínculo profissional, desde que
+ * não haja agendas futuras abertas com aquele serviço.
+ */
 @Service
 @RequiredArgsConstructor
 public class DesvincularItemUseCase {
@@ -22,7 +25,6 @@ public class DesvincularItemUseCase {
     private final ProfissionalVinculoServicoRepositoryPort vinculoServicoPort;
     private final AgendaRepositoryPort agendaPort;
     private final AgendaItemRepositoryPort agendaItemPort;
-    private final CachePort cachePort;
 
     @Transactional
     public void executar(Integer vinculoId, Integer servicoId) {
@@ -42,6 +44,5 @@ public class DesvincularItemUseCase {
         }
 
         vinculoServicoPort.deletarPorVinculoEServico(vinculoId, servicoId);
-        cachePort.invalidar("agendamento:cache:vinculo:" + vinculoId + ":servicos");
     }
 }

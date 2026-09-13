@@ -3,6 +3,7 @@ package br.com.fiap.techchalleger3.agendamento.infrastructure.persistence.reposi
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.persistence.entity.AgendamentoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,8 +15,22 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
     List<AgendamentoEntity> findByCodAgendaAndStatus(Integer codAgenda, StatusAgendamentoEnum status);
     List<AgendamentoEntity> findByCodCliente(Integer codCliente);
     List<AgendamentoEntity> findByCodAgendaInAndStatus(List<Integer> codAgendas, StatusAgendamentoEnum status);
+
+    @Query("SELECT a FROM AgendamentoEntity a " +
+           "WHERE a.codAgenda IN :agendaIds " +
+           "AND a.status = br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum.DISPONIVEL " +
+           "AND a.codAgendamentoPai IS NULL")
+    List<AgendamentoEntity> buscarDisponiveisRaizPorAgendas(@Param("agendaIds") List<Integer> agendaIds);
     List<AgendamentoEntity> findByStatus(StatusAgendamentoEnum status);
     List<AgendamentoEntity> findByCodAgendamentoPai(Integer codAgendamentoPai);
+
+    @Modifying
+    @Query("DELETE FROM AgendamentoEntity a WHERE a.codAgenda = :agendaId AND a.codAgendamentoPai IS NOT NULL")
+    void deletarFilhosPorAgendaId(@Param("agendaId") Integer agendaId);
+
+    @Modifying
+    @Query("DELETE FROM AgendamentoEntity a WHERE a.codAgenda = :agendaId")
+    void deletarTodosPorAgendaId(@Param("agendaId") Integer agendaId);
 
     @Query("SELECT a FROM AgendamentoEntity a JOIN AgendaEntity ag ON a.codAgenda = ag.codigo " +
            "WHERE a.codCliente = :clienteId AND a.status = :status AND a.codAgendamentoPai IS NULL " +

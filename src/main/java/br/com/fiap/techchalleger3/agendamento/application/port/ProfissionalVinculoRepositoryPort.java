@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de vínculos profissional-estabelecimento ({@link br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo}).
+ */
 public interface ProfissionalVinculoRepositoryPort {
     Optional<ProfissionalVinculo> buscarPorId(Integer id);
     List<ProfissionalVinculo> listarPorProfissionalId(Integer profissionalId);

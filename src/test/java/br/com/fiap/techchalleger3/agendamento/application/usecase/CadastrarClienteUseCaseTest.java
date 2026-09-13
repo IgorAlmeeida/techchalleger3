@@ -1,9 +1,10 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.CpfJaCadastradoException;
+import br.com.fiap.techchalleger3.agendamento.domain.exception.EmailJaCadastradoException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.SenhaFracaException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
@@ -14,12 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,13 +27,14 @@ class CadastrarClienteUseCaseTest {
 
     @Mock private UsuarioRepositoryPort usuarioPort;
     @Mock private ClienteRepositoryPort clientePort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @InjectMocks private CadastrarClienteUseCase useCase;
 
     @Test
     void deveCadastrar_quandoDadosValidos() {
         when(clientePort.existePorCpf("123.456.789-00")).thenReturn(false);
-        when(keycloakAdminPort.criarUsuario(any(), any(), any(), any(), anyBoolean())).thenReturn("kc-1");
+        when(usuarioPort.buscarPorEmail("maria@test.com")).thenReturn(Optional.empty());
+        when(passwordPort.encode("Senha123A")).thenReturn("hash");
         when(usuarioPort.salvar(any())).thenReturn(Usuario.builder().id(1).build());
         Cliente clienteSalvo = Cliente.builder().id(1).nome("Maria").build();
         when(clientePort.salvar(any())).thenReturn(clienteSalvo);
@@ -58,5 +59,15 @@ class CadastrarClienteUseCaseTest {
         assertThatThrownBy(() -> useCase.executar("Maria", "maria@test.com", "Senha123A",
                 "123.456.789-00", null, null, null, null))
                 .isInstanceOf(CpfJaCadastradoException.class);
+    }
+
+    @Test
+    void deveLancar_quandoEmailJaCadastrado() {
+        when(clientePort.existePorCpf("123.456.789-00")).thenReturn(false);
+        when(usuarioPort.buscarPorEmail("maria@test.com")).thenReturn(Optional.of(Usuario.builder().id(99).build()));
+
+        assertThatThrownBy(() -> useCase.executar("Maria", "maria@test.com", "Senha123A",
+                "123.456.789-00", null, null, null, null))
+                .isInstanceOf(EmailJaCadastradoException.class);
     }
 }

@@ -30,9 +30,9 @@ class ListarMeusAgendamentosClienteUseCaseTest {
     @InjectMocks private ListarMeusAgendamentosClienteUseCase useCase;
 
     private void setupBase(int clienteId, Agendamento agendamento) {
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub").build();
+        Usuario usuario = Usuario.builder().id(1).uuid("sub").build();
         Cliente cliente = Cliente.builder().id(clienteId).email("c@x.com").build();
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente));
         when(agendamentoPort.buscarPaisPorClienteId(org.mockito.ArgumentMatchers.eq(clienteId),
                 org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.isNull(), org.mockito.ArgumentMatchers.isNull()))

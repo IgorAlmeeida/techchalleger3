@@ -49,7 +49,7 @@ class CancelarAgendamentoUseCaseTest {
     @InjectMocks private CancelarAgendamentoUseCase useCase;
 
     private Usuario usuarioCliente() {
-        return Usuario.builder().id(10).keycloakId("sub-cliente").role(RoleEnum.CLIENTE).build();
+        return Usuario.builder().id(10).uuid("sub-cliente").role(RoleEnum.CLIENTE).build();
     }
 
     private Cliente cliente(int id) {
@@ -86,7 +86,7 @@ class CancelarAgendamentoUseCaseTest {
         Agenda ag = agenda(7);
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -108,7 +108,7 @@ class CancelarAgendamentoUseCaseTest {
         Cliente cli = cliente(100);
         Agendamento agendamento = agendamentoPai(7, 999, StatusAgendamentoEnum.AGENDADO);
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
 
@@ -122,7 +122,7 @@ class CancelarAgendamentoUseCaseTest {
         Cliente cli = cliente(100);
         Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.DISPONIVEL);
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
 
@@ -141,7 +141,7 @@ class CancelarAgendamentoUseCaseTest {
                 .status(StatusAgendamentoEnum.AGENDADO)
                 .build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(filho));
 
@@ -151,13 +151,13 @@ class CancelarAgendamentoUseCaseTest {
 
     @Test
     void deveCancelarComoAdmin_quandoAgendamentoAgendado() {
-        Usuario admin = Usuario.builder().id(99).keycloakId("sub-admin").role(RoleEnum.ADMIN).build();
+        Usuario admin = Usuario.builder().id(99).uuid("sub-admin").role(RoleEnum.ADMIN).build();
         Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.AGENDADO);
         Agenda ag = agenda(7);
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
         Cliente cli = cliente(100);
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-admin")).thenReturn(Optional.of(admin));
+        when(usuarioPort.buscarPorUuid("sub-admin")).thenReturn(Optional.of(admin));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
         when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of());

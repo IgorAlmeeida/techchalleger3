@@ -28,6 +28,7 @@ public class Agendamento {
     private Boolean presencaConfirmada;
     private LocalDateTime dhInsert;
     private LocalDateTime dhAtualizacao;
+    private String googleCalendarEventId;
 
     public boolean isDisponivel() {
         return StatusAgendamentoEnum.DISPONIVEL.equals(this.status);

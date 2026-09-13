@@ -61,4 +61,9 @@ public class EstabelecimentoRepositoryPortImpl implements EstabelecimentoReposit
     public Estabelecimento salvar(Estabelecimento estabelecimento) {
         return mapper.toModel(repository.save(mapper.toEntity(estabelecimento)));
     }
+
+    @Override
+    public void deletar(Integer id) {
+        repository.deleteById(id);
+    }
 }

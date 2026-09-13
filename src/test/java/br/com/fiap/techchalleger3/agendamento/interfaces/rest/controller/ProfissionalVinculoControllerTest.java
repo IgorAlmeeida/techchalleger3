@@ -5,7 +5,6 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculoServico;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.ProfissionalVinculoResponseAssembler;
 
 import jakarta.servlet.FilterChain;
@@ -47,8 +46,6 @@ class ProfissionalVinculoControllerTest {
     @MockitoBean DesvincularItemUseCase desvincularItemUseCase;
     @MockitoBean DesvincularProfissionalUseCase desvincularProfissionalUseCase;
     @MockitoBean ProfissionalVinculoResponseAssembler assembler;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach

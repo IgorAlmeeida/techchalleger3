@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Busca estabelecimentos por localidade ou serviço, sem necessidade de autenticação.
+ * Suporta filtros de nome, localização, serviço, faixa de preço, nota mínima e data.
+ */
 @Service
 @RequiredArgsConstructor
 public class BuscarEstabelecimentosUseCase {

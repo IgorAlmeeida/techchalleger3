@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço de domínio que encontra janelas de slots consecutivos disponíveis para acomodar a duração de um serviço.
+ */
 public final class BuscadorDeJanelaDeSlots {
 
     private BuscadorDeJanelaDeSlots() {}
@@ -56,6 +59,29 @@ public final class BuscadorDeJanelaDeSlots {
                 List<Agendamento> candidatos = slots.subList(i, i + nSlots);
                 if (saoConsecutivos(candidatos)) {
                     inicios.add(candidatos.get(0));
+                }
+            }
+        }
+        return inicios;
+    }
+
+    /**
+     * Retorna os inícios de janelas não sobrepostas: após encontrar janela válida,
+     * avança nSlots posições (não 1), evitando retornar 9:05 quando 9:00 já é válido.
+     */
+    public static List<Agendamento> buscarIniciosDeJanelasNaoSobrepostas(
+            Map<Integer, List<Agendamento>> porAgenda, int nSlots) {
+        List<Agendamento> inicios = new ArrayList<>();
+        for (Map.Entry<Integer, List<Agendamento>> entry : porAgenda.entrySet()) {
+            List<Agendamento> slots = entry.getValue();
+            int i = 0;
+            while (i <= slots.size() - nSlots) {
+                List<Agendamento> candidatos = slots.subList(i, i + nSlots);
+                if (saoConsecutivos(candidatos)) {
+                    inicios.add(candidatos.get(0));
+                    i += nSlots;
+                } else {
+                    i++;
                 }
             }
         }

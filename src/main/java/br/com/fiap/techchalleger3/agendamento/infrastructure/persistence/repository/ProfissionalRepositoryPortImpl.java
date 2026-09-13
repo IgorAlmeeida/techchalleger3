@@ -47,4 +47,9 @@ public class ProfissionalRepositoryPortImpl implements ProfissionalRepositoryPor
     public Profissional salvar(Profissional profissional) {
         return mapper.toModel(repository.save(mapper.toEntity(profissional)));
     }
+
+    @Override
+    public void deletar(Integer id) {
+        repository.deleteById(id);
+    }
 }

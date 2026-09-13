@@ -34,12 +34,13 @@ public class AgendamentoRepositoryPortImpl implements AgendamentoRepositoryPort 
 
     @Override
     public List<Agendamento> buscarDisponiveisPorVinculo(Integer profissionalVinculoId) {
-        List<AgendaEntity> agendas = agendaRepository.findByCodProfissionalVinculo(profissionalVinculoId);
+        List<AgendaEntity> agendas = agendaRepository.findByCodProfissionalVinculoAndDataAgendaGreaterThanEqual(
+                profissionalVinculoId, LocalDate.now());
         if (agendas.isEmpty()) {
             return List.of();
         }
         List<Integer> agendaIds = agendas.stream().map(AgendaEntity::getCodigo).toList();
-        return agendamentoRepository.findByCodAgendaInAndStatus(agendaIds, StatusAgendamentoEnum.DISPONIVEL)
+        return agendamentoRepository.buscarDisponiveisRaizPorAgendas(agendaIds)
                 .stream()
                 .map(mapper::toModel)
                 .sorted(Comparator.comparing(a -> getDataAgenda(agendas, a.getAgendaId())))
@@ -98,6 +99,12 @@ public class AgendamentoRepositoryPortImpl implements AgendamentoRepositoryPort 
     @Override
     public Agendamento salvar(Agendamento agendamento) {
         return mapper.toModel(agendamentoRepository.save(mapper.toEntity(agendamento)));
+    }
+
+    @Override
+    public void deletarTodosPorAgendaId(Integer agendaId) {
+        agendamentoRepository.deletarFilhosPorAgendaId(agendaId);
+        agendamentoRepository.deletarTodosPorAgendaId(agendaId);
     }
 
     private LocalDate getDataAgenda(List<AgendaEntity> agendas, Integer agendaId) {

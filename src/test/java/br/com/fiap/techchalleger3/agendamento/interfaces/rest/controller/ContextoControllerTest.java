@@ -4,7 +4,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarEstabele
 import br.com.fiap.techchalleger3.agendamento.domain.model.Estabelecimento;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -36,8 +35,6 @@ class ContextoControllerTest {
     @Autowired MockMvc mockMvc;
 
     @MockitoBean ListarEstabelecimentosContextoUseCase useCase;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach

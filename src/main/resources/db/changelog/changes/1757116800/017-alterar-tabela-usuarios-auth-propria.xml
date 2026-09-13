@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-017-alterar-tb-usuarios" author="igor">
+
+        <renameColumn tableName="TB_USUARIOS" schemaName="agd"
+                      oldColumnName="COD_KEYCLOAK"
+                      newColumnName="TX_UUID"
+                      columnDataType="VARCHAR(36)"/>
+
+        <addColumn tableName="TB_USUARIOS" schemaName="agd">
+            <column name="TX_EMAIL" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TB_USUARIOS" schemaName="agd">
+            <column name="TX_NOME" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TB_USUARIOS" schemaName="agd">
+            <column name="TX_SENHA_HASH" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <rollback>
+            <renameColumn tableName="TB_USUARIOS" schemaName="agd"
+                          oldColumnName="TX_UUID"
+                          newColumnName="COD_KEYCLOAK"
+                          columnDataType="VARCHAR(255)"/>
+            <dropColumn tableName="TB_USUARIOS" schemaName="agd" columnName="TX_EMAIL"/>
+            <dropColumn tableName="TB_USUARIOS" schemaName="agd" columnName="TX_NOME"/>
+            <dropColumn tableName="TB_USUARIOS" schemaName="agd" columnName="TX_SENHA_HASH"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1757116800-017b-unique-email-usuarios" author="igor">
+        <addUniqueConstraint tableName="TB_USUARIOS" schemaName="agd"
+                             columnNames="TX_EMAIL"
+                             constraintName="UQ_TB_USUARIOS_TX_EMAIL"/>
+        <rollback>
+            <dropUniqueConstraint tableName="TB_USUARIOS" schemaName="agd"
+                                  constraintName="UQ_TB_USUARIOS_TX_EMAIL"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

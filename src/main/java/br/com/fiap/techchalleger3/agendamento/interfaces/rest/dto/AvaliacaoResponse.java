@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public record AvaliacaoResponse(
         @Schema(description = "Comentário sobre o atendimento", example = "Excelente atendimento!")
         String comentario,
 
-        @Schema(description = "Data/hora da avaliação")
+        @Schema(description = "Data/hora da avaliação", example = "2026-01-15 10:30:00")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime dhInsert
 ) {}

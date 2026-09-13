@@ -116,7 +116,7 @@ class CriarEscalaUseCaseTest {
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder()
                 .id(1).profissionalId(10).estabelecimentoId(1).build();
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(vinculo));
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(99).build()));
 
         assertThatThrownBy(() -> useCase.executar(

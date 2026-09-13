@@ -11,7 +11,7 @@ public record CadastrarProfissionalRequest(
         @Schema(description = "Nome completo do profissional", example = "Dra. Ana Lima")
         @NotBlank String nome,
 
-        @Schema(description = "E-mail do profissional, usado como login no Keycloak", example = "ana.lima@clinica.com")
+        @Schema(description = "E-mail do profissional, usado como login", example = "ana.lima@clinica.com")
         @NotBlank @Email String email,
 
         @Schema(description = "Especialidades do profissional", example = "[\"Clínico Geral\",\"Pediatria\"]")

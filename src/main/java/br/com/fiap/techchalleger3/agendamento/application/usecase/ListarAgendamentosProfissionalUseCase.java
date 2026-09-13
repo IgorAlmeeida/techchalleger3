@@ -26,6 +26,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Lista agendamentos de um profissional autenticado, com enriquecimento de dados
+ * de serviço, cliente e estabelecimento. Admins podem filtrar por qualquer vínculo.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarAgendamentosProfissionalUseCase {
@@ -43,7 +47,7 @@ public class ListarAgendamentosProfissionalUseCase {
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
 
     public List<ListarMeusAgendamentosClienteUseCase.AgendamentoEnriquecido> executar(
-            String keycloakSub,
+            String userSub,
             Integer profissionalVinculoIdFiltro,
             List<StatusAgendamentoEnum> statuses,
             LocalDate dataInicio,
@@ -58,8 +62,8 @@ public class ListarAgendamentosProfissionalUseCase {
             }
             vinculoIds = List.of(profissionalVinculoIdFiltro);
         } else {
-            Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+            Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
             Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                     .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional para usuário", usuario.getId()));

@@ -1,0 +1,72 @@
+name: Teste de Carga (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      num_clientes:
+        description: 'Número de clientes de teste a criar no pool'
+        default: '60'
+        required: false
+
+jobs:
+  load-test:
+    name: Teste de carga — criação concorrente de agendamentos
+    runs-on: ubuntu-latest
+    env:
+      GMAIL_USERNAME: ci-placeholder@example.com
+      GMAIL_APP_PASSWORD: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Subir Postgres
+        run: docker compose up -d
+
+      - name: Build da imagem da aplicação
+        run: docker build -t agendamento-loadtest:latest .
+
+      - name: Subir a aplicação (network host — usa os serviços do compose em localhost)
+        run: |
+          docker run -d --name agendamento-app --network host \
+            -e GMAIL_USERNAME="$GMAIL_USERNAME" \
+            -e GMAIL_APP_PASSWORD="$GMAIL_APP_PASSWORD" \
+            agendamento-loadtest:latest
+
+      - name: Esperar Postgres e a aplicação ficarem prontos
+        run: |
+          echo "Aguardando a aplicação..."
+          # Sem Actuator no projeto hoje — usa um endpoint público real como health-check.
+          # Se este endpoint não estiver acessível sem autenticação, trocar por outro público.
+          timeout 120 bash -c 'until curl -sf http://localhost:8080/api/estabelecimentos/buscar > /dev/null; do sleep 3; done'
+
+      - name: Seed de dados (estabelecimento, serviço, profissional, escala, agenda)
+        id: seed
+        run: |
+          chmod +x infra/load-test/seed.sh
+          BASE_URL=http://localhost:8080 infra/load-test/seed.sh
+
+      - name: Rodar k6
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: infra/load-test/booking-load-test.js
+        env:
+          BASE_URL: http://localhost:8080
+          VINCULO_ID: ${{ steps.seed.outputs.vinculo_id }}
+          SERVICO_ID: ${{ steps.seed.outputs.servico_id }}
+          NUM_CLIENTES: ${{ github.event.inputs.num_clientes }}
+
+      - name: Logs da aplicação (sempre, útil em caso de falha)
+        if: always()
+        run: docker logs agendamento-app --tail 200
+
+      - name: Encerrar containers
+        if: always()
+        run: |
+          docker rm -f agendamento-app || true
+          docker compose down -v

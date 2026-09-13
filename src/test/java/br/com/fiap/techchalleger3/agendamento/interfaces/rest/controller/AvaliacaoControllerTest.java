@@ -6,7 +6,6 @@ import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepository
 import br.com.fiap.techchalleger3.agendamento.application.usecase.AvaliarAtendimentoUseCase;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -37,8 +36,6 @@ class AvaliacaoControllerTest {
     @MockitoBean private AvaliacaoRepositoryPort avaliacaoPort;
     @MockitoBean private UsuarioRepositoryPort usuarioPort;
     @MockitoBean private ClienteRepositoryPort clientePort;
-    @MockitoBean private JwtDecoder jwtDecoder;
-    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach

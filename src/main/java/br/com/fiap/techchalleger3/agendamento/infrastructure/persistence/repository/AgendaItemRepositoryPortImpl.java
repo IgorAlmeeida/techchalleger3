@@ -30,4 +30,9 @@ public class AgendaItemRepositoryPortImpl implements AgendaItemRepositoryPort {
     public AgendaItem salvar(AgendaItem item) {
         return mapper.toModel(repository.save(mapper.toEntity(item)));
     }
+
+    @Override
+    public void deletarPorAgendaId(Integer agendaId) {
+        repository.deletarPorAgendaId(agendaId);
+    }
 }

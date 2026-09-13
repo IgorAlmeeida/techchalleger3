@@ -29,8 +29,8 @@ class CancelarAgendamentoRoleTest {
 
     @Test
     void roleNula_lancaAcessoNegado() {
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-x").role(null).build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-x")).thenReturn(Optional.of(usuario));
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-x").role(null).build();
+        when(usuarioPort.buscarPorUuid("sub-x")).thenReturn(Optional.of(usuario));
 
         assertThatThrownBy(() -> useCase.executar(1, "sub-x"))
                 .isInstanceOf(AcessoNegadoException.class)

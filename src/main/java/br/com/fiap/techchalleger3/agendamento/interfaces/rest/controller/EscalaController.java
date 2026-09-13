@@ -34,6 +34,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/escalas")
 @RequiredArgsConstructor
+/**
+ * Endpoints para criação, listagem e atualização de escalas semanais de disponibilidade
+ * de profissionais em seus estabelecimentos.
+ */
 @Tag(name = "Escalas", description = "Gerenciamento de escalas recorrentes de disponibilidade dos profissionais")
 @SecurityRequirement(name = "bearerAuth")
 public class EscalaController {
@@ -54,14 +58,14 @@ public class EscalaController {
             @Valid @RequestBody CriarEscalaRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityUtils.isAdmin(principal);
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         Escala escala = criarEscalaUseCase.executar(
                 request.profissionalVinculoId(),
                 request.diaSemana(),
                 request.horaInicio(),
                 request.horaFim(),
                 request.servicosIds(),
-                keycloakSub,
+                userSub,
                 isAdmin
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(assembler.toResponse(escala));
@@ -82,10 +86,10 @@ public class EscalaController {
 
         boolean isAdmin = principal.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         Escala escala = atualizarEscalaUseCase.executar(
                 id, request.diaSemana(), request.horaInicio(), request.horaFim(),
-                request.servicosIds(), keycloakSub, isAdmin);
+                request.servicosIds(), userSub, isAdmin);
         return ResponseEntity.ok(assembler.toResponse(escala));
     }
 
@@ -103,7 +107,7 @@ public class EscalaController {
 
         boolean isAdmin = principal.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        String keycloakSub = principal.getToken().getSubject();
-        return ResponseEntity.ok(listarEscalasUseCase.executar(estabelecimentoId, profissionalVinculoId, keycloakSub, isAdmin));
+        String userSub = principal.getToken().getSubject();
+        return ResponseEntity.ok(listarEscalasUseCase.executar(estabelecimentoId, profissionalVinculoId, userSub, isAdmin));
     }
 }

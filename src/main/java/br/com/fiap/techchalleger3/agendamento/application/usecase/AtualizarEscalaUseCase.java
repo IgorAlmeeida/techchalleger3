@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Atualiza os itens de uma escala existente, substituindo os dias/horários cadastrados.
+ * Valida conflitos de escala e permissão do profissional antes de salvar.
+ */
 @Service
 @RequiredArgsConstructor
 public class AtualizarEscalaUseCase {
@@ -46,7 +50,7 @@ public class AtualizarEscalaUseCase {
             LocalTime horaInicio,
             LocalTime horaFim,
             List<Integer> servicoIds,
-            String keycloakSub,
+            String userSub,
             boolean isAdmin) {
 
         Escala escala = escalaPort.buscarPorId(escalaId)
@@ -56,7 +60,7 @@ public class AtualizarEscalaUseCase {
                 .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", escala.getProfissionalVinculoId()));
 
         if (!isAdmin) {
-            Integer profissionalId = resolveProfissionalId(keycloakSub);
+            Integer profissionalId = resolveProfissionalId(userSub);
             if (!vinculo.getProfissionalId().equals(profissionalId)) {
                 throw new AcessoNegadoException("Profissional não autorizado a atualizar esta escala.");
             }
@@ -98,9 +102,9 @@ public class AtualizarEscalaUseCase {
         return salva;
     }
 
-    private Integer resolveProfissionalId(String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    private Integer resolveProfissionalId(String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
         Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", usuario.getId()));
         return profissional.getId();

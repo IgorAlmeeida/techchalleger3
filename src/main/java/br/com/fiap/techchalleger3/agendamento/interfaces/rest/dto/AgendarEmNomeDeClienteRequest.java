@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,7 +12,7 @@ public record AgendarEmNomeDeClienteRequest(
         Integer agendamentoId,
         @NotBlank String cpf,
         String nome,
-        LocalDate dataNascimento,
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dataNascimento,
         String telefone,
         String sexo,
         String endereco,

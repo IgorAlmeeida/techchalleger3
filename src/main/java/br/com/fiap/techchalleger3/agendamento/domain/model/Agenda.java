@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Representa a grade de horários de um profissional em uma data específica.
+ * Contém os slots de atendimento ({@link Agendamento}) e está ligada a um {@link ProfissionalVinculo}.
+ */
 public class Agenda {
     private Integer id;
     private Integer escalaId;

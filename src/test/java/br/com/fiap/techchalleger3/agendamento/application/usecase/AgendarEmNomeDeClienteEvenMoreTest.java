@@ -25,7 +25,7 @@ class AgendarEmNomeDeClienteEvenMoreTest {
 
     @Mock private ClienteRepositoryPort clientePort;
     @Mock private UsuarioRepositoryPort usuarioPort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @Mock private EmailSenderPort emailSenderPort;
     @Mock private ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     @Mock private AgendamentoRepositoryPort agendamentoPort;

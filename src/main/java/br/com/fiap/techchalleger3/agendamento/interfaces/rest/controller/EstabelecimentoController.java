@@ -38,6 +38,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/estabelecimentos")
 @RequiredArgsConstructor
+/**
+ * Endpoints para CRUD de estabelecimentos (admin), busca pública por critérios variados
+ * e consulta da oferta de serviços e profissionais de um estabelecimento.
+ */
 @Tag(name = "Estabelecimentos", description = "CRUD de estabelecimentos e busca pública")
 @SecurityRequirement(name = "bearerAuth")
 public class EstabelecimentoController {
@@ -91,12 +95,35 @@ public class EstabelecimentoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Remove estabelecimento do banco")
+    @ApiResponse(responseCode = "204", description = "Estabelecimento removido com sucesso")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    @ApiResponse(responseCode = "422", description = "Estabelecimento possui vínculos ativos")
+    public ResponseEntity<Void> deletar(
+            @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id) {
+        useCase.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/inativar")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inativa estabelecimento")
     @ApiResponse(responseCode = "204", description = "Estabelecimento inativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
     public ResponseEntity<Void> inativar(
             @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id) {
         useCase.inativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/ativar")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Ativa estabelecimento")
+    @ApiResponse(responseCode = "204", description = "Estabelecimento ativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Estabelecimento não encontrado")
+    public ResponseEntity<Void> ativar(
+            @Parameter(description = "Identificador do estabelecimento") @PathVariable Integer id) {
+        useCase.ativar(id);
         return ResponseEntity.noContent().build();
     }
 

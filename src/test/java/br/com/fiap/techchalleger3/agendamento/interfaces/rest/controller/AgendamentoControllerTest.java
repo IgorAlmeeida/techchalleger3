@@ -9,7 +9,6 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.AgendamentoResponseAssembler;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.AgendamentoResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,8 +52,6 @@ class AgendamentoControllerTest {
     @MockitoBean private ListarAgendamentosProfissionalUseCase listarProfissionalUseCase;
     @MockitoBean private ExportarAgendamentoIcsUseCase exportarIcsUseCase;
     @MockitoBean private AgendamentoResponseAssembler assembler;
-    @MockitoBean private JwtDecoder jwtDecoder;
-    @MockitoBean private SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockitoBean private ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
 
     @BeforeEach

@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Define o padrão de trabalho semanal de um profissional em um estabelecimento.
+ * Composta por itens ({@link EscalaItem}) que especificam dia e horário.
+ */
 public class Escala {
     private Integer id;
     private Integer profissionalVinculoId;

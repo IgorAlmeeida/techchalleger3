@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 
+/**
+ * Marca a presença confirmada de um cliente em um agendamento com status AGENDADO.
+ */
 @Service
 @RequiredArgsConstructor
 public class ConfirmarPresencaUseCase {

@@ -1,6 +1,12 @@
 spring:
   application:
     name: agendamento
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
   liquibase:
     change-log: classpath:db/changelog/changelog-master.xml
   jpa:
@@ -12,16 +18,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:agendamento}
     username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD}
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: ${RABBITMQ_USER:agendamento}
-    password: ${RABBITMQ_PASSWORD}
+    password: ${POSTGRES_PASSWORD:postgres}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -33,15 +30,13 @@ spring:
           auth: true
           starttls:
             enable: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8180/realms/agendamento
-          jwk-set-uri: http://localhost:8180/realms/agendamento/protocol/openid-connect/certs
+jwt:
+  secret: ${JWT_SECRET:minha-chave-secreta-minimo-32-caracteres-aqui}
+  expiration-segundos: 1800
+  refresh-expiration-segundos: 604800
 
-keycloak:
-  server-url: http://localhost:8180
-  realm: agendamento
-  client-id: agendamento-client
-  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+google:
+  calendar:
+    client-id: ${GOOGLE_CLIENT_ID:placeholder-client-id}
+    client-secret: ${GOOGLE_CLIENT_SECRET:placeholder-client-secret}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/api/integracoes/google/callback}

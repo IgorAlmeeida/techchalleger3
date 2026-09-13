@@ -14,6 +14,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 
+/**
+ * Cria um vínculo entre um profissional e um estabelecimento, garantindo que
+ * não exista vínculo ativo duplicado.
+ */
 @Service
 @RequiredArgsConstructor
 public class CriarVinculoUseCase {

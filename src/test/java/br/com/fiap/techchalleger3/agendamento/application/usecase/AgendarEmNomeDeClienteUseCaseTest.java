@@ -5,7 +5,7 @@ import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryP
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
@@ -39,7 +39,7 @@ class AgendarEmNomeDeClienteUseCaseTest {
 
     @Mock private ClienteRepositoryPort clientePort;
     @Mock private UsuarioRepositoryPort usuarioPort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @Mock private EmailSenderPort emailSenderPort;
     @Mock private ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     @Mock private AgendamentoRepositoryPort agendamentoPort;

@@ -13,9 +13,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Usuário do sistema. Pode ser ADMIN, PROFISSIONAL ou CLIENTE conforme o role.
+ */
 public class Usuario {
     private Integer id;
-    private String keycloakId;
+    private String uuid;
+    private String email;
+    private String nome;
+    private String senhaHash;
     private RoleEnum role;
     private LocalDateTime dhInsert;
     private LocalDateTime dhAtualizacao;

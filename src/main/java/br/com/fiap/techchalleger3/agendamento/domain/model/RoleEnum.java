@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
+/**
+ * Papéis (roles) de usuário no sistema: ADMIN, PROFISSIONAL, CLIENTE.
+ */
 public enum RoleEnum {
 
     ADMIN("ADMIN", "Administrador"),

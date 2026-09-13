@@ -81,7 +81,7 @@ class EscalaUseCaseTest {
 
     @Test
     void listar_profissional_lancaAcessoNegado_quandoVinculoDeOutro() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(99).build()));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(50).build();
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo));
@@ -134,7 +134,7 @@ class EscalaUseCaseTest {
         when(escalaPort.buscarPorId(1)).thenReturn(Optional.of(escala));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(20).build();
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo));
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(99).build()));
 
         assertThatThrownBy(() -> atualizarEscala.executar(1, DiaSemanaEnum.TERCA, LocalTime.of(8,0), LocalTime.of(12,0), List.of(), "kc", false))
@@ -148,7 +148,7 @@ class EscalaUseCaseTest {
         when(escalaPort.buscarPorId(1)).thenReturn(Optional.of(escala));
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(20).build();
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo));
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(5).build()));
         when(profissionalPort.buscarPorUsuarioId(5)).thenReturn(Optional.of(Profissional.builder().id(20).build()));
         when(vinculoServicoPort.listarPorProfissionalVinculoId(10)).thenReturn(List.of());
         when(profissionalVinculoPort.listarPorProfissionalId(20)).thenReturn(List.of());

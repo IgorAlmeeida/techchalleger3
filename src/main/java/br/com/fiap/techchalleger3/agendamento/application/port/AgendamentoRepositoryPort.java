@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de agendamentos ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento}).
+ */
 public interface AgendamentoRepositoryPort {
     Optional<Agendamento> buscarPorId(Integer id);
     List<Agendamento> listarPorAgendaId(Integer agendaId);
@@ -18,4 +21,5 @@ public interface AgendamentoRepositoryPort {
     List<Agendamento> buscarPaisPorClienteId(Integer clienteId, List<StatusAgendamentoEnum> statuses, LocalDate dataInicio, LocalDate dataFim);
     List<Agendamento> buscarPaisPorProfissionalVinculoIds(List<Integer> profissionalVinculoIds, List<StatusAgendamentoEnum> statuses, LocalDate dataInicio, LocalDate dataFim);
     Agendamento salvar(Agendamento agendamento);
+    void deletarTodosPorAgendaId(Integer agendaId);
 }

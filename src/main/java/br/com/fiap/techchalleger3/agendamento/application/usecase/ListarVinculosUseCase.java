@@ -7,6 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Lista vínculos profissional-estabelecimento com filtros opcionais por profissional
+ * e por estabelecimento.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarVinculosUseCase {

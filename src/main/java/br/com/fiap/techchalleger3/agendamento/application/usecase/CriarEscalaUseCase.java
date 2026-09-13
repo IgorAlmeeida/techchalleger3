@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Cria uma nova escala semanal para um vínculo profissional, com validação de conflitos e
+ * verificação de serviços permitidos para aquele vínculo.
+ */
 @Service
 @RequiredArgsConstructor
 public class CriarEscalaUseCase {
@@ -42,7 +46,7 @@ public class CriarEscalaUseCase {
     @Transactional
     public Escala executar(Integer profissionalVinculoId, DiaSemanaEnum diaSemana,
                            LocalTime horaInicio, LocalTime horaFim, List<Integer> servicoIds,
-                           String keycloakSub, boolean isAdmin) {
+                           String userSub, boolean isAdmin) {
 
         ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(profissionalVinculoId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", profissionalVinculoId));
@@ -52,8 +56,8 @@ public class CriarEscalaUseCase {
         }
 
         if (!isAdmin) {
-            Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+            Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
             Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                     .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional para usuário", usuario.getId()));
             if (!vinculo.getProfissionalId().equals(profissional.getId())) {

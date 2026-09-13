@@ -2,7 +2,7 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
@@ -28,45 +28,46 @@ class RedefinirSenhaEsquecidaUseCaseTest {
     @Mock private ClienteRepositoryPort clientePort;
     @Mock private ProfissionalRepositoryPort profissionalPort;
     @Mock private UsuarioRepositoryPort usuarioPort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @Mock private EmailSenderPort emailSenderPort;
     @InjectMocks private RedefinirSenhaEsquecidaUseCase useCase;
 
     @Test
     void deveEnviarEmail_quandoClienteEncontrado() {
+        Usuario usuario = Usuario.builder().id(10).uuid("uid-1").nome("Maria").build();
         Cliente cliente = Cliente.builder().id(1).nome("Maria").usuarioId(10).build();
-        Usuario usuario = Usuario.builder().id(10).keycloakId("kc-1").build();
+        when(usuarioPort.buscarPorEmail("maria@test.com")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorEmail("maria@test.com")).thenReturn(Optional.of(cliente));
-        when(usuarioPort.buscarPorId(10)).thenReturn(Optional.of(usuario));
+        when(passwordPort.encode(anyString())).thenReturn("novo-hash");
 
         useCase.executar("maria@test.com");
 
-        verify(keycloakAdminPort).redefinirSenha(anyString(), anyString(), any(Boolean.class));
+        verify(usuarioPort).atualizarSenha("uid-1", "novo-hash");
         verify(emailSenderPort).enviar(any());
     }
 
     @Test
     void deveEnviarEmail_quandoProfissionalEncontrado() {
+        Usuario usuario = Usuario.builder().id(20).uuid("uid-2").nome("Dr. João").build();
         Profissional profissional = Profissional.builder().id(1).nome("Dr. João").usuarioId(20).build();
-        Usuario usuario = Usuario.builder().id(20).keycloakId("kc-2").build();
+        when(usuarioPort.buscarPorEmail("joao@test.com")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorEmail("joao@test.com")).thenReturn(Optional.empty());
         when(profissionalPort.buscarPorEmail("joao@test.com")).thenReturn(Optional.of(profissional));
-        when(usuarioPort.buscarPorId(20)).thenReturn(Optional.of(usuario));
+        when(passwordPort.encode(anyString())).thenReturn("novo-hash");
 
         useCase.executar("joao@test.com");
 
-        verify(keycloakAdminPort).redefinirSenha(anyString(), anyString(), any(Boolean.class));
+        verify(usuarioPort).atualizarSenha("uid-2", "novo-hash");
         verify(emailSenderPort).enviar(any());
     }
 
     @Test
     void naoFazNada_quandoEmailNaoEncontrado() {
-        when(clientePort.buscarPorEmail("inexistente@test.com")).thenReturn(Optional.empty());
-        when(profissionalPort.buscarPorEmail("inexistente@test.com")).thenReturn(Optional.empty());
+        when(usuarioPort.buscarPorEmail("inexistente@test.com")).thenReturn(Optional.empty());
 
         useCase.executar("inexistente@test.com");
 
-        verify(keycloakAdminPort, never()).redefinirSenha(any(), any(), any(Boolean.class));
+        verify(usuarioPort, never()).atualizarSenha(any(), any());
         verify(emailSenderPort, never()).enviar(any());
     }
 }

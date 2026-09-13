@@ -20,6 +20,10 @@ import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Agrupa as operações de CRUD sobre profissionais: listagem, busca, atualização e inativação.
+ * Profissionais só podem acessar e alterar seus próprios dados; admins têm acesso irrestrito.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProfissionalUseCase {
@@ -35,22 +39,22 @@ public class ProfissionalUseCase {
         return profissionalPort.listarComFiltros(nome, especialidade, incluirInativos, pageable);
     }
 
-    public Profissional buscarPorId(Integer id, String keycloakSub, boolean isAdmin) {
+    public Profissional buscarPorId(Integer id, String userSub, boolean isAdmin) {
         Profissional profissional = profissionalPort.buscarPorId(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
         if (!isAdmin) {
-            validarProprioAcesso(profissional, keycloakSub);
+            validarProprioAcesso(profissional, userSub);
         }
         return profissional;
     }
 
     @Transactional
     public Profissional atualizar(Integer id, String nome, List<String> especialidades,
-                                   String endereco, String keycloakSub, boolean isAdmin) {
+                                   String endereco, String userSub, boolean isAdmin) {
         Profissional profissional = profissionalPort.buscarPorId(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
         if (!isAdmin) {
-            validarProprioAcesso(profissional, keycloakSub);
+            validarProprioAcesso(profissional, userSub);
         }
         profissional.setNome(nome);
         profissional.setEspecialidades(especialidades);
@@ -60,7 +64,7 @@ public class ProfissionalUseCase {
     }
 
     @Transactional
-    public void inativar(Integer id) {
+    public void deletar(Integer id) {
         Profissional profissional = profissionalPort.buscarPorId(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException(ENTIDADE_PROFISSIONAL, id));
 
@@ -69,17 +73,16 @@ public class ProfissionalUseCase {
                 .anyMatch(v -> agendaPort.existeAgendaFuturaPorVinculo(v.getId()));
         if (temAgendaFutura) {
             throw new OperacaoInvalidaException(
-                    "Profissional possui agendas futuras. Cancele as agendas antes de inativar.");
+                    "Profissional possui agendas futuras. Cancele as agendas antes de excluir.");
         }
 
-        profissional.setAtivo(false);
-        profissional.setDhAtualizacao(LocalDateTime.now(ZoneId.systemDefault()));
-        profissionalPort.salvar(profissional);
+        profissionalPort.deletar(id);
+        usuarioPort.deletar(profissional.getUsuarioId());
     }
 
-    private void validarProprioAcesso(Profissional profissional, String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    private void validarProprioAcesso(Profissional profissional, String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
         if (!profissional.getUsuarioId().equals(usuario.getId())) {
             throw new AcessoNegadoException("Profissional não autorizado a acessar este recurso.");
         }

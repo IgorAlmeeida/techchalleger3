@@ -20,6 +20,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Lista os profissionais disponíveis e seus serviços para um estabelecimento,
+ * com filtro opcional por serviço.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarOfertaDoEstabelecimentoUseCase {

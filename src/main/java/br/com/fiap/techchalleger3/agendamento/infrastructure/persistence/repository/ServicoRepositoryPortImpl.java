@@ -37,4 +37,9 @@ public class ServicoRepositoryPortImpl implements ServicoRepositoryPort {
     public Servico salvar(Servico servico) {
         return mapper.toModel(repository.save(mapper.toEntity(servico)));
     }
+
+    @Override
+    public void deletar(Integer id) {
+        repository.deleteById(id);
+    }
 }

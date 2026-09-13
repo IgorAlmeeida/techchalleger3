@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+/**
+ * Encerra o vínculo de um profissional com um estabelecimento, definindo data de fim como hoje.
+ * Bloqueia o encerramento se existirem agendas futuras abertas para o vínculo.
+ */
 @Service
 @RequiredArgsConstructor
 public class DesvincularProfissionalUseCase {

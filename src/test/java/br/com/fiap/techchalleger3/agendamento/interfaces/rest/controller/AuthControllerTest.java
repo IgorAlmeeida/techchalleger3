@@ -1,11 +1,10 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.controller;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakTokenPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.TokenPort;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.*;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -40,24 +39,19 @@ class AuthControllerTest {
     @MockitoBean CadastrarClienteUseCase cadastrarClienteUseCase;
     @MockitoBean RedefinirSenhaEsquecidaUseCase redefinirSenhaEsquecidaUseCase;
     @MockitoBean AlterarSenhaUseCase alterarSenhaUseCase;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarUsuarioFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoEstabelecimentoFilter;
+    @MockitoBean JwtDecoder jwtDecoder;
 
     @BeforeEach
     void configureFiltros() throws Exception {
         lenient().doAnswer(inv -> {
             ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
             return null;
-        }).when(sincronizarUsuarioFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
-        lenient().doAnswer(inv -> {
-            ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
-            return null;
         }).when(contextoEstabelecimentoFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
     }
 
-    private KeycloakTokenPort.TokenResponse tokenResponse() {
-        return new KeycloakTokenPort.TokenResponse("access-tok", 300, "Bearer", "refresh-tok", 1800);
+    private TokenPort.TokenResponse tokenResponse() {
+        return new TokenPort.TokenResponse("access-tok", 300, "Bearer", "refresh-tok", 1800);
     }
 
     @Test
@@ -126,7 +120,6 @@ class AuthControllerTest {
 
     @Test
     void alterarSenha_retorna4xx_semAutenticacao() throws Exception {
-        // Spring Security pode retornar 401 ou 403 dependendo da config
         mockMvc.perform(patch("/api/auth/alterar-senha")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -138,7 +131,7 @@ class AuthControllerTest {
     @Test
     void alterarSenha_retorna200_comAutenticacao() throws Exception {
         mockMvc.perform(patch("/api/auth/alterar-senha")
-                        .with(jwt().jwt(j -> j.subject("kc-sub").claim("email", "u@x.com"))
+                        .with(jwt().jwt(j -> j.subject("uid-sub").claim("email", "u@x.com"))
                                 .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

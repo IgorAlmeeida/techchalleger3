@@ -99,7 +99,7 @@ class AgendamentoUseCaseTest {
 
     @Test
     void meusAgendamentos_lancaQuandoUsuarioNaoEncontrado() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.empty());
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> listarMeusAgendamentos.executar("kc", null, null, null))
                 .isInstanceOf(RegistroNaoEncontradoException.class);
@@ -107,7 +107,7 @@ class AgendamentoUseCaseTest {
 
     @Test
     void meusAgendamentos_retornaAgendamentosEnriquecidos() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Cliente.builder().id(10).build()));
 
         Agendamento ag = Agendamento.builder().id(5).agendaId(100).horaInicio(LocalTime.of(9,0))
@@ -137,7 +137,7 @@ class AgendamentoUseCaseTest {
 
     @Test
     void agendamentosProfissional_profissional_retornaAgendamentos() {
-        when(usuarioPort.buscarPorCodKeycloak("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
+        when(usuarioPort.buscarPorUuid("kc")).thenReturn(Optional.of(Usuario.builder().id(1).build()));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(Profissional.builder().id(10).build()));
         when(profissionalVinculoPort.listarPorProfissionalId(10)).thenReturn(List.of(
                 ProfissionalVinculo.builder().id(50).build()

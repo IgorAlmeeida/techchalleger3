@@ -6,7 +6,7 @@ import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoReposi
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailMensagem;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -43,13 +44,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Permite que um ADMIN ou PROFISSIONAL crie um agendamento em nome de um cliente específico.
+ * <p>
+ * Se o cliente não existir (busca por CPF), ele é criado automaticamente com senha temporária
+ * e notificado por e-mail.
+ */
 @Service
 @RequiredArgsConstructor
 public class AgendarEmNomeDeClienteUseCase {
 
     private final ClienteRepositoryPort clientePort;
     private final UsuarioRepositoryPort usuarioPort;
-    private final KeycloakAdminPort keycloakAdminPort;
+    private final PasswordPort passwordPort;
     private final EmailSenderPort emailSenderPort;
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final AgendamentoRepositoryPort agendamentoPort;
@@ -116,10 +123,12 @@ public class AgendarEmNomeDeClienteUseCase {
         }
 
         String senhaTemp = SenhaTemporariaGenerator.gerar();
-        String keycloakId = keycloakAdminPort.criarUsuario(email, nome, senhaTemp, "CLIENTE", true);
 
         Usuario usuario = usuarioPort.salvar(Usuario.builder()
-                .keycloakId(keycloakId)
+                .uuid(UUID.randomUUID().toString())
+                .email(email)
+                .nome(nome)
+                .senhaHash(passwordPort.encode(senhaTemp))
                 .role(RoleEnum.CLIENTE)
                 .build());
 
@@ -224,7 +233,7 @@ public class AgendarEmNomeDeClienteUseCase {
 
         emailSenderPort.enviar(new EmailMensagem(
                 cliente.getEmail(),
-                "CONFIRMACAO_AGENDAMENTO",
+                "confirmacao-agendamento",
                 dadosEmail
         ));
 

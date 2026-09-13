@@ -31,7 +31,7 @@ class AgendarEmNomeDeClienteMoreTest {
 
     @Mock private ClienteRepositoryPort clientePort;
     @Mock private UsuarioRepositoryPort usuarioPort;
-    @Mock private KeycloakAdminPort keycloakAdminPort;
+    @Mock private PasswordPort passwordPort;
     @Mock private EmailSenderPort emailSenderPort;
     @Mock private ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     @Mock private AgendamentoRepositoryPort agendamentoPort;
@@ -75,8 +75,8 @@ class AgendarEmNomeDeClienteMoreTest {
     void cpfNaoEncontrado_criaClienteNovo_sucesso() {
         when(clientePort.buscarPorCpf("111")).thenReturn(Optional.empty());
         when(clientePort.buscarPorEmail("new@x.com")).thenReturn(Optional.empty());
-        when(keycloakAdminPort.criarUsuario(any(), any(), any(), any(), anyBoolean())).thenReturn("kc-uid");
-        when(usuarioPort.salvar(any())).thenReturn(Usuario.builder().id(50).keycloakId("kc-uid").build());
+        when(passwordPort.encode(any())).thenReturn("hash");
+        when(usuarioPort.salvar(any())).thenReturn(Usuario.builder().id(50).uuid("new-uid").build());
 
         Cliente clienteNovo = Cliente.builder().id(77).email("new@x.com").build();
         when(clientePort.salvar(any())).thenReturn(clienteNovo);

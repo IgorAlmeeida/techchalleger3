@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de agendas ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Agenda}).
+ */
 public interface AgendaRepositoryPort {
     Optional<Agenda> buscarPorId(Integer id);
     List<Agenda> listarPorProfissionalVinculoId(Integer profissionalVinculoId);
@@ -16,4 +19,5 @@ public interface AgendaRepositoryPort {
     boolean existeAgendaFuturaPorVinculo(Integer profissionalVinculoId);
     boolean existeAgendaPorVinculoEData(Integer profissionalVinculoId, LocalDate dataAgenda);
     Agenda salvar(Agenda agenda);
+    void deletar(Integer id);
 }

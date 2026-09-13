@@ -33,8 +33,17 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer codigo;
 
-    @Column(name = "COD_KEYCLOAK", nullable = false, unique = true)
-    private String codKeycloak;
+    @Column(name = "TX_UUID", nullable = false, unique = true)
+    private String uuid;
+
+    @Column(name = "TX_EMAIL", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "TX_NOME", nullable = false)
+    private String nome;
+
+    @Column(name = "TX_SENHA_HASH", nullable = false)
+    private String senhaHash;
 
     @Column(name = "IC_ROLE", nullable = false)
     private RoleEnum role;

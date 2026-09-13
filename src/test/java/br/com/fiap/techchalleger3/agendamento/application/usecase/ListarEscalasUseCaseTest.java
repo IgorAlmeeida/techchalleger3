@@ -86,9 +86,9 @@ class ListarEscalasUseCaseTest {
     void profissional_comVinculoId_posseValida_sucesso() {
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(30).estabelecimentoId(5).build();
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo));
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(30).build();
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(profissional));
 
         when(escalaPort.listarPorFiltros(null, 10)).thenReturn(List.of(escala()));
@@ -110,9 +110,9 @@ class ListarEscalasUseCaseTest {
     void profissional_comVinculoId_posseInvalida_lancaAcessoNegado() {
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(10).profissionalId(30).estabelecimentoId(5).build();
         when(profissionalVinculoPort.buscarPorId(10)).thenReturn(Optional.of(vinculo));
-        Usuario usuario = Usuario.builder().id(1).keycloakId("sub-prof").build();
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-prof").build();
         Profissional profissional = Profissional.builder().id(99).build(); // different
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(1)).thenReturn(Optional.of(profissional));
 
         assertThatThrownBy(() -> useCase.executar(null, 10, "sub-prof", false))

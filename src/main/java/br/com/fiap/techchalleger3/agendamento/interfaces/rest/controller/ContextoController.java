@@ -20,6 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/contexto")
 @RequiredArgsConstructor
+/**
+ * Endpoint para listar os estabelecimentos disponíveis para o usuário autenticado,
+ * filtrando por perfil (PROFISSIONAL vê apenas seus estabelecimentos vinculados).
+ */
 @Tag(name = "Contexto", description = "Seleção de estabelecimento pós-login")
 @SecurityRequirement(name = "bearerAuth")
 public class ContextoController {
@@ -33,8 +37,8 @@ public class ContextoController {
     public ResponseEntity<List<EstabelecimentoContextoResponse>> listarEstabelecimentos(
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
 
-        String keycloakSub = principal.getToken().getSubject();
-        List<Estabelecimento> estabelecimentos = useCase.executar(keycloakSub);
+        String userSub = principal.getToken().getSubject();
+        List<Estabelecimento> estabelecimentos = useCase.executar(userSub);
 
         List<EstabelecimentoContextoResponse> response = estabelecimentos.stream()
                 .map(e -> new EstabelecimentoContextoResponse(e.getId(), e.getNome(), e.getCnpj(), e.getEndereco()))

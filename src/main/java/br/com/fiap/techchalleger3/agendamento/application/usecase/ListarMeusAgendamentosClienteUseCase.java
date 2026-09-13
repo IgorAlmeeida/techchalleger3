@@ -30,6 +30,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Lista os agendamentos do cliente autenticado, com enriquecimento de dados de profissional,
+ * estabelecimento e serviço. Filtra por status e intervalo de datas.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarMeusAgendamentosClienteUseCase {
@@ -47,13 +51,13 @@ public class ListarMeusAgendamentosClienteUseCase {
     private final EstabelecimentoRepositoryPort estabelecimentoPort;
 
     public List<AgendamentoEnriquecido> executar(
-            String keycloakSub,
+            String userSub,
             List<StatusAgendamentoEnum> statuses,
             LocalDate dataInicio,
             LocalDate dataFim) {
 
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
         Cliente cliente = clientePort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Cliente para usuário", usuario.getId()));

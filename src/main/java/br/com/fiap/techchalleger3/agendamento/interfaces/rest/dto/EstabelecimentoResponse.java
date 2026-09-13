@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -34,9 +35,11 @@ public record EstabelecimentoResponse(
         @Schema(description = "Indica se o estabelecimento está ativo no sistema", example = "true")
         Boolean ativo,
 
-        @Schema(description = "Data/hora de criação do registro", example = "2026-01-15T10:30:00")
+        @Schema(description = "Data/hora de criação do registro", example = "2026-01-15 10:30:00")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime dhInsert,
 
-        @Schema(description = "Data/hora da última atualização", example = "2026-06-01T14:00:00")
+        @Schema(description = "Data/hora da última atualização", example = "2026-06-01 14:00:00")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime dhAtualizacao
 ) {}

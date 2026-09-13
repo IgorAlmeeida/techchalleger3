@@ -1,15 +1,20 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.controller;
 
+import br.com.fiap.techchalleger3.agendamento.application.usecase.AgendarEmNomeDeClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.CancelarAgendamentoUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.ConfirmarPresencaUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.CriarAgendamentoUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ExportarAgendamentoIcsUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendamentosProfissionalUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarHorariosDisponiveisUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarMeusAgendamentosClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.AgendamentoResponseAssembler;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.AgendarEmNomeDeClienteRequest;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.AgendamentoResponse;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.CriarAgendamentoRequest;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.HorarioDisponivelResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,15 +45,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/agendamentos")
 @RequiredArgsConstructor
+/**
+ * Endpoints para criação, cancelamento, confirmação de presença, exportação ICS e
+ * consulta de agendamentos, com visibilidade por perfil (CLIENTE, PROFISSIONAL ou ADMIN).
+ */
 @Tag(name = "Agendamentos", description = "Criação, cancelamento e consulta de agendamentos")
 @SecurityRequirement(name = "bearerAuth")
 public class AgendamentoController {
 
     private final CriarAgendamentoUseCase criarUseCase;
     private final CancelarAgendamentoUseCase cancelarUseCase;
+    private final AgendarEmNomeDeClienteUseCase agendarEmNomeDeClienteUseCase;
+    private final ConfirmarPresencaUseCase confirmarPresencaUseCase;
     private final ListarMeusAgendamentosClienteUseCase listarClienteUseCase;
     private final ListarAgendamentosProfissionalUseCase listarProfissionalUseCase;
     private final ExportarAgendamentoIcsUseCase exportarIcsUseCase;
+    private final ListarHorariosDisponiveisUseCase listarHorariosUseCase;
     private final AgendamentoResponseAssembler assembler;
 
     @PostMapping
@@ -63,9 +75,9 @@ public class AgendamentoController {
     public ResponseEntity<AgendamentoResponse> criar(
             @Valid @RequestBody CriarAgendamentoRequest request,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         Agendamento agendamento = criarUseCase.executar(
-                keycloakSub,
+                userSub,
                 request.profissionalVinculoId(),
                 request.servicoId(),
                 request.dataPreferencia(),
@@ -84,8 +96,39 @@ public class AgendamentoController {
     public ResponseEntity<AgendamentoResponse> cancelar(
             @Parameter(description = "ID do agendamento pai") @PathVariable Integer id,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
-        String keycloakSub = principal.getToken().getSubject();
-        Agendamento agendamento = cancelarUseCase.executar(id, keycloakSub);
+        String userSub = principal.getToken().getSubject();
+        Agendamento agendamento = cancelarUseCase.executar(id, userSub);
+        return ResponseEntity.ok(assembler.toResponse(agendamento));
+    }
+
+    @PostMapping("/em-nome-de")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROFISSIONAL')")
+    @Operation(summary = "Agenda em nome de cliente",
+            description = "Permite que ADMIN ou PROFISSIONAL crie um agendamento para um cliente (walk-in ou por telefone). Se o cliente não existir pelo CPF, ele é criado automaticamente.")
+    @ApiResponse(responseCode = "201", description = "Agendamento criado")
+    @ApiResponse(responseCode = "409", description = "Cliente já possui agendamento ativo para este serviço/profissional")
+    @ApiResponse(responseCode = "422", description = "Sem horários disponíveis")
+    public ResponseEntity<AgendamentoResponse> agendarEmNomeDeCliente(
+            @Valid @RequestBody AgendarEmNomeDeClienteRequest request,
+            @Parameter(hidden = true) JwtAuthenticationToken principal) {
+        Agendamento agendamento = agendarEmNomeDeClienteUseCase.executar(
+                request.cpf(), request.nome(), request.dataNascimento(), request.telefone(),
+                request.sexo(), request.endereco(), request.email(),
+                request.profissionalVinculoId(), request.servicoId(),
+                request.agendamentoId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(assembler.toResponse(agendamento));
+    }
+
+    @PatchMapping("/{id}/confirmar-presenca")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROFISSIONAL')")
+    @Operation(summary = "Confirma presença do cliente",
+            description = "Marca presença confirmada no agendamento. O scheduler posteriomente seta status REALIZADO.")
+    @ApiResponse(responseCode = "200", description = "Presença confirmada")
+    @ApiResponse(responseCode = "404", description = "Agendamento não encontrado")
+    @ApiResponse(responseCode = "422", description = "Agendamento não está em status AGENDADO")
+    public ResponseEntity<AgendamentoResponse> confirmarPresenca(
+            @Parameter(description = "ID do agendamento pai") @PathVariable Integer id) {
+        Agendamento agendamento = confirmarPresencaUseCase.executar(id);
         return ResponseEntity.ok(assembler.toResponse(agendamento));
     }
 
@@ -99,8 +142,8 @@ public class AgendamentoController {
             @Parameter(description = "Data de início (inclusive)", example = "2026-08-01") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @Parameter(description = "Data de fim (inclusive)", example = "2026-08-31") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
-        String keycloakSub = principal.getToken().getSubject();
-        return ResponseEntity.ok(listarClienteUseCase.executar(keycloakSub, status, dataInicio, dataFim));
+        String userSub = principal.getToken().getSubject();
+        return ResponseEntity.ok(listarClienteUseCase.executar(userSub, status, dataInicio, dataFim));
     }
 
     @GetMapping("/profissional")
@@ -114,9 +157,23 @@ public class AgendamentoController {
             @Parameter(description = "Data de fim", example = "2026-08-31") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             @Parameter(hidden = true) JwtAuthenticationToken principal) {
         boolean isAdmin = br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityUtils.isAdmin(principal);
-        String keycloakSub = principal.getToken().getSubject();
+        String userSub = principal.getToken().getSubject();
         return ResponseEntity.ok(listarProfissionalUseCase.executar(
-                keycloakSub, profissionalVinculoId, status, dataInicio, dataFim, isAdmin));
+                userSub, profissionalVinculoId, status, dataInicio, dataFim, isAdmin));
+    }
+
+    @GetMapping("/disponiveis")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'PROFISSIONAL', 'ADMIN')")
+    @Operation(summary = "Lista slots disponíveis para agendamento",
+            description = "Retorna janelas de slots consecutivos DISPONIVEL que comportam a duração do serviço informado. "
+                    + "Cada item traz o agendamentoId do slot inicial — use-o em POST /api/agendamentos para reservar aquele horário específico. "
+                    + "horaFim = horaInicio + duracaoMinutos do serviço.")
+    @ApiResponse(responseCode = "200", description = "Lista de slots disponíveis")
+    @ApiResponse(responseCode = "422", description = "profissionalVinculoId não informado")
+    public ResponseEntity<List<HorarioDisponivelResponse>> listarDisponiveis(
+            @Parameter(description = "Id do vínculo de profissional (obrigatório)") @RequestParam Integer profissionalVinculoId,
+            @Parameter(description = "Id do serviço (obrigatório — define a duração e filtra agendas que oferecem o serviço)") @RequestParam Integer servicoId) {
+        return ResponseEntity.ok(listarHorariosUseCase.executar(profissionalVinculoId, servicoId));
     }
 
     @GetMapping("/{id}/ics")

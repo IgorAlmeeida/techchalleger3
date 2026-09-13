@@ -1,5 +1,6 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
+import br.com.fiap.techchalleger3.agendamento.application.port.AgendaItemRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
@@ -29,6 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Cancela uma agenda aberta, liberando todos os slots associados e notificando
+ * os clientes com agendamentos ativos por e-mail.
+ */
 @Service
 @RequiredArgsConstructor
 public class CancelarAgendaUseCase {
@@ -37,6 +42,7 @@ public class CancelarAgendaUseCase {
     private final ProfissionalRepositoryPort profissionalPort;
     private final ProfissionalVinculoRepositoryPort profissionalVinculoPort;
     private final AgendaRepositoryPort agendaPort;
+    private final AgendaItemRepositoryPort agendaItemPort;
     private final AgendamentoRepositoryPort agendamentoPort;
     private final ClienteRepositoryPort clientePort;
     private final ServicoRepositoryPort servicoPort;
@@ -45,13 +51,13 @@ public class CancelarAgendaUseCase {
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Transactional
-    public void executar(Integer agendaId, String keycloakSub, boolean isAdmin) {
+    public void executar(Integer agendaId, String userSub, boolean isAdmin) {
         Agenda agenda = agendaPort.buscarPorId(agendaId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Agenda", agendaId));
 
         if (!isAdmin) {
-            Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+            Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
             Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                     .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional para usuário", usuario.getId()));
@@ -71,6 +77,10 @@ public class CancelarAgendaUseCase {
             if (agendamento.getAgendamentoPaiId() != null) continue;
             cancelarSlot(agendamento, agendaId, agenda, agora);
         }
+
+        agendamentoPort.deletarTodosPorAgendaId(agendaId);
+        agendaItemPort.deletarPorAgendaId(agendaId);
+        agendaPort.deletar(agendaId);
     }
 
     private void cancelarSlot(Agendamento agendamento, Integer agendaId, Agenda agenda, LocalDateTime agora) {
@@ -92,7 +102,7 @@ public class CancelarAgendaUseCase {
                 clientePort.buscarPorId(clienteId).ifPresent(c ->
                         emailSenderPort.enviar(new EmailMensagem(
                                 c.getEmail(),
-                                "CANCELAMENTO_AGENDA",
+                                "cancelamento-agenda",
                                 dadosCancelamentoAgenda(agendaId, agenda, servicoId)
                         )));
             }

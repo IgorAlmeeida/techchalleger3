@@ -65,4 +65,7 @@ public class AgendamentoEntity {
     @UpdateTimestamp
     @Column(name = "DH_ATUALIZACAO")
     private LocalDateTime dhAtualizacao;
+
+    @Column(name = "TX_GOOGLE_CALENDAR_EVENT_ID")
+    private String googleCalendarEventId;
 }

@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Item de uma agenda: define quais serviços ({@link Servico}) estão disponíveis naquela agenda.
+ */
 public class AgendaItem {
     private Integer id;
     private Integer agendaId;

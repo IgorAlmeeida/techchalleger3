@@ -41,12 +41,12 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void profissional_agendamentoPai_lancaOperacaoInvalida() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(30).build();
         Agendamento filho = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(5)
                 .status(StatusAgendamentoEnum.AGENDADO).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(filho));
 
@@ -57,7 +57,7 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void profissional_semClienteId_naoEnviaEmail() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(30).build();
         Agendamento agendamento = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(null).servicoId(null)
@@ -66,7 +66,7 @@ class CancelarAgendamentoEvenMoreTest {
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -82,7 +82,7 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void profissional_comFilhos_cancelaTodos() {
-        Usuario usuario = Usuario.builder().id(20).keycloakId("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Usuario usuario = Usuario.builder().id(20).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
         Profissional profissional = Profissional.builder().id(30).build();
         Agendamento pai = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(100).servicoId(5)
@@ -93,7 +93,7 @@ class CancelarAgendamentoEvenMoreTest {
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-prof")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuario));
         when(profissionalPort.buscarPorUsuarioId(20)).thenReturn(Optional.of(profissional));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(pai));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -112,11 +112,11 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void admin_agendamentoPai_lancaOperacaoInvalida() {
-        Usuario admin = Usuario.builder().id(99).keycloakId("sub-admin").role(RoleEnum.ADMIN).build();
+        Usuario admin = Usuario.builder().id(99).uuid("sub-admin").role(RoleEnum.ADMIN).build();
         Agendamento filho = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(5)
                 .status(StatusAgendamentoEnum.AGENDADO).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-admin")).thenReturn(Optional.of(admin));
+        when(usuarioPort.buscarPorUuid("sub-admin")).thenReturn(Optional.of(admin));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(filho));
 
         assertThatThrownBy(() -> useCase.executar(1, "sub-admin"))
@@ -126,7 +126,7 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void cliente_servicoNulo_vinculoNulo_emailSemDetalhes() {
-        Usuario usuario = Usuario.builder().id(10).keycloakId("sub-cliente").role(RoleEnum.CLIENTE).build();
+        Usuario usuario = Usuario.builder().id(10).uuid("sub-cliente").role(RoleEnum.CLIENTE).build();
         Cliente cli = Cliente.builder().id(100).email("c@x.com").build();
         Agendamento agendamento = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(100).servicoId(null)
@@ -135,7 +135,7 @@ class CancelarAgendamentoEvenMoreTest {
         Agenda ag = Agenda.builder().id(7).dataAgenda(LocalDate.now().plusDays(1))
                 .profissionalVinculoId(20).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
@@ -151,7 +151,7 @@ class CancelarAgendamentoEvenMoreTest {
 
     @Test
     void cliente_comFilhos_cancelaTodos() {
-        Usuario usuario = Usuario.builder().id(10).keycloakId("sub-cliente").role(RoleEnum.CLIENTE).build();
+        Usuario usuario = Usuario.builder().id(10).uuid("sub-cliente").role(RoleEnum.CLIENTE).build();
         Cliente cli = Cliente.builder().id(100).email("c@x.com").build();
         Agendamento pai = Agendamento.builder().id(1).agendaId(7).agendamentoPaiId(null)
                 .clienteId(100).servicoId(5)
@@ -162,7 +162,7 @@ class CancelarAgendamentoEvenMoreTest {
         Agenda ag = agenda();
         ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
 
-        when(usuarioPort.buscarPorCodKeycloak("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
         when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
         when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(pai));
         when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));

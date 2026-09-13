@@ -20,19 +20,19 @@ class UsuarioRepositoryTest extends RepositoryTestBase {
     private UsuarioRepository repository;
 
     @Test
-    void deveBuscarPorCodKeycloak_quandoExiste() {
-        em.persist(UsuarioEntity.builder().codKeycloak("kc-abc").role(RoleEnum.CLIENTE).build());
+    void devebuscarPorUuid_quandoExiste() {
+        em.persist(UsuarioEntity.builder().uuid("kc-abc").email("a@test.com").nome("A").senhaHash("h").role(RoleEnum.CLIENTE).build());
         em.flush();
 
-        Optional<UsuarioEntity> result = repository.findByCodKeycloak("kc-abc");
+        Optional<UsuarioEntity> result = repository.findByUuid("kc-abc");
 
         assertThat(result).isPresent();
-        assertThat(result.get().getCodKeycloak()).isEqualTo("kc-abc");
+        assertThat(result.get().getUuid()).isEqualTo("kc-abc");
     }
 
     @Test
     void deveRetornarVazio_quandoCodNaoExiste() {
-        Optional<UsuarioEntity> result = repository.findByCodKeycloak("inexistente");
+        Optional<UsuarioEntity> result = repository.findByUuid("inexistente");
         assertThat(result).isEmpty();
     }
 }

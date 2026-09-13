@@ -35,7 +35,7 @@ class CriarAgendamentoEvenMoreTest {
     @Mock private EmailSenderPort emailSenderPort;
     @InjectMocks private CriarAgendamentoUseCase useCase;
 
-    private Usuario usuario() { return Usuario.builder().id(1).keycloakId("sub").build(); }
+    private Usuario usuario() { return Usuario.builder().id(1).uuid("sub").build(); }
     private Cliente cliente() { return Cliente.builder().id(10).email("c@x.com").build(); }
     private ProfissionalVinculo vinculo() {
         return ProfissionalVinculo.builder().id(1).profissionalId(30).estabelecimentoId(5).build();
@@ -48,7 +48,7 @@ class CriarAgendamentoEvenMoreTest {
     }
 
     private void setupBase(Servico servico) {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(vinculo()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(servico));
@@ -192,7 +192,7 @@ class CriarAgendamentoEvenMoreTest {
 
     @Test
     void vinculoNaoEncontrado_lancaRegistroNaoEncontrado() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.empty());
 
@@ -204,7 +204,7 @@ class CriarAgendamentoEvenMoreTest {
 
     @Test
     void servicoNaoEncontrado_lancaRegistroNaoEncontrado() {
-        when(usuarioPort.buscarPorCodKeycloak("sub")).thenReturn(Optional.of(usuario()));
+        when(usuarioPort.buscarPorUuid("sub")).thenReturn(Optional.of(usuario()));
         when(clientePort.buscarPorUsuarioId(1)).thenReturn(Optional.of(cliente()));
         when(profissionalVinculoPort.buscarPorId(1)).thenReturn(Optional.of(vinculo()));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.empty());

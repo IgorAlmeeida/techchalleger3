@@ -2,7 +2,7 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailMensagem;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakAdminPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +23,18 @@ public class CadastrarProfissionalUseCase {
 
     private final UsuarioRepositoryPort usuarioPort;
     private final ProfissionalRepositoryPort profissionalPort;
-    private final KeycloakAdminPort keycloakAdminPort;
+    private final PasswordPort passwordPort;
     private final EmailSenderPort emailSenderPort;
 
     @Transactional
     public Profissional executar(String nome, String email, List<String> especialidades, String endereco) {
         String senhaTemp = SenhaTemporariaGenerator.gerar();
 
-        String keycloakId = keycloakAdminPort.criarUsuario(email, nome, senhaTemp, "PROFISSIONAL", false);
-
         Usuario usuario = usuarioPort.salvar(Usuario.builder()
-                .keycloakId(keycloakId)
+                .uuid(UUID.randomUUID().toString())
+                .email(email)
+                .nome(nome)
+                .senhaHash(passwordPort.encode(senhaTemp))
                 .role(RoleEnum.PROFISSIONAL)
                 .build());
 

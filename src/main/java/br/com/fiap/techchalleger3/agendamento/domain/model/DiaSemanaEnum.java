@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
+/**
+ * Dias da semana usados nas escalas de trabalho dos profissionais.
+ */
 public enum DiaSemanaEnum {
 
     DOMINGO("DOMINGO", "Domingo"),

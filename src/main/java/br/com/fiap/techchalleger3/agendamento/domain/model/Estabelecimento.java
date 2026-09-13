@@ -14,6 +14,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Estabelecimento de beleza/bem-estar que oferece serviços.
+ * Agrega o papel de empresa e unidade de atendimento.
+ */
 public class Estabelecimento {
     private Integer id;
     private String nome;

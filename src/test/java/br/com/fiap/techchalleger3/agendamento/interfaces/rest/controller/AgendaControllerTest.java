@@ -6,7 +6,6 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendasU
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agenda;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SincronizarUsuarioFilter;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.AgendaResponseAssembler;
 
 import jakarta.servlet.FilterChain;
@@ -46,8 +45,6 @@ class AgendaControllerTest {
     @MockitoBean CancelarAgendaUseCase cancelarAgendaUseCase;
     @MockitoBean ListarAgendasUseCase listarAgendasUseCase;
     @MockitoBean AgendaResponseAssembler assembler;
-    @MockitoBean JwtDecoder jwtDecoder;
-    @MockitoBean SincronizarUsuarioFilter sincronizarFilter;
     @MockitoBean ContextoEstabelecimentoFilter contextoFilter;
 
     @BeforeEach

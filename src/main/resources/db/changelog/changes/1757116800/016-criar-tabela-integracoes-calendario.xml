@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="1757116800-016-criar-tb-integracoes-calendario" author="igor">
+        <createTable tableName="TB_INTEGRACOES_CALENDARIO" schemaName="agd"
+                     remarks="Tokens OAuth2 de integração com calendários externos (Google Calendar)">
+            <column name="COD_INTEGRACAO" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_TB_INTEGRACOES_CALENDARIO" nullable="false"/>
+            </column>
+            <column name="COD_CLIENTE" type="INT">
+                <constraints foreignKeyName="FK_TB_INTEGRACOES_CALENDARIO_COD_CLIENTE"
+                             references="agd.TB_CLIENTES(COD_CLIENTE)"/>
+            </column>
+            <column name="COD_PROFISSIONAL" type="INT">
+                <constraints foreignKeyName="FK_TB_INTEGRACOES_CALENDARIO_COD_PROFISSIONAL"
+                             references="agd.TB_PROFISSIONAIS(COD_PROFISSIONAL)"/>
+            </column>
+            <column name="IC_PROVEDOR" type="VARCHAR(20)" defaultValue="GOOGLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TX_ACCESS_TOKEN" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TX_REFRESH_TOKEN" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_EXPIRA_EM" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="IC_ATIVO" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DH_INSERT" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="TB_INTEGRACOES_CALENDARIO" schemaName="agd"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

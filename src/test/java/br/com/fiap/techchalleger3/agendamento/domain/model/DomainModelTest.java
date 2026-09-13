@@ -257,7 +257,7 @@ class DomainModelTest {
     void usuario_setters() {
         Usuario u = new Usuario();
         u.setId(1);
-        u.setKeycloakId("kc-1");
+        u.setUuid("kc-1");
         u.setRole(RoleEnum.CLIENTE);
         assertThat(u.getRole()).isEqualTo(RoleEnum.CLIENTE);
     }
@@ -409,11 +409,11 @@ class DomainModelTest {
     void usuario_builderCompleto() {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Usuario u = Usuario.builder()
-                .id(1).keycloakId("kc-uuid-1").role(RoleEnum.PROFISSIONAL)
+                .id(1).uuid("kc-uuid-1").role(RoleEnum.PROFISSIONAL)
                 .dhInsert(now).dhAtualizacao(now)
                 .build();
         assertThat(u.getRole()).isEqualTo(RoleEnum.PROFISSIONAL);
-        assertThat(u.getKeycloakId()).isEqualTo("kc-uuid-1");
+        assertThat(u.getUuid()).isEqualTo("kc-uuid-1");
     }
 
     @Test

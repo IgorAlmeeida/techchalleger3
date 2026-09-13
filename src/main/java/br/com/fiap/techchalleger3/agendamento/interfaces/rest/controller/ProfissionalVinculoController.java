@@ -42,6 +42,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/profissional-vinculos")
 @RequiredArgsConstructor
+/**
+ * Endpoints para gerenciamento de vínculos profissional-estabelecimento e associação de
+ * serviços a vínculos, incluindo listagem de horários disponíveis.
+ */
 @Tag(name = "Vínculos de Profissional", description = "Associação de profissionais a estabelecimentos e serviços")
 @SecurityRequirement(name = "bearerAuth")
 public class ProfissionalVinculoController {

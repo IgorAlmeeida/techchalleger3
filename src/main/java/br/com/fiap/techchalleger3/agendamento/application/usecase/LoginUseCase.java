@@ -1,6 +1,9 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.KeycloakTokenPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.PasswordPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.TokenPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.domain.exception.CredenciaisInvalidasException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,9 +11,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginUseCase {
 
-    private final KeycloakTokenPort keycloakTokenPort;
+    private final UsuarioRepositoryPort usuarioPort;
+    private final PasswordPort passwordPort;
+    private final TokenPort tokenPort;
 
-    public KeycloakTokenPort.TokenResponse executar(String username, String password) {
-        return keycloakTokenPort.obterToken(username, password);
+    public TokenPort.TokenResponse executar(String email, String senha) {
+        var usuario = usuarioPort.buscarPorEmail(email)
+                .orElseThrow(CredenciaisInvalidasException::new);
+        if (!passwordPort.matches(senha, usuario.getSenhaHash())) {
+            throw new CredenciaisInvalidasException();
+        }
+        return tokenPort.gerarTokens(usuario);
     }
 }

@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Item de escala: um dia da semana e o intervalo de horário de trabalho do profissional.
+ */
 public class EscalaItem {
     private Integer id;
     private Integer escalaId;

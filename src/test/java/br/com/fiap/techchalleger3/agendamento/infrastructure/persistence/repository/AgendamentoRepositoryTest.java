@@ -38,8 +38,8 @@ class AgendamentoRepositoryTest extends RepositoryTestBase {
 
     @BeforeEach
     void setUp() {
-        UsuarioEntity usuCliente = em.persist(UsuarioEntity.builder().codKeycloak("kc-cli").role(RoleEnum.CLIENTE).build());
-        UsuarioEntity usuProf = em.persist(UsuarioEntity.builder().codKeycloak("kc-prof").role(RoleEnum.PROFISSIONAL).build());
+        UsuarioEntity usuCliente = em.persist(UsuarioEntity.builder().uuid("kc-cli").email("cli@test.com").nome("Maria").senhaHash("h").role(RoleEnum.CLIENTE).build());
+        UsuarioEntity usuProf = em.persist(UsuarioEntity.builder().uuid("kc-prof").email("prof@test.com").nome("Ana").senhaHash("h").role(RoleEnum.PROFISSIONAL).build());
         EstabelecimentoEntity estab = em.persist(EstabelecimentoEntity.builder()
                 .nome("Studio Test").cnpj("00.000.000/0001-00").build());
         ProfissionalEntity prof = em.persist(ProfissionalEntity.builder()

@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Vínculo entre um profissional e um estabelecimento.
+ * Permite que o mesmo profissional atue em múltiplos estabelecimentos com configurações independentes.
+ */
 public class ProfissionalVinculo {
     private Integer id;
     private Integer profissionalId;

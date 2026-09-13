@@ -2,9 +2,11 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.CalendarioExternoGateway;
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailMensagem;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.IntegracaoCalendarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
@@ -21,6 +23,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.RoleEnum;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Cancela um agendamento existente de acordo com o perfil do usuário (cliente, profissional
+ * ou admin), liberando os slots, notificando o cliente por e-mail e removendo o evento
+ * do Google Calendar quando houver integração ativa.
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CancelarAgendamentoUseCase {
@@ -44,16 +53,18 @@ public class CancelarAgendamentoUseCase {
     private final AgendaRepositoryPort agendaPort;
     private final ServicoRepositoryPort servicoPort;
     private final EmailSenderPort emailSenderPort;
+    private final IntegracaoCalendarioRepositoryPort integracaoCalendarioPort;
+    private final CalendarioExternoGateway calendarioExternoGateway;
 
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final String ENTIDADE_AGENDAMENTO = "Agendamento";
     private static final String ENTIDADE_AGENDA = "Agenda";
-    private static final String TIPO_EMAIL_CANCELAMENTO = "CANCELAMENTO";
+    private static final String TIPO_EMAIL_CANCELAMENTO = "cancelamento";
 
     @Transactional
-    public Agendamento executar(Integer agendamentoId, String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    public Agendamento executar(Integer agendamentoId, String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
 
         if (RoleEnum.CLIENTE.equals(usuario.getRole())) {
             return executarComoCliente(agendamentoId, usuario);
@@ -116,6 +127,18 @@ public class CancelarAgendamentoUseCase {
                 dadosCancelamento(agendamentoId, agenda, servicoIdOriginal)
         ));
 
+        try {
+            String eventId = agendamento.getGoogleCalendarEventId();
+            if (eventId != null) {
+                integracaoCalendarioPort.buscarAtivaByClienteId(clienteIdOriginal).ifPresent(integracao ->
+                    calendarioExternoGateway.removerEvento(eventId, integracao)
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Falha ao remover evento Google Calendar do agendamento {}: {}",
+                    agendamentoId, e.getMessage());
+        }
+
         return Agendamento.builder()
                 .id(agendamento.getId())
                 .agendaId(agendamento.getAgendaId())
@@ -167,6 +190,17 @@ public class CancelarAgendamentoUseCase {
                     TIPO_EMAIL_CANCELAMENTO,
                     dadosCancelamento(agendamentoId, agenda, servicoId)
             ));
+            try {
+                String eventId = agendamento.getGoogleCalendarEventId();
+                if (eventId != null) {
+                    integracaoCalendarioPort.buscarAtivaByClienteId(clienteId).ifPresent(integracao ->
+                        calendarioExternoGateway.removerEvento(eventId, integracao)
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Falha ao remover evento Google Calendar do agendamento {}: {}",
+                        agendamentoId, e.getMessage());
+            }
         }
 
         return agendamento;
@@ -220,6 +254,17 @@ public class CancelarAgendamentoUseCase {
                     TIPO_EMAIL_CANCELAMENTO,
                     dadosCancelamento(agendamentoId, agenda, servicoId)
             ));
+            try {
+                String eventId = agendamento.getGoogleCalendarEventId();
+                if (eventId != null) {
+                    integracaoCalendarioPort.buscarAtivaByClienteId(clienteId).ifPresent(integracao ->
+                        calendarioExternoGateway.removerEvento(eventId, integracao)
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Falha ao remover evento Google Calendar do agendamento {}: {}",
+                        agendamentoId, e.getMessage());
+            }
         }
 
         return agendamento;

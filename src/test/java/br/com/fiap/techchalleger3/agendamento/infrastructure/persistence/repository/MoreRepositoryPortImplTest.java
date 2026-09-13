@@ -351,18 +351,18 @@ class MoreRepositoryPortImplTest {
     @InjectMocks UsuarioRepositoryPortImpl usuarioPortImpl;
 
     @Test
-    void usuario_buscarPorCodKeycloak() {
-        UsuarioEntity e = UsuarioEntity.builder().codigo(1).codKeycloak("sub-abc").build();
-        Usuario m = Usuario.builder().id(1).keycloakId("sub-abc").build();
-        when(usuarioRepo.findByCodKeycloak("sub-abc")).thenReturn(Optional.of(e));
+    void usuario_buscarPorUuid() {
+        UsuarioEntity e = UsuarioEntity.builder().codigo(1).uuid("sub-abc").build();
+        Usuario m = Usuario.builder().id(1).uuid("sub-abc").build();
+        when(usuarioRepo.findByUuid("sub-abc")).thenReturn(Optional.of(e));
         when(usuarioMapper.toModel(e)).thenReturn(m);
-        assertThat(usuarioPortImpl.buscarPorCodKeycloak("sub-abc")).contains(m);
+        assertThat(usuarioPortImpl.buscarPorUuid("sub-abc")).contains(m);
     }
 
     @Test
     void usuario_buscarPorId() {
-        UsuarioEntity e = UsuarioEntity.builder().codigo(5).codKeycloak("sub-x").build();
-        Usuario m = Usuario.builder().id(5).keycloakId("sub-x").build();
+        UsuarioEntity e = UsuarioEntity.builder().codigo(5).uuid("sub-x").build();
+        Usuario m = Usuario.builder().id(5).uuid("sub-x").build();
         when(usuarioRepo.findById(5)).thenReturn(Optional.of(e));
         when(usuarioMapper.toModel(e)).thenReturn(m);
         assertThat(usuarioPortImpl.buscarPorId(5)).contains(m);
@@ -370,8 +370,8 @@ class MoreRepositoryPortImplTest {
 
     @Test
     void usuario_salvar() {
-        Usuario m = Usuario.builder().id(1).keycloakId("sub-new").build();
-        UsuarioEntity e = UsuarioEntity.builder().codigo(1).codKeycloak("sub-new").build();
+        Usuario m = Usuario.builder().id(1).uuid("sub-new").build();
+        UsuarioEntity e = UsuarioEntity.builder().codigo(1).uuid("sub-new").build();
         when(usuarioMapper.toEntity(m)).thenReturn(e);
         when(usuarioRepo.save(e)).thenReturn(e);
         when(usuarioMapper.toModel(e)).thenReturn(m);

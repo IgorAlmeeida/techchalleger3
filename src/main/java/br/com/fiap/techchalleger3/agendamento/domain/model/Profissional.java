@@ -14,6 +14,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Profissional que presta serviços no estabelecimento.
+ * Associado a um {@link Usuario} e vinculado a estabelecimentos via {@link ProfissionalVinculo}.
+ */
 public class Profissional {
     private Integer id;
     private Integer usuarioId;

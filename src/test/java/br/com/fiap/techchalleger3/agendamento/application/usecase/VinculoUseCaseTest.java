@@ -2,7 +2,6 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaItemRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EstabelecimentoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
@@ -53,7 +52,6 @@ class VinculoUseCaseTest {
     // AssociarServicoAoVinculoUseCase
     @Mock private ServicoRepositoryPort servicoPort;
     @Mock private ProfissionalVinculoServicoRepositoryPort vinculoServicoPort;
-    @Mock private CachePort cachePort;
     @InjectMocks private AssociarServicoAoVinculoUseCase associarServico;
 
     // DesvincularItemUseCase
@@ -145,7 +143,7 @@ class VinculoUseCaseTest {
 
         associarServico.executar(1, 2);
 
-        verify(cachePort).invalidar(any());
+        verify(vinculoServicoPort).salvar(any());
     }
 
     @Test
@@ -165,7 +163,6 @@ class VinculoUseCaseTest {
         desvincularItem.executar(1, 2);
 
         verify(vinculoServicoPort).deletarPorVinculoEServico(1, 2);
-        verify(cachePort).invalidar(any());
     }
 
     @Test

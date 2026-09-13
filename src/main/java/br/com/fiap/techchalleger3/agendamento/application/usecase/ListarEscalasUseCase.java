@@ -27,6 +27,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Lista escalas por estabelecimento e/ou vínculo profissional, com dados detalhados
+ * de profissional, estabelecimento e serviços associados.
+ */
 @Service
 @RequiredArgsConstructor
 public class ListarEscalasUseCase {
@@ -42,7 +46,7 @@ public class ListarEscalasUseCase {
     public List<EscalaDetalhadaResponse> executar(
             Integer estabelecimentoId,
             Integer profissionalVinculoId,
-            String keycloakSub,
+            String userSub,
             boolean isAdmin) {
 
         if (estabelecimentoId == null && profissionalVinculoId == null) {
@@ -50,7 +54,7 @@ public class ListarEscalasUseCase {
         }
 
         if (!isAdmin && profissionalVinculoId != null) {
-            Integer profissionalId = resolveProfissionalId(keycloakSub);
+            Integer profissionalId = resolveProfissionalId(userSub);
             ProfissionalVinculo vinculo = profissionalVinculoPort.buscarPorId(profissionalVinculoId)
                     .orElseThrow(() -> new RegistroNaoEncontradoException("ProfissionalVinculo", profissionalVinculoId));
             if (!vinculo.getProfissionalId().equals(profissionalId)) {
@@ -62,9 +66,9 @@ public class ListarEscalasUseCase {
         return escalas.stream().map(this::toDetalhada).toList();
     }
 
-    private Integer resolveProfissionalId(String keycloakSub) {
-        Usuario usuario = usuarioPort.buscarPorCodKeycloak(keycloakSub)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", keycloakSub));
+    private Integer resolveProfissionalId(String userSub) {
+        Usuario usuario = usuarioPort.buscarPorUuid(userSub)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
         Profissional profissional = profissionalPort.buscarPorUsuarioId(usuario.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Profissional", usuario.getId()));
         return profissional.getId();

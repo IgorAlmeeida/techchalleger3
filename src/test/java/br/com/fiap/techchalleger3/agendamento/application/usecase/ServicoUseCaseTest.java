@@ -1,6 +1,5 @@
 package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
-import br.com.fiap.techchalleger3.agendamento.application.port.CachePort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 class ServicoUseCaseTest {
 
     @Mock private ServicoRepositoryPort servicoPort;
-    @Mock private CachePort cachePort;
     @InjectMocks private ServicoUseCase useCase;
 
     private Servico servico(int id) {
@@ -40,7 +38,6 @@ class ServicoUseCaseTest {
         Servico result = useCase.criar("Corte", 30, BigDecimal.TEN);
 
         assertThat(result.getId()).isEqualTo(1);
-        verify(cachePort).invalidar(any());
     }
 
     @Test
@@ -56,8 +53,7 @@ class ServicoUseCaseTest {
     }
 
     @Test
-    void deveListar_doBanco_quandoCacheVazio() {
-        when(cachePort.get(any(), any())).thenReturn(Optional.empty());
+    void deveListar_doBanco() {
         when(servicoPort.listarAtivos()).thenReturn(List.of(servico(1), servico(2)));
 
         Page<Servico> page = useCase.listar(PageRequest.of(0, 10));
@@ -77,13 +73,12 @@ class ServicoUseCaseTest {
     }
 
     @Test
-    void deveInativar() {
+    void deveDeletar() {
         Servico existente = servico(1);
         when(servicoPort.buscarPorId(1)).thenReturn(Optional.of(existente));
 
-        useCase.inativar(1);
+        useCase.deletar(1);
 
-        verify(servicoPort).salvar(any());
-        verify(cachePort).invalidar(any());
+        verify(servicoPort).deletar(1);
     }
 }

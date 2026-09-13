@@ -6,11 +6,11 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KeycloakTokenPortTest {
+class TokenPortTest {
 
     @Test
     void tokenResponse_acessoresRetornamValoresCorretos() {
-        KeycloakTokenPort.TokenResponse resp = new KeycloakTokenPort.TokenResponse(
+        TokenPort.TokenResponse resp = new TokenPort.TokenResponse(
                 "access-abc", 300, "Bearer", "refresh-xyz", 1800);
 
         assertThat(resp.accessToken()).isEqualTo("access-abc");
@@ -22,15 +22,15 @@ class KeycloakTokenPortTest {
 
     @Test
     void tokenResponse_equalsEHashCode() {
-        KeycloakTokenPort.TokenResponse a = new KeycloakTokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
-        KeycloakTokenPort.TokenResponse b = new KeycloakTokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
+        TokenPort.TokenResponse a = new TokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
+        TokenPort.TokenResponse b = new TokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
 
         assertThat(a).isEqualTo(b).hasSameHashCodeAs(b);
     }
 
     @Test
     void tokenResponse_toString() {
-        KeycloakTokenPort.TokenResponse r = new KeycloakTokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
+        TokenPort.TokenResponse r = new TokenPort.TokenResponse("tok", 1, "Bearer", "ref", 2);
 
         assertThat(r.toString()).contains("tok");
     }

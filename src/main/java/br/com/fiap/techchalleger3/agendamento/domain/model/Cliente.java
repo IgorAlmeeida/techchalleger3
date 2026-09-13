@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Representa o usuário final que realiza agendamentos.
+ * Associado a um {@link Usuario} via {@code usuarioId}.
+ */
 public class Cliente {
     private Integer id;
     private Integer usuarioId;

@@ -5,27 +5,26 @@ import br.com.fiap.techchalleger3.agendamento.application.port.EmailMensagem;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.adapter.IcsCalendarioExportAdapter;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.cache.RedisCachePortImpl;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.email.RabbitEmailSenderPortImpl;
+import br.com.fiap.techchalleger3.agendamento.infrastructure.email.AsyncEmailSenderPortImpl;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.scheduler.FecharAgendamentosJob;
-import br.com.fiap.techchalleger3.agendamento.infrastructure.security.KeycloakRolesConverter;
+import br.com.fiap.techchalleger3.agendamento.infrastructure.security.AppJwtRolesConverter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SenhaTemporariaGenerator;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -90,60 +89,31 @@ class InfrastructureMiscTest {
         verify(agendamentoPort, times(2)).salvar(any());
     }
 
-    // ── RedisCachePortImpl ────────────────────────────────────────────────
+    // ── AsyncEmailSenderPortImpl ──────────────────────────────────────────
 
-    @Mock RedisTemplate<String, Object> redisTemplate;
-    @Mock ValueOperations<String, Object> valueOps;
-    @InjectMocks RedisCachePortImpl redisCachePort;
-
-    @Test
-    void redis_put() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOps);
-
-        redisCachePort.put("key", "value", Duration.ofMinutes(10));
-
-        verify(valueOps).set("key", "value", Duration.ofMinutes(10));
-    }
+    @Mock JavaMailSender mailSender;
+    @Mock TemplateEngine templateEngine;
+    @InjectMocks AsyncEmailSenderPortImpl asyncEmailSender;
 
     @Test
-    void redis_get_encontrado() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOps);
-        when(valueOps.get("key")).thenReturn("cached");
-
-        Optional<String> result = redisCachePort.get("key", String.class);
-
-        assertThat(result).contains("cached");
-    }
-
-    @Test
-    void redis_get_ausente() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOps);
-        when(valueOps.get("missing")).thenReturn(null);
-
-        Optional<String> result = redisCachePort.get("missing", String.class);
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void redis_invalidar() {
-        redisCachePort.invalidar("chave");
-
-        verify(redisTemplate).delete("chave");
-    }
-
-    // ── RabbitEmailSenderPortImpl ─────────────────────────────────────────
-
-    @Mock RabbitTemplate rabbitTemplate;
-
-    @Test
-    void email_enviar() {
-        RabbitEmailSenderPortImpl emailSender = new RabbitEmailSenderPortImpl(rabbitTemplate, "agendamento.email");
+    void email_enviar_chamaSend() throws Exception {
         EmailMensagem mensagem = new EmailMensagem("dest@x.com", "RESET_SENHA", Map.of("senha", "tmp123"));
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("RESET_SENHA"), any(Context.class))).thenReturn("<html>ok</html>");
 
-        emailSender.enviar(mensagem);
+        asyncEmailSender.enviar(mensagem);
 
-        verify(rabbitTemplate).convertAndSend("agendamento.email", mensagem);
+        verify(mailSender).send(mimeMessage);
+    }
+
+    @Test
+    void email_enviar_erroNaoPropagarExcecao() {
+        EmailMensagem mensagem = new EmailMensagem("dest@x.com", "RESET_SENHA", Map.of());
+        when(mailSender.createMimeMessage()).thenThrow(new RuntimeException("SMTP down"));
+
+        asyncEmailSender.enviar(mensagem);
+        // sem exceção propagada — erro logado internamente
     }
 
     // ── IcsCalendarioExportAdapter ────────────────────────────────────────
@@ -168,14 +138,14 @@ class InfrastructureMiscTest {
                 .contains("END:VCALENDAR");
     }
 
-    // ── KeycloakRolesConverter ────────────────────────────────────────────
+    // ── AppJwtRolesConverter ──────────────────────────────────────────────
 
-    private final KeycloakRolesConverter rolesConverter = new KeycloakRolesConverter();
+    private final AppJwtRolesConverter rolesConverter = new AppJwtRolesConverter();
 
     @Test
-    void keycloakRoles_semRealmAccess_retornaVazio() {
+    void jwtRoles_semRoleClaim_retornaVazio() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getClaimAsMap("realm_access")).thenReturn(null);
+        when(jwt.getClaimAsString("role")).thenReturn(null);
 
         Collection<GrantedAuthority> authorities = rolesConverter.convert(jwt);
 
@@ -183,25 +153,27 @@ class InfrastructureMiscTest {
     }
 
     @Test
-    void keycloakRoles_semRoles_retornaVazio() {
+    void jwtRoles_comRole_retornaAuthority() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getClaimAsMap("realm_access")).thenReturn(Map.of());
+        when(jwt.getClaimAsString("role")).thenReturn("ADMIN");
 
         Collection<GrantedAuthority> authorities = rolesConverter.convert(jwt);
 
-        assertThat(authorities).isEmpty();
-    }
-
-    @Test
-    void keycloakRoles_comRoles_retornaAuthorities() {
-        Jwt jwt = mock(Jwt.class);
-        when(jwt.getClaimAsMap("realm_access")).thenReturn(Map.of("roles", List.of("ADMIN", "PROFISSIONAL")));
-
-        Collection<GrantedAuthority> authorities = rolesConverter.convert(jwt);
-
-        assertThat(authorities).hasSize(2);
+        assertThat(authorities).hasSize(1);
         assertThat(authorities.stream().map(GrantedAuthority::getAuthority))
-                .containsExactlyInAnyOrder("ROLE_ADMIN", "ROLE_PROFISSIONAL");
+                .containsExactly("ROLE_ADMIN");
+    }
+
+    @Test
+    void jwtRoles_comRoleCliente_retornaAuthority() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("role")).thenReturn("CLIENTE");
+
+        Collection<GrantedAuthority> authorities = rolesConverter.convert(jwt);
+
+        assertThat(authorities).hasSize(1);
+        assertThat(authorities.stream().map(GrantedAuthority::getAuthority))
+                .containsExactly("ROLE_CLIENTE");
     }
 
     // ── SenhaTemporariaGenerator ──────────────────────────────────────────
@@ -215,14 +187,11 @@ class InfrastructureMiscTest {
 
     @Test
     void senha_gerar_conteudoMisto() {
-        // Gera 20 senhas e verifica que variam (não são determinísticas)
         String s1 = SenhaTemporariaGenerator.gerar();
         String s2 = SenhaTemporariaGenerator.gerar();
 
-        // Ambas devem ter 12 chars e conter mix de caracteres
         assertThat(s1).hasSize(12);
         assertThat(s2).hasSize(12);
-        // Garante que ao menos uma letra maiúscula, minúscula, dígito ou especial existe
         assertThat(s1).matches(".*[A-Z].*|.*[a-z].*|.*[0-9].*|.*[@#$!].*");
     }
 }

@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Porta de saída para persistência de profissionais ({@link br.com.fiap.techchalleger3.agendamento.domain.model.Profissional}).
+ */
 public interface ProfissionalRepositoryPort {
     Optional<Profissional> buscarPorId(Integer id);
     Optional<Profissional> buscarPorUsuarioId(Integer usuarioId);
@@ -14,4 +17,5 @@ public interface ProfissionalRepositoryPort {
     List<Profissional> listarTodos();
     Page<Profissional> listarComFiltros(String nome, String especialidade, boolean incluirInativos, Pageable pageable);
     Profissional salvar(Profissional profissional);
+    void deletar(Integer id);
 }

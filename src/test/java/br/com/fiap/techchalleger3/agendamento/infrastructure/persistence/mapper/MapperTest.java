@@ -108,22 +108,22 @@ class MapperTest {
     @Test
     void usuario_toModel() {
         UsuarioEntity e = UsuarioEntity.builder()
-                .codigo(1).codKeycloak("kc-uuid").role(RoleEnum.CLIENTE).build();
+                .codigo(1).uuid("kc-uuid").role(RoleEnum.CLIENTE).build();
 
         Usuario m = usuarioMapper.toModel(e);
 
         assertThat(m.getId()).isEqualTo(1);
-        assertThat(m.getKeycloakId()).isEqualTo("kc-uuid");
+        assertThat(m.getUuid()).isEqualTo("kc-uuid");
     }
 
     @Test
     void usuario_toEntity() {
-        Usuario m = Usuario.builder().id(3).keycloakId("kc-456").role(RoleEnum.PROFISSIONAL).build();
+        Usuario m = Usuario.builder().id(3).uuid("kc-456").role(RoleEnum.PROFISSIONAL).build();
 
         UsuarioEntity e = usuarioMapper.toEntity(m);
 
         assertThat(e.getCodigo()).isEqualTo(3);
-        assertThat(e.getCodKeycloak()).isEqualTo("kc-456");
+        assertThat(e.getUuid()).isEqualTo("kc-456");
     }
 
     // ── ProfissionalMapper ────────────────────────────────────────────────

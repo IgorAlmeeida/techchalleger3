@@ -19,5 +19,8 @@
     <include file="changes/1757116800/012-criar-tabela-agenda-itens.xml" relativeToChangelogFile="true"/>
     <include file="changes/1757116800/013-criar-tabela-agendamentos.xml" relativeToChangelogFile="true"/>
     <include file="changes/1757116800/014-criar-tabela-avaliacoes.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/015-adicionar-google-calendar-agendamentos.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/016-criar-tabela-integracoes-calendario.xml" relativeToChangelogFile="true"/>
+    <include file="changes/1757116800/017-alterar-tabela-usuarios-auth-propria.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
