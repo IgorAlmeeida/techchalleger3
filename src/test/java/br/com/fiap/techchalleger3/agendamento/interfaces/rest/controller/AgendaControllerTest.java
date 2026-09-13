@@ -52,10 +52,6 @@ class AgendaControllerTest {
         lenient().doAnswer(inv -> {
             ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
             return null;
-        }).when(sincronizarFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
-        lenient().doAnswer(inv -> {
-            ((FilterChain) inv.getArgument(2)).doFilter(inv.getArgument(0), inv.getArgument(1));
-            return null;
         }).when(contextoFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
     }
 
@@ -143,7 +139,7 @@ class AgendaControllerTest {
 
     @Test
     void listar_comRoleProfissional_retorna200() throws Exception {
-        when(listarAgendasUseCase.executar(any(), any(), any(), any(), anyString(), anyBoolean(), any()))
+        when(listarAgendasUseCase.executar(any(), any(), any(), any(), anyString(), anyBoolean(), anyBoolean(), any()))
                 .thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/api/agendas")

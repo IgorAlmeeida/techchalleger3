@@ -153,7 +153,7 @@ class AgendaUseCaseTest {
 
     @Test
     void listar_lancaQuandoSemFiltro() {
-        assertThatThrownBy(() -> listarAgendas.executar(null, null, null, null, "x", true, PageRequest.of(0, 10)))
+        assertThatThrownBy(() -> listarAgendas.executar(null, null, null, null, "x", true, false, PageRequest.of(0, 10)))
                 .isInstanceOf(OperacaoInvalidaException.class);
     }
 
@@ -189,7 +189,7 @@ class AgendaUseCaseTest {
         when(estabelecimentoPort.buscarPorId(30)).thenReturn(Optional.of(Estabelecimento.builder().id(30).nome("Studio").build()));
         when(agendaItemPort.listarPorAgendaId(1)).thenReturn(List.of());
 
-        var result = listarAgendas.executar(null, 30, null, null, "x", true, PageRequest.of(0, 10));
+        var result = listarAgendas.executar(null, 30, null, null, "x", true, false, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(1);
     }
@@ -210,7 +210,7 @@ class AgendaUseCaseTest {
         when(agendaItemPort.listarPorAgendaId(1)).thenReturn(List.of(item));
         when(servicoPort.buscarPorId(5)).thenReturn(Optional.of(Servico.builder().id(5).nome("Corte").duracaoMinutos(30).build()));
 
-        var result = listarAgendas.executar(null, 30, null, null, "x", true, PageRequest.of(0, 10));
+        var result = listarAgendas.executar(null, 30, null, null, "x", true, false, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(1);
     }
@@ -230,7 +230,7 @@ class AgendaUseCaseTest {
         when(estabelecimentoPort.buscarPorId(30)).thenReturn(Optional.of(Estabelecimento.builder().id(30).nome("Studio").build()));
         when(agendaItemPort.listarPorAgendaId(1)).thenReturn(List.of());
 
-        var result = listarAgendas.executar(5, null, null, null, "kc", false, PageRequest.of(0, 10));
+        var result = listarAgendas.executar(5, null, null, null, "kc", false, false, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(1);
     }
@@ -242,7 +242,7 @@ class AgendaUseCaseTest {
         ProfissionalVinculo outroVinculo = ProfissionalVinculo.builder().id(5).profissionalId(99).estabelecimentoId(30).build();
         when(profissionalVinculoPort.buscarPorId(5)).thenReturn(Optional.of(outroVinculo));
 
-        assertThatThrownBy(() -> listarAgendas.executar(5, null, null, null, "kc", false, PageRequest.of(0, 10)))
+        assertThatThrownBy(() -> listarAgendas.executar(5, null, null, null, "kc", false, false, PageRequest.of(0, 10)))
                 .isInstanceOf(AcessoNegadoException.class);
     }
 

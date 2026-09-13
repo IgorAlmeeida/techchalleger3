@@ -20,6 +20,7 @@ import br.com.fiap.techchalleger3.agendamento.domain.model.ProfissionalVinculo;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Servico;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.HorarioDisponivelResponse;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,10 +92,10 @@ class AgendamentoUseCaseTest {
         when(profissionalPort.buscarPorId(30)).thenReturn(Optional.of(Profissional.builder().id(30).nome("Dr.").build()));
         when(estabelecimentoPort.buscarPorId(40)).thenReturn(Optional.of(Estabelecimento.builder().id(40).nome("Studio").build()));
 
-        List<ListarHorariosDisponiveisUseCase.HorarioDisponivel> result = listarHorarios.executar(1, 5);
+        List<HorarioDisponivelResponse> result = listarHorarios.executar(1, 5);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getHoraInicio()).isEqualTo(LocalTime.of(9, 0));
+        assertThat(result.get(0).horaInicio()).isEqualTo(LocalTime.of(9, 0));
     }
 
     @Test

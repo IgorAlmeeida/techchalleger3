@@ -43,7 +43,7 @@ public class GerenciamentoAgendaSteps {
     public void cancelaAgenda(int agendaId) throws Exception {
         resultado = mockMvc.perform(patch("/api/agendas/" + agendaId + "/cancelar")
                 .with(jwt()
-                        .claim("sub", "admin-sub-uuid")
+                        .jwt(builder -> builder.claim("sub", "admin-sub-uuid"))
                         .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))));
     }
 
@@ -64,7 +64,7 @@ public class GerenciamentoAgendaSteps {
 
         resultado = mockMvc.perform(patch("/api/agendas/" + agendaId + "/cancelar")
                 .with(jwt()
-                        .claim("sub", "profissional-sub-uuid")
+                        .jwt(builder -> builder.claim("sub", "profissional-sub-uuid"))
                         .authorities(new SimpleGrantedAuthority("ROLE_PROFISSIONAL"))));
     }
 

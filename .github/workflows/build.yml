@@ -30,7 +30,9 @@ jobs:
           cache: maven
 
       - name: Compilar
-        run: ./mvnw -B -DskipTests compile
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -DskipTests compile
 
   # ---------------------------------------------------------------------
   # 2) Testes + Cobertura — unitários e de integração (Testcontainers sobe
@@ -56,7 +58,9 @@ jobs:
           cache: maven
 
       - name: Rodar testes e checar gate de cobertura
-        run: ./mvnw -B verify
+        run: |
+          chmod +x mvnw
+          ./mvnw -B verify
 
       - name: Publicar relatórios de teste (sempre, mesmo em falha)
         if: always()
@@ -106,13 +110,14 @@ jobs:
           path: target
 
       - name: Analise Sonar (sem re-rodar os testes)
-        run: >
-          ./mvnw -B sonar:sonar
-          -Dmaven.test.skip=true
-          -Dsonar.projectKey=$SONAR_PROJECT_KEY
-          -Dsonar.organization=$SONAR_ORGANIZATION
-          -Dsonar.host.url=$SONAR_HOST_URL
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+        run: |
+          chmod +x mvnw
+          ./mvnw -B sonar:sonar \
+            -Dmaven.test.skip=true \
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.organization=$SONAR_ORGANIZATION \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
   # ---------------------------------------------------------------------
   # 4) Publicação da imagem no GitHub Container Registry (GHCR) — só
