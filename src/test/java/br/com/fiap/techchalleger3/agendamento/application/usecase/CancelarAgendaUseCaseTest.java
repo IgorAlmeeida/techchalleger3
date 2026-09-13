@@ -27,6 +27,7 @@ class CancelarAgendaUseCaseTest {
     @Mock private AgendamentoRepositoryPort agendamentoPort;
     @Mock private ClienteRepositoryPort clientePort;
     @Mock private ServicoRepositoryPort servicoPort;
+    @Mock private AgendaItemRepositoryPort agendaItemPort;
     @Mock private EmailSenderPort emailSenderPort;
     @InjectMocks private CancelarAgendaUseCase useCase;
 

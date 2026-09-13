@@ -150,10 +150,13 @@ class AgendaControllerTest {
     }
 
     @Test
-    void listar_comRoleCliente_retorna403() throws Exception {
+    void listar_comRoleCliente_retorna200() throws Exception {
+        when(listarAgendasUseCase.executar(any(), any(), any(), any(), anyString(), anyBoolean(), anyBoolean(), any()))
+                .thenReturn(new PageImpl<>(List.of()));
+
         mockMvc.perform(get("/api/agendas")
                         .param("profissionalVinculoId", "10")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
     }
 }

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +50,8 @@ class AgendamentoRepositoryPortImplTest {
 
     @Test
     void buscarDisponiveisPorVinculo_agendasVazias() {
-        when(agendaRepository.findByCodProfissionalVinculo(1)).thenReturn(List.of());
+        when(agendaRepository.findByCodProfissionalVinculoAndDataAgendaGreaterThanEqual(eq(1), any(LocalDate.class)))
+                .thenReturn(List.of());
 
         assertThat(portImpl.buscarDisponiveisPorVinculo(1)).isEmpty();
     }
@@ -60,8 +63,9 @@ class AgendamentoRepositoryPortImplTest {
         AgendamentoEntity ae = AgendamentoEntity.builder().codigo(1).codAgenda(10).build();
         Agendamento m = Agendamento.builder().id(1).agendaId(10).status(StatusAgendamentoEnum.DISPONIVEL).build();
 
-        when(agendaRepository.findByCodProfissionalVinculo(1)).thenReturn(List.of(agenda));
-        when(agendamentoRepository.findByCodAgendaInAndStatus(List.of(10), StatusAgendamentoEnum.DISPONIVEL))
+        when(agendaRepository.findByCodProfissionalVinculoAndDataAgendaGreaterThanEqual(eq(1), any(LocalDate.class)))
+                .thenReturn(List.of(agenda));
+        when(agendamentoRepository.buscarDisponiveisRaizPorAgendas(List.of(10)))
                 .thenReturn(List.of(ae));
         when(mapper.toModel(ae)).thenReturn(m);
 

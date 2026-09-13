@@ -15,6 +15,7 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ExportarAgenda
 import br.com.fiap.techchalleger3.agendamento.application.usecase.GerarAgendaUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendamentosProfissionalUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendasUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarHorariosDisponiveisUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarMeusAgendamentosClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
@@ -58,6 +59,7 @@ public class CucumberSpringConfiguration {
     @MockitoBean AgendamentoResponseAssembler agendamentoAssembler;
     @MockitoBean AgendarEmNomeDeClienteUseCase agendarEmNomeDeClienteUseCase;
     @MockitoBean ConfirmarPresencaUseCase confirmarPresencaUseCase;
+    @MockitoBean ListarHorariosDisponiveisUseCase listarHorariosUseCase;
 
     // AvaliacaoController deps
     @MockitoBean AvaliarAtendimentoUseCase avaliarAtendimentoUseCase;

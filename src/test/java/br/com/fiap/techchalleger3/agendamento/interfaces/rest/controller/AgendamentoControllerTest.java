@@ -1,8 +1,11 @@
 package br.com.fiap.techchalleger3.agendamento.interfaces.rest.controller;
 
 import br.com.fiap.techchalleger3.agendamento.application.usecase.CancelarAgendamentoUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.AgendarEmNomeDeClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.CriarAgendamentoUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ExportarAgendamentoIcsUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.ConfirmarPresencaUseCase;
+import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarHorariosDisponiveisUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendamentosProfissionalUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarMeusAgendamentosClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
@@ -47,6 +50,9 @@ class AgendamentoControllerTest {
     @Autowired private ObjectMapper objectMapper;
 
     @MockitoBean private CriarAgendamentoUseCase criarUseCase;
+    @MockitoBean private AgendarEmNomeDeClienteUseCase agendarEmNomeDeClienteUseCase;
+    @MockitoBean private ConfirmarPresencaUseCase confirmarPresencaUseCase;
+    @MockitoBean private ListarHorariosDisponiveisUseCase listarHorariosUseCase;
     @MockitoBean private CancelarAgendamentoUseCase cancelarUseCase;
     @MockitoBean private ListarMeusAgendamentosClienteUseCase listarClienteUseCase;
     @MockitoBean private ListarAgendamentosProfissionalUseCase listarProfissionalUseCase;
