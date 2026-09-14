@@ -10,6 +10,7 @@ import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarAgendame
 import br.com.fiap.techchalleger3.agendamento.application.usecase.ListarMeusAgendamentosClienteUseCase;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agendamento;
 import br.com.fiap.techchalleger3.agendamento.domain.model.StatusAgendamentoEnum;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.HorarioDisponivelResponse;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.AgendamentoResponseAssembler;
@@ -39,6 +40,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -112,5 +115,115 @@ class AgendamentoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deveRetornar200_quandoCancelarComSucesso() throws Exception {
+        Agendamento agendamento = Agendamento.builder()
+                .id(1).agendaId(10).status(StatusAgendamentoEnum.CANCELADO)
+                .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
+                .presencaConfirmada(false).build();
+        AgendamentoResponse response = new AgendamentoResponse(
+                1, 10, null, null, LocalTime.of(9, 0), LocalTime.of(10, 0),
+                null, StatusAgendamentoEnum.CANCELADO, false);
+
+        when(cancelarUseCase.executar(anyInt(), anyString())).thenReturn(agendamento);
+        when(assembler.toResponse(any(Agendamento.class))).thenReturn(response);
+
+        mockMvc.perform(patch("/api/agendamentos/1/cancelar")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar201_quandoAgendarEmNomeDeClienteComSucesso() throws Exception {
+        Agendamento agendamento = Agendamento.builder()
+                .id(2).agendaId(10).status(StatusAgendamentoEnum.AGENDADO)
+                .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
+                .presencaConfirmada(false).build();
+        AgendamentoResponse response = new AgendamentoResponse(
+                2, 10, null, null, LocalTime.of(9, 0), LocalTime.of(10, 0),
+                null, StatusAgendamentoEnum.AGENDADO, false);
+
+        when(agendarEmNomeDeClienteUseCase.executar(any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
+                .thenReturn(agendamento);
+        when(assembler.toResponse(any(Agendamento.class))).thenReturn(response);
+
+        String body = """
+                {
+                    "cpf": "52998224725",
+                    "nome": "Cliente Walkin",
+                    "dataNascimento": "1990-01-01",
+                    "telefone": "(11) 90000-0000",
+                    "sexo": "M",
+                    "endereco": "Rua X, 1",
+                    "email": "walkin@teste.com",
+                    "profissionalVinculoId": 1,
+                    "servicoId": 2
+                }
+                """;
+
+        mockMvc.perform(post("/api/agendamentos/em-nome-de")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deveRetornar200_quandoConfirmarPresencaComSucesso() throws Exception {
+        Agendamento agendamento = Agendamento.builder()
+                .id(1).agendaId(10).status(StatusAgendamentoEnum.AGENDADO)
+                .horaInicio(LocalTime.of(9, 0)).horaFim(LocalTime.of(10, 0))
+                .presencaConfirmada(true).build();
+        AgendamentoResponse response = new AgendamentoResponse(
+                1, 10, null, null, LocalTime.of(9, 0), LocalTime.of(10, 0),
+                null, StatusAgendamentoEnum.AGENDADO, true);
+
+        when(confirmarPresencaUseCase.executar(1)).thenReturn(agendamento);
+        when(assembler.toResponse(any(Agendamento.class))).thenReturn(response);
+
+        mockMvc.perform(patch("/api/agendamentos/1/confirmar-presenca")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PROFISSIONAL"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoListarMeus() throws Exception {
+        when(listarClienteUseCase.executar(anyString(), any(), any(), any())).thenReturn(java.util.List.of());
+
+        mockMvc.perform(get("/api/agendamentos/meus")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoListarProfissional() throws Exception {
+        when(listarProfissionalUseCase.executar(anyString(), any(), any(), any(), any(), org.mockito.ArgumentMatchers.anyBoolean()))
+                .thenReturn(java.util.List.of());
+
+        mockMvc.perform(get("/api/agendamentos/profissional")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PROFISSIONAL"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoListarDisponiveis() throws Exception {
+        when(listarHorariosUseCase.executar(1, 2)).thenReturn(java.util.List.<HorarioDisponivelResponse>of());
+
+        mockMvc.perform(get("/api/agendamentos/disponiveis")
+                        .param("profissionalVinculoId", "1")
+                        .param("servicoId", "2")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoExportarIcs() throws Exception {
+        when(exportarIcsUseCase.exportar(1)).thenReturn("ICS-CONTENT".getBytes());
+
+        mockMvc.perform(get("/api/agendamentos/1/ics")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
+                .andExpect(status().isOk());
     }
 }

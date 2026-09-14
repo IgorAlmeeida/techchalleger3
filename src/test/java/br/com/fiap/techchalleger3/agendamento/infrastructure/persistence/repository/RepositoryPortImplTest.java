@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,6 +89,13 @@ class RepositoryPortImplTest {
         Servico saved = servicoPortImpl.salvar(model);
 
         assertThat(saved).isEqualTo(model);
+    }
+
+    @Test
+    void servico_deletar() {
+        servicoPortImpl.deletar(1);
+
+        verify(servicoRepo).deleteById(1);
     }
 
     // ── ClienteRepositoryPortImpl ─────────────────────────────────────────
@@ -222,6 +230,13 @@ class RepositoryPortImplTest {
         when(profissionalMapper.toModel(e)).thenReturn(m);
 
         assertThat(profissionalPortImpl.salvar(m)).isEqualTo(m);
+    }
+
+    @Test
+    void profissional_deletar() {
+        profissionalPortImpl.deletar(1);
+
+        verify(profissionalRepo).deleteById(1);
     }
 
     // ── EscalaRepositoryPortImpl ──────────────────────────────────────────

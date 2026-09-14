@@ -2,6 +2,11 @@ package br.com.fiap.techchalleger3.agendamento.interfaces.rest.controller;
 
 import br.com.fiap.techchalleger3.agendamento.application.usecase.BuscarEstabelecimentosUseCase;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.EstabelecimentoUseCase;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Estabelecimento;
+import br.com.fiap.techchalleger3.agendamento.interfaces.rest.dto.EstabelecimentoResponse;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
 import br.com.fiap.techchalleger3.agendamento.interfaces.rest.assembler.EstabelecimentoResponseAssembler;
@@ -21,12 +26,16 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EstabelecimentoController.class)
@@ -85,5 +94,82 @@ class EstabelecimentoControllerTest {
         mockMvc.perform(get("/api/estabelecimentos/buscar")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoBuscarPorId() throws Exception {
+        Estabelecimento estab = Estabelecimento.builder().id(1).nome("Studio").build();
+        EstabelecimentoResponse resp = new EstabelecimentoResponse(
+                1, "Studio", "12345678000195", "Rua A", "11999999999",
+                "Responsavel", "12345678909", List.of(), true, LocalDateTime.now(), null);
+        when(useCase.buscarPorId(1)).thenReturn(estab);
+        when(assembler.toResponse(estab)).thenReturn(resp);
+
+        mockMvc.perform(get("/api/estabelecimentos/1")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoListar() throws Exception {
+        when(useCase.listar(any())).thenReturn(Page.empty());
+
+        mockMvc.perform(get("/api/estabelecimentos")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoAtualizar() throws Exception {
+        Estabelecimento estab = Estabelecimento.builder().id(1).nome("Novo Nome").build();
+        EstabelecimentoResponse resp = new EstabelecimentoResponse(
+                1, "Novo Nome", "12345678000190", "Rua A", "11999999999",
+                "João", "12345678909", List.of(), true, LocalDateTime.now(), LocalDateTime.now());
+        when(useCase.atualizar(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(estab);
+        when(assembler.toResponse(estab)).thenReturn(resp);
+
+        String body = """
+                {
+                    "nome": "Novo Nome",
+                    "cnpj": "12.345.678/0001-90",
+                    "endereco": "Rua A",
+                    "telefone": "11999999999",
+                    "responsavelNome": "João",
+                    "responsavelCpf": "123.456.789-09"
+                }
+                """;
+
+        mockMvc.perform(put("/api/estabelecimentos/1")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar204_quandoDeletar() throws Exception {
+        mockMvc.perform(delete("/api/estabelecimentos/1")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isNoContent());
+
+        verify(useCase).deletar(1);
+    }
+
+    @Test
+    void deveRetornar204_quandoInativar() throws Exception {
+        mockMvc.perform(put("/api/estabelecimentos/1/inativar")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isNoContent());
+
+        verify(useCase).inativar(1);
+    }
+
+    @Test
+    void deveRetornar204_quandoAtivar() throws Exception {
+        mockMvc.perform(put("/api/estabelecimentos/1/ativar")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isNoContent());
+
+        verify(useCase).ativar(1);
     }
 }

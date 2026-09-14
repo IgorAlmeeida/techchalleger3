@@ -103,6 +103,12 @@ class MoreRepositoryPortImplTest {
         assertThat(estabelecimentoPortImpl.salvar(m)).isEqualTo(m);
     }
 
+    @Test
+    void estabelecimento_deletar() {
+        estabelecimentoPortImpl.deletar(1);
+        verify(estabelecimentoRepo).deleteById(1);
+    }
+
     // ── ProfissionalVinculoRepositoryPortImpl ─────────────────────────────────
 
     @Mock ProfissionalVinculoRepository profissionalVinculoRepo;
@@ -305,6 +311,12 @@ class MoreRepositoryPortImplTest {
         assertThat(agendaItemPortImpl.salvar(m)).isEqualTo(m);
     }
 
+    @Test
+    void agendaItem_deletarPorAgendaId() {
+        agendaItemPortImpl.deletarPorAgendaId(10);
+        verify(agendaItemRepo).deletarPorAgendaId(10);
+    }
+
     // ── ProfissionalVinculoServicoRepositoryPortImpl ─────────────────────────
 
     @Mock ProfissionalVinculoServicoRepository profissionalVinculoServicoRepo;
@@ -376,5 +388,26 @@ class MoreRepositoryPortImplTest {
         when(usuarioRepo.save(e)).thenReturn(e);
         when(usuarioMapper.toModel(e)).thenReturn(m);
         assertThat(usuarioPortImpl.salvar(m)).isEqualTo(m);
+    }
+
+    @Test
+    void usuario_buscarPorEmail() {
+        UsuarioEntity e = UsuarioEntity.builder().codigo(1).email("admin@agendamento.com").build();
+        Usuario m = Usuario.builder().id(1).email("admin@agendamento.com").build();
+        when(usuarioRepo.findByEmail("admin@agendamento.com")).thenReturn(Optional.of(e));
+        when(usuarioMapper.toModel(e)).thenReturn(m);
+        assertThat(usuarioPortImpl.buscarPorEmail("admin@agendamento.com")).contains(m);
+    }
+
+    @Test
+    void usuario_atualizarSenha() {
+        usuarioPortImpl.atualizarSenha("sub-x", "novo-hash");
+        verify(usuarioRepo).updateSenhaHash("sub-x", "novo-hash");
+    }
+
+    @Test
+    void usuario_deletar() {
+        usuarioPortImpl.deletar(1);
+        verify(usuarioRepo).deleteById(1);
     }
 }

@@ -4,6 +4,9 @@ import br.com.fiap.techchalleger3.agendamento.application.port.AvaliacaoReposito
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.usecase.AvaliarAtendimentoUseCase;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Avaliacao;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Cliente;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Usuario;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.ContextoEstabelecimentoFilter;
 import br.com.fiap.techchalleger3.agendamento.infrastructure.security.SecurityConfig;
 import jakarta.servlet.FilterChain;
@@ -21,8 +24,11 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,5 +83,48 @@ class AvaliacaoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveRetornar201_quandoAvaliarComSucesso() throws Exception {
+        Usuario usuario = Usuario.builder().id(1).uuid("sub-cliente").build();
+        Cliente cliente = Cliente.builder().id(10).build();
+        Avaliacao avaliacao = Avaliacao.builder().id(1).agendamentoId(1).clienteId(10).nota(5).build();
+
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(java.util.Optional.of(usuario));
+        when(clientePort.buscarPorUsuarioId(1)).thenReturn(java.util.Optional.of(cliente));
+        when(avaliarUseCase.avaliar(anyInt(), anyInt(), anyInt(), any())).thenReturn(avaliacao);
+
+        String body = """
+                {
+                    "agendamentoId": 1,
+                    "nota": 5,
+                    "comentario": "Muito bom"
+                }
+                """;
+
+        mockMvc.perform(post("/api/avaliacoes")
+                        .with(jwt().jwt(j -> j.subject("sub-cliente")).authorities(new SimpleGrantedAuthority("ROLE_CLIENTE")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deveRetornar200_quandoListarPorEstabelecimento() throws Exception {
+        when(avaliacaoPort.listarPorEstabelecimentoId(10)).thenReturn(java.util.List.of());
+
+        mockMvc.perform(get("/api/avaliacoes/estabelecimento/10")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveRetornar200_quandoListarPorProfissionalVinculo() throws Exception {
+        when(avaliacaoPort.listarPorProfissionalVinculoId(20)).thenReturn(java.util.List.of());
+
+        mockMvc.perform(get("/api/avaliacoes/profissional-vinculo/20")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PROFISSIONAL"))))
+                .andExpect(status().isOk());
     }
 }

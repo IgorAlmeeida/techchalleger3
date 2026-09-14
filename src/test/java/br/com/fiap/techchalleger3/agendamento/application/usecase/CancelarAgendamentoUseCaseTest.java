@@ -2,12 +2,16 @@ package br.com.fiap.techchalleger3.agendamento.application.usecase;
 
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendaRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.AgendamentoRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.CalendarioExternoGateway;
 import br.com.fiap.techchalleger3.agendamento.application.port.ClienteRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.EmailSenderPort;
+import br.com.fiap.techchalleger3.agendamento.application.port.IntegracaoCalendarioRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ProfissionalVinculoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.ServicoRepositoryPort;
 import br.com.fiap.techchalleger3.agendamento.application.port.UsuarioRepositoryPort;
+import br.com.fiap.techchalleger3.agendamento.domain.model.IntegracaoCalendarioExterno;
+import br.com.fiap.techchalleger3.agendamento.domain.model.Profissional;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.AcessoNegadoException;
 import br.com.fiap.techchalleger3.agendamento.domain.exception.OperacaoInvalidaException;
 import br.com.fiap.techchalleger3.agendamento.domain.model.Agenda;
@@ -45,6 +49,8 @@ class CancelarAgendamentoUseCaseTest {
     @Mock private AgendaRepositoryPort agendaPort;
     @Mock private ServicoRepositoryPort servicoPort;
     @Mock private EmailSenderPort emailSenderPort;
+    @Mock private IntegracaoCalendarioRepositoryPort integracaoCalendarioPort;
+    @Mock private CalendarioExternoGateway calendarioExternoGateway;
 
     @InjectMocks private CancelarAgendamentoUseCase useCase;
 
@@ -171,5 +177,75 @@ class CancelarAgendamentoUseCaseTest {
 
         assertThat(result).isNotNull();
         verify(agendamentoPort).salvar(any());
+    }
+
+    @Test
+    void deveCancelarComoProfissional_quandoDonoDoVinculo() {
+        Usuario usuarioProf = Usuario.builder().id(50).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Profissional profissional = Profissional.builder().id(30).nome("Dr. Fulano").build();
+        Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.AGENDADO);
+        Agenda ag = agenda(7);
+        ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
+        Cliente cli = cliente(100);
+
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuarioProf));
+        when(profissionalPort.buscarPorUsuarioId(50)).thenReturn(Optional.of(profissional));
+        when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
+        when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
+        when(profissionalVinculoPort.buscarPorId(20)).thenReturn(Optional.of(vinculo));
+        when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of());
+        when(agendamentoPort.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(clientePort.buscarPorId(100)).thenReturn(Optional.of(cli));
+        when(profissionalPort.buscarPorId(30)).thenReturn(Optional.of(profissional));
+        when(servicoPort.buscarPorId(5)).thenReturn(Optional.empty());
+
+        Agendamento result = useCase.executar(1, "sub-prof");
+
+        assertThat(result.getStatus()).isEqualTo(StatusAgendamentoEnum.CANCELADO);
+        verify(emailSenderPort).enviar(any());
+    }
+
+    @Test
+    void deveLancarAcessoNegado_quandoProfissionalNaoEDonoDoVinculo() {
+        Usuario usuarioProf = Usuario.builder().id(50).uuid("sub-prof").role(RoleEnum.PROFISSIONAL).build();
+        Profissional profissional = Profissional.builder().id(999).build(); // não é o dono
+        Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.AGENDADO);
+        Agenda ag = agenda(7);
+        ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
+
+        when(usuarioPort.buscarPorUuid("sub-prof")).thenReturn(Optional.of(usuarioProf));
+        when(profissionalPort.buscarPorUsuarioId(50)).thenReturn(Optional.of(profissional));
+        when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
+        when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
+        when(profissionalVinculoPort.buscarPorId(20)).thenReturn(Optional.of(vinculo));
+
+        assertThatThrownBy(() -> useCase.executar(1, "sub-prof"))
+                .isInstanceOf(AcessoNegadoException.class);
+    }
+
+    @Test
+    void deveRemoverEventoDoGoogleCalendar_quandoAgendamentoTemEventoEClienteComIntegracaoAtiva() {
+        Usuario usuario = usuarioCliente();
+        Cliente cli = cliente(100);
+        Agendamento agendamento = agendamentoPai(7, 100, StatusAgendamentoEnum.AGENDADO);
+        agendamento.setGoogleCalendarEventId("google-event-123");
+        Agenda ag = agenda(7);
+        ProfissionalVinculo vinculo = ProfissionalVinculo.builder().id(20).profissionalId(30).build();
+        IntegracaoCalendarioExterno integracao = IntegracaoCalendarioExterno.builder().id(1).clienteId(100).build();
+
+        when(usuarioPort.buscarPorUuid("sub-cliente")).thenReturn(Optional.of(usuario));
+        when(clientePort.buscarPorUsuarioId(10)).thenReturn(Optional.of(cli));
+        when(agendamentoPort.buscarPorId(1)).thenReturn(Optional.of(agendamento));
+        when(agendaPort.buscarPorId(7)).thenReturn(Optional.of(ag));
+        when(agendamentoPort.buscarFilhosPorPaiId(1)).thenReturn(List.of());
+        when(agendamentoPort.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(profissionalVinculoPort.buscarPorId(20)).thenReturn(Optional.of(vinculo));
+        when(profissionalPort.buscarPorId(30)).thenReturn(Optional.empty());
+        when(servicoPort.buscarPorId(5)).thenReturn(Optional.empty());
+        when(integracaoCalendarioPort.buscarAtivaByClienteId(100)).thenReturn(Optional.of(integracao));
+
+        useCase.executar(1, "sub-cliente");
+
+        verify(calendarioExternoGateway).removerEvento("google-event-123", integracao);
     }
 }

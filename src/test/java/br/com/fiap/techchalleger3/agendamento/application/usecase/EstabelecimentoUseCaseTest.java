@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,5 +127,28 @@ class EstabelecimentoUseCaseTest {
 
         assertThatThrownBy(() -> useCase.deletar(1))
                 .isInstanceOf(OperacaoInvalidaException.class);
+    }
+
+    @Test
+    void deveInativar_quandoEstabelecimentoExiste() {
+        Estabelecimento existente = estab(1);
+        when(estabelecimentoPort.buscarPorId(1)).thenReturn(Optional.of(existente));
+        when(estabelecimentoPort.salvar(any())).thenReturn(existente);
+
+        useCase.inativar(1);
+
+        verify(estabelecimentoPort).salvar(argThat(e -> !e.getAtivo()));
+    }
+
+    @Test
+    void deveAtivar_quandoEstabelecimentoExiste() {
+        Estabelecimento existente = estab(1);
+        existente.setAtivo(false);
+        when(estabelecimentoPort.buscarPorId(1)).thenReturn(Optional.of(existente));
+        when(estabelecimentoPort.salvar(any())).thenReturn(existente);
+
+        useCase.ativar(1);
+
+        verify(estabelecimentoPort).salvar(argThat(Estabelecimento::getAtivo));
     }
 }
