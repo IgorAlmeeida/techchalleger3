@@ -199,6 +199,6 @@ jobs:
           inlineScript: |
             az extension add --name containerapp --upgrade --only-show-errors
             az containerapp update \
-              --name ca-agendamento \
+              --name ca-agendamento-final \
               --resource-group TechChalleger3 \
               --image ${{ steps.image.outputs.name }}:sha-${{ github.sha }}
