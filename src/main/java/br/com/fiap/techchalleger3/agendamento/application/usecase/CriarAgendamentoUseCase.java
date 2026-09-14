@@ -201,7 +201,15 @@ public class CriarAgendamentoUseCase {
                 }
             });
         } catch (Exception e) {
-            log.warn("Falha ao sincronizar com Google Calendar para agendamento {}: {}",
+            log.warn("Falha ao sincronizar com Google Calendar (cliente) para agendamento {}: {}",
+                    paiSalvo.getId(), e.getMessage());
+        }
+
+        try {
+            integracaoCalendarioPort.buscarAtivaByProfissionalId(vinculo.getProfissionalId()).ifPresent(integracao ->
+                    calendarioExternoGateway.criarEvento(paiSalvo, integracao));
+        } catch (Exception e) {
+            log.warn("Falha ao sincronizar com Google Calendar (profissional) para agendamento {}: {}",
                     paiSalvo.getId(), e.getMessage());
         }
 

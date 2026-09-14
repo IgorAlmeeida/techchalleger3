@@ -3,7 +3,7 @@
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan"
               testname="Agendamento — Plano de Carga (10 cenários)" enabled="true">
-      <stringProp name="TestPlan.comments">Parametrize via -J antes de rodar: -Jprotocol=https -Jhost=SEU_HOST -Jport=443 -JvinculoId=1 -JservicoId=1 -JestabelecimentoId=1 -JadminUser=admin -JadminPass=admin</stringProp>
+      <stringProp name="TestPlan.comments">Parametrize via -J antes de rodar: -Jprotocol=https -Jhost=SEU_HOST -Jport=443 -JvinculoId=1 -JservicoId=1 -JestabelecimentoId=1 -JadminUser=admin@agendamento.com -JadminPass=Admin@1234</stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -43,12 +43,12 @@
           </elementProp>
           <elementProp name="adminUser" elementType="Argument">
             <stringProp name="Argument.name">adminUser</stringProp>
-            <stringProp name="Argument.value">admin</stringProp>
+            <stringProp name="Argument.value">admin@agendamento.com</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="adminPass" elementType="Argument">
             <stringProp name="Argument.name">adminPass</stringProp>
-            <stringProp name="Argument.value">admin</stringProp>
+            <stringProp name="Argument.value">Admin@1234</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

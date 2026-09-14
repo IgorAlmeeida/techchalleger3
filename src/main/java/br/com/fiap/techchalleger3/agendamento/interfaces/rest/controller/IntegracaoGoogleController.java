@@ -21,7 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,12 +54,13 @@ public class IntegracaoGoogleController {
         return ResponseEntity.ok(new IntegracaoGoogleUrlResponse(url));
     }
 
-    @PostMapping("/callback")
-    @PreAuthorize("hasAnyRole('CLIENTE', 'PROFISSIONAL')")
+    @GetMapping("/callback")
     @Operation(summary = "Processa callback OAuth2 do Google",
-            description = "Troca o authorization code por tokens e armazena a integração.")
-    public ResponseEntity<Void> callback(@RequestParam String code, JwtAuthenticationToken principal) {
-        String userSub = principal.getToken().getSubject();
+            description = "Endpoint público chamado pelo próprio redirect do Google (não exige Bearer token, "
+                    + "pois o navegador não consegue mandar header de autorização num redirect). "
+                    + "O parâmetro 'state' (gerado em /autorizar) identifica o usuário que está autorizando.")
+    public ResponseEntity<String> callback(@RequestParam String code, @RequestParam String state) {
+        String userSub = state;
 
         Usuario usuario = usuarioPort.buscarPorUuid(userSub)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Usuario", userSub));
@@ -93,7 +93,8 @@ public class IntegracaoGoogleController {
         }
 
         integracaoPort.salvar(builder.build());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("<html><body><h2>Google Calendar conectado com sucesso!</h2>"
+                + "<p>Você já pode fechar esta aba.</p></body></html>");
     }
 
     @DeleteMapping

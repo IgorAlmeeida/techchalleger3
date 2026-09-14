@@ -16,8 +16,8 @@
 | `vinculoId` | `1` | ID do vínculo profissional gerado pelo seed |
 | `servicoId` | `1` | ID do serviço gerado pelo seed |
 | `estabelecimentoId` | `1` | ID do estabelecimento gerado pelo seed |
-| `adminUser` | `admin` | Usuário admin no Keycloak |
-| `adminPass` | `admin` | Senha do admin |
+| `adminUser` | `admin@agendamento.com` | Usuário admin criado automaticamente pelo `AdminSeeder` no primeiro boot |
+| `adminPass` | `Admin@1234` | Senha do admin (idem) |
 
 Edite os defaults na GUI (TestPlan → User Defined Variables) ou passe via `-J` na linha de comando.
 
@@ -28,15 +28,14 @@ Edite os defaults na GUI (TestPlan → User Defined Variables) ou passe via `-J`
 docker compose up -d
 
 # 2. Execute o seed para criar os dados base
-cd infra/load-test
-BASE_URL=http://localhost:8080 bash seed.sh
+BASE_URL=http://localhost:8080 bash scripts/seed.sh
 
 # 3. Rode o plano (GUI — validação visual)
-jmeter -t infra/load-test/jmeter/agendamento-plano-carga.jmx
+jmeter -t infra/load-test/agendamento-plano-carga.jmx
 
 # 4. Rode headless com saída de relatório
 jmeter -n \
-  -t infra/load-test/jmeter/agendamento-plano-carga.jmx \
+  -t infra/load-test/agendamento-plano-carga.jmx \
   -l resultados.jtl \
   -e -o relatorio-html/
 ```
@@ -45,15 +44,15 @@ jmeter -n \
 
 ```bash
 jmeter -n \
-  -t infra/load-test/jmeter/agendamento-plano-carga.jmx \
+  -t infra/load-test/agendamento-plano-carga.jmx \
   -Jprotocol=https \
   -Jhost=<FQDN-do-Container-App> \
   -Jport=443 \
   -JvinculoId=<id-do-seed> \
   -JservicoId=<id-do-seed> \
   -JestabelecimentoId=<id-do-seed> \
-  -JadminUser=admin \
-  -JadminPass=<senha-admin-keycloak> \
+  -JadminUser=admin@agendamento.com \
+  -JadminPass=<senha-admin> \
   -l resultados-azure.jtl \
   -e -o relatorio-azure/
 ```

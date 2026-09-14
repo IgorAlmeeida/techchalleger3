@@ -51,6 +51,7 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/api/contexto/**",
                     "/api/estabelecimentos/buscar",
+                    "/api/integracoes/google/callback",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/actuator/**"

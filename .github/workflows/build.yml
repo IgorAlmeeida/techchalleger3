@@ -167,3 +167,38 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ---------------------------------------------------------------------
+  # 5) Deploy — dispara uma nova revisão no Container App com a imagem
+  #    reciém publicada (tag SHA, rastreável), só depois do publish passar.
+  # ---------------------------------------------------------------------
+  deploy:
+    name: Deploy no Azure Container Apps
+    needs: docker-publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Login no Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Normalizar nome da imagem
+        id: image
+        run: |
+          echo "name=$(echo ghcr.io/${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Atualizar revisão do Container App
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az extension add --name containerapp --upgrade --only-show-errors
+            az containerapp update \
+              --name ca-agendamento \
+              --resource-group TechChalleger3 \
+              --image ${{ steps.image.outputs.name }}:sha-${{ github.sha }}
