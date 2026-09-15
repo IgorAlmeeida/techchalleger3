@@ -45,7 +45,7 @@ public class JwtTokenAdapter implements TokenPort {
                 .subject(uuid)
                 .issuedAt(new Date(now))
                 .expiration(new Date(now + (long) refreshExpiracaoSeg * 1000))
-                .signWith(key)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -73,7 +73,7 @@ public class JwtTokenAdapter implements TokenPort {
                 .claim("role", role)
                 .issuedAt(new Date(now))
                 .expiration(new Date(now + (long) expiracaoSegundos * 1000))
-                .signWith(key)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 }
